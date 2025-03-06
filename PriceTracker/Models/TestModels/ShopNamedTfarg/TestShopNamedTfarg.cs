@@ -1,31 +1,25 @@
 ﻿using PriceTracker.Models.BaseModels;
 using PriceTracker.Models.TestModels.ShopNamedTfarg;
 
-public class TfargShop: IShop
+public class TfargShop: AbstractShop
 {
-    public int Id { get; set; } = 1;
-    public string Name { get; set; } = "Tfarg";
     public List<TestTfargMerch> MerchList { get; set; }
 
-    public TfargShop(string name, List<TestTfargMerch>? shopMerches)
+    public TfargShop(string name, ILogger logger, int id = default, List<TestTfargMerch>? shopMerches = null): base (name, logger, id)
     {
-        Name = name;
         MerchList = shopMerches==null?new():shopMerches;
     }
-    public IEnumerable<IShopMerch> GetAllMerches()
-    {
-        return MerchList;
-    }
-    public IShopMerch GetMerch(int id)
+    public override ICollection<IShopMerch> GetAllMerches()
     {
         try
         {
-            return MerchList.Single(merch => merch.Id == id);
+            var listToReturn = MerchList.ToList<IShopMerch>();
         }
-        catch (InvalidOperationException)
+        catch(ArgumentNullException)
         {
-
+            Logger.LogCritical("Коллекция товаров не инициализирована!");
         }
-        return MerchList.Single(merch => merch.Id == id);
+        return MerchList.ToList<IShopMerch>();
     }
 }
+

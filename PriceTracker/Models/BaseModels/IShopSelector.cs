@@ -2,7 +2,8 @@
 {
     public interface IShopSelector
     {
-        public IShop? GetShopByName(string name);
-        public IEnumerable<IShop> GetAll();
+        public AbstractShop? GetShopByName(string name);
+        public AbstractShop? GetShopById(int id);
+        public IEnumerable<AbstractShop> GetAll();
     }
 }

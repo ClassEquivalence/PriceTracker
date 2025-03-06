@@ -4,7 +4,7 @@
     {
         protected IShopMerchExtractor ShopMerchExtractor;
         protected IShopPriceExtractor ShopPriceExtractor;
-        ShopPeriodicalPricesOverseer(IShopMerchExtractor shopMerchExtractor, IShopPriceExtractor shopPriceExtractor) 
+        public ShopPeriodicalPricesOverseer(IShopMerchExtractor shopMerchExtractor, IShopPriceExtractor shopPriceExtractor) 
         {
             ShopMerchExtractor = shopMerchExtractor;
             ShopPriceExtractor = shopPriceExtractor;

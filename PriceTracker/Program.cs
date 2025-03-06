@@ -1,3 +1,5 @@
+using PriceTracker.Models.BaseModels;
+
 namespace PriceTracker
 {
     public class Program
@@ -6,8 +8,16 @@ namespace PriceTracker
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            //builder.Services.AddLogging();
+
             // Add services to the container.
             builder.Services.AddRazorPages();
+            builder.Services.AddControllersWithViews();
+
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
+            builder.Services.AddSingleton<IShopCollection, ShopCollection>();
 
             var app = builder.Build();
 
@@ -17,6 +27,13 @@ namespace PriceTracker
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+
+            }
+            else
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(); //opts => opts.SwaggerEndpoint("swagger", "v1"));
+
             }
 
             app.UseHttpsRedirection();
@@ -27,6 +44,7 @@ namespace PriceTracker
             app.UseAuthorization();
 
             app.MapRazorPages();
+            app.MapControllers();
 
             app.Run();
         }

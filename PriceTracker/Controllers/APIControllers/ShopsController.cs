@@ -5,47 +5,67 @@ using PriceTracker.Models.BaseModels;
 
 namespace PriceTracker.Controllers.APIControllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ShopsController : ControllerBase
     {
-        [HttpGet]
-        public IEnumerable<IShop> GetShops()
+        public IShopCollection ShopCollection { get; set; }
+        public ILogger Logger { get; set; }
+        public ShopsController(ILogger<Program> logger, IShopCollection shopCollection) 
         {
-
+            Logger = logger;
+            ShopCollection = shopCollection;
+            
         }
 
-
-        // GET: api/<ShopsController>
+        // GET api/<ShopsController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<AbstractShop> GetShops()
         {
-            return new string[] { "value1", "value2" };
+            return ShopCollection.GetAll();
         }
 
         // GET api/<ShopsController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            var shop = ShopCollection.GetShopById(id);
+            return shop != null ? Content(shop.ToString()) : NotFound();
         }
 
         // POST api/<ShopsController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult PostTfargShop(string shopName)
         {
+            var shop = new TfargShop(shopName, Logger);
+            bool isAdded = ShopCollection.AddShop(shop);
+            if (isAdded)
+                return Ok();
+            else
+                return Conflict();
         }
 
         // PUT api/<ShopsController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult ChangeName(int id, string shopName)
         {
+            var shop = ShopCollection.GetShopById(id);
+            bool isNameChanged = ShopCollection.ChangeShopName(shop, shopName);
+            if (isNameChanged)
+                return Ok();
+            else
+                return Conflict();
         }
 
         // DELETE api/<ShopsController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            bool isRemoved = ShopCollection.RemoveShopById(id);
+            if (isRemoved)
+                return Ok();
+            else
+                return NotFound();
         }
     }
 }
