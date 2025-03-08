@@ -8,39 +8,39 @@ namespace PriceTracker.Models.BaseModels
     public class ShopCollection : IShopCollection
     {
         protected ILogger Logger;
-        protected ICollection<AbstractShop> Shops;
-        public ShopCollection(ILogger<Program> logger, ICollection<AbstractShop>? shops = null)
+        protected ICollection<Shop> Shops;
+        public ShopCollection(ILogger<Program> logger, ICollection<Shop>? shops = null)
         {
             Logger = logger;
             if (shops != null)
                 Shops = shops;
             else
-                Shops = new List<AbstractShop>();
+                Shops = new List<Shop>();
         }
 
-        public AbstractShop? GetShopByName(string name)
+        public Shop? GetShopByName(string name)
         {
             return CollectionSingleObjectController.TryGetSingle(Shops, shop => shop.Name == name,
                 $"Не удалось выбрать магазин с name={name}, так как не получилось однозначно его выбрать.");
         }
 
-        public AbstractShop? GetShopById(int id)
+        public Shop? GetShopById(int id)
         {
             return CollectionSingleObjectController.TryGetSingle(Shops, shop => shop.Id == id,
                 $"Не удалось выбрать магазин с id={id}, так как не получилось однозначно его выбрать.");
         }
-        public IEnumerable<AbstractShop> GetAll()
+        public IEnumerable<Shop> GetAll()
         {
             return Shops;
         }
-        public bool AddShop(AbstractShop shop)
+        public bool AddShop(Shop shop)
         {
             shop.Id = getFreeId();
 
             (bool sameNameExists, bool sameIdExists) = checkShopUniqueness(shop);
             if (!sameNameExists && !sameIdExists)
             {
-                shop.isNameChangeAllowed = isNameUnique;
+                shop.ValidateNameAvailability = isNameUnique;
                 Shops.Add(shop);
                 Logger.LogInformation($"Добавлен магазин {shop.Name}");
                 return true;
@@ -73,7 +73,7 @@ namespace PriceTracker.Models.BaseModels
             return CollectionSingleObjectController.TryRemoveSingle(Shops, shop => shop.Id == id, $"Не удалось удалить магазин с id={id}");
         }
 
-        public bool ChangeShopName(AbstractShop? shop, string newName)
+        public bool ChangeShopName(Shop? shop, string newName)
         {
             if (isNameUnique(newName) && shop!=null)
             {
@@ -84,7 +84,7 @@ namespace PriceTracker.Models.BaseModels
                 return false;
         }
 
-        protected (bool sameNameExist, bool sameIdExist) checkShopUniqueness(AbstractShop shop)
+        protected (bool sameNameExist, bool sameIdExist) checkShopUniqueness(Shop shop)
         {
             bool sameNameExists, sameIdExists;
             sameNameExists = !isNameUnique(shop.Name);
@@ -101,18 +101,17 @@ namespace PriceTracker.Models.BaseModels
             return Shops.Where(s => s.Id == id).Count() > 0 ? false : true;
         }
 
+        protected int AvailableId = 1;
         int getFreeId()
         {
-            int maxId = 0;
-            foreach(var shop in Shops)
+            while (Shops.Any(shop => shop.Id == AvailableId))
             {
-                if (shop.Id >= maxId)
-                    maxId = shop.Id;
+                AvailableId++;
             }
-            return maxId+1;
+            return AvailableId;
         }
 
-        public IEnumerator<AbstractShop> GetEnumerator()
+        public IEnumerator<Shop> GetEnumerator()
         {
             return Shops.GetEnumerator();
         }

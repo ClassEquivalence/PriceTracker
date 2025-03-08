@@ -1,9 +1,9 @@
 ﻿namespace PriceTracker.Models.BaseModels
 {
-    public interface IShopCollection: IShopSelector, IEnumerable<AbstractShop>
+    public interface IShopCollection: IShopSelector, IEnumerable<Shop>
     {
-        public bool AddShop(AbstractShop shop);
+        public bool AddShop(Shop shop);
         public bool RemoveShopById(int id);
-        public bool ChangeShopName(AbstractShop? shop, string newName);
+        public bool ChangeShopName(Shop? shop, string newName);
     }
 }

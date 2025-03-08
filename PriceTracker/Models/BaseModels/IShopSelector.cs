@@ -2,8 +2,8 @@
 {
     public interface IShopSelector
     {
-        public AbstractShop? GetShopByName(string name);
-        public AbstractShop? GetShopById(int id);
-        public IEnumerable<AbstractShop> GetAll();
+        public Shop? GetShopByName(string name);
+        public Shop? GetShopById(int id);
+        public IEnumerable<Shop> GetAll();
     }
 }

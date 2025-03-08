@@ -20,7 +20,7 @@ namespace PriceTracker.Controllers.APIControllers
 
         // GET api/<ShopsController>
         [HttpGet]
-        public IEnumerable<AbstractShop> GetShops()
+        public IEnumerable<Shop> GetShops()
         {
             return ShopCollection.GetAll();
         }
@@ -35,9 +35,9 @@ namespace PriceTracker.Controllers.APIControllers
 
         // POST api/<ShopsController>
         [HttpPost]
-        public IActionResult PostTfargShop(string shopName)
+        public IActionResult PostShop(string shopName)
         {
-            var shop = new TfargShop(shopName, Logger);
+            var shop = new Shop(shopName, Logger, new List<ShopMerch>());
             bool isAdded = ShopCollection.AddShop(shop);
             if (isAdded)
                 return Ok();
