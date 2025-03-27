@@ -1,6 +1,6 @@
-﻿namespace PriceTracker.Models.BaseModels
+﻿namespace PriceTracker.Models.BaseAppModels.ShopCollections
 {
-    public interface IShopCollection: IShopSelector, IEnumerable<Shop>
+    public interface IShopCollection : IShopSelector, IEnumerable<Shop>
     {
         public bool AddShop(Shop shop);
         public bool RemoveShopById(int id);

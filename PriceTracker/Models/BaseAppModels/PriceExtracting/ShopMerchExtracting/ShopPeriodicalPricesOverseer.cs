@@ -1,4 +1,4 @@
-﻿namespace PriceTracker.Models.BaseModels.PriceExtracting.ShopMerchExtracting
+﻿namespace PriceTracker.Models.BaseAppModels.PriceExtracting.ShopMerchExtracting
 {
     public abstract class ShopPeriodicalPricesOverseer: IShopPeriodicalPricesOverseer
     {

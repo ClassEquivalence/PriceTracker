@@ -1,4 +1,4 @@
-﻿namespace PriceTracker.Models.BaseModels.PriceExtracting
+﻿namespace PriceTracker.Models.BaseAppModels.PriceExtracting
 {
     public interface IShopPriceExtractor
     {

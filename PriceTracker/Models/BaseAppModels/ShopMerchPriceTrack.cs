@@ -1,4 +1,4 @@
-﻿namespace PriceTracker.Models.BaseModels
+﻿namespace PriceTracker.Models.BaseAppModels
 {
     public class ShopMerchPriceTrack
     {

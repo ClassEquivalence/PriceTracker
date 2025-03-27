@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Text;
 using System.Collections;
-using PriceTracker.Models.BaseModels.TemplateMethods;
+using PriceTracker.Models.BaseAppModels.TemplateMethods;
 
-namespace PriceTracker.Models.BaseModels
+namespace PriceTracker.Models.BaseAppModels
 {
     public class Shop
     {

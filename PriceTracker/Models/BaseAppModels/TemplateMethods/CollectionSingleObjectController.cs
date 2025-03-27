@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace PriceTracker.Models.BaseModels.TemplateMethods
+namespace PriceTracker.Models.BaseAppModels.TemplateMethods
 {
     //предполагается класс-синглтон.
     public static class CollectionSingleObjectController

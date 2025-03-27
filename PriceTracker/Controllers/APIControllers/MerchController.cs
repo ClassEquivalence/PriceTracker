@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PriceTracker.Models.BaseModels;
+using PriceTracker.Models.BaseAppModels;
+using PriceTracker.Models.BaseAppModels.ShopCollections;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

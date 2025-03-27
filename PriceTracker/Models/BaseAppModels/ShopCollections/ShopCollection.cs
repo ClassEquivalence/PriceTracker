@@ -1,14 +1,14 @@
-﻿
-using PriceTracker.Models.BaseModels.TemplateMethods;
+﻿using PriceTracker.Models.BaseAppModels.TemplateMethods;
 
 using System.Collections;
 
-namespace PriceTracker.Models.BaseModels
+namespace PriceTracker.Models.BaseAppModels.ShopCollections
 {
     public class ShopCollection : IShopCollection
     {
         protected ILogger Logger;
         protected ICollection<Shop> Shops;
+        public IEnumerable<Shop> AllShops => Shops;
         public ShopCollection(ILogger<Program> logger, ICollection<Shop>? shops = null)
         {
             Logger = logger;
@@ -29,11 +29,7 @@ namespace PriceTracker.Models.BaseModels
             return CollectionSingleObjectController.TryGetSingle(Shops, shop => shop.Id == id,
                 $"Не удалось выбрать магазин с id={id}, так как не получилось однозначно его выбрать.");
         }
-        public IEnumerable<Shop> GetAll()
-        {
-            return Shops;
-        }
-        public bool AddShop(Shop shop)
+        public virtual bool AddShop(Shop shop)
         {
             shop.Id = getFreeId();
 
@@ -75,7 +71,7 @@ namespace PriceTracker.Models.BaseModels
 
         public bool ChangeShopName(Shop? shop, string newName)
         {
-            if (isNameUnique(newName) && shop!=null)
+            if (isNameUnique(newName) && shop != null)
             {
                 shop.Name = newName;
                 return true;
@@ -92,10 +88,11 @@ namespace PriceTracker.Models.BaseModels
             return (sameNameExists, sameIdExists);
         }
 
-        bool isNameUnique(string name)
+        protected bool isNameUnique(string name)
         {
-            return Shops.Where(s => s.Name == name).Count() > 0 ? false : true;
+            return !Shops.Any(s => s.Name == name);
         }
+
         bool isIdUnique(int id)
         {
             return Shops.Where(s => s.Id == id).Count() > 0 ? false : true;

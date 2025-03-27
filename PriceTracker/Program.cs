@@ -1,4 +1,7 @@
-using PriceTracker.Models.BaseModels;
+using Microsoft.EntityFrameworkCore;
+using PriceTracker.Models.BaseAppModels;
+using PriceTracker.Models.BaseAppModels.ShopCollections;
+using PriceTracker.Models.DbRelatedModels;
 
 namespace PriceTracker
 {
@@ -16,8 +19,13 @@ namespace PriceTracker
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddSingleton<IShopCollection, ShopsFromDatabase>();
+            builder.Services.AddSingleton<PriceTrackerContext>();
 
-            builder.Services.AddSingleton<IShopCollection, ShopCollection>();
+            //Не уверен что это правильно.
+            builder.Services.AddSingleton<ICollection<Shop>, DbDataExtractor<Shop>>();
+
+            //builder.Services.AddSingleton<ICollection<Shop>, DbDataExtractor<Shop>>();
 
             var app = builder.Build();
 

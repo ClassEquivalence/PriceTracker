@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PriceTracker.Models.BaseModels;
+using PriceTracker.Models.BaseAppModels;
+using PriceTracker.Models.BaseAppModels.ShopCollections;
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,7 +13,7 @@ namespace PriceTracker.Controllers.APIControllers
     {
         public IShopCollection ShopCollection { get; set; }
         public ILogger Logger { get; set; }
-        public ShopsController(ILogger<Program> logger, IShopCollection shopCollection) 
+        public ShopsController(ILogger<Program> logger, IShopCollection shopCollection)
         {
             Logger = logger;
             ShopCollection = shopCollection;
@@ -22,7 +24,7 @@ namespace PriceTracker.Controllers.APIControllers
         [HttpGet]
         public IEnumerable<Shop> GetShops()
         {
-            return ShopCollection.GetAll();
+            return ShopCollection.AllShops;
         }
 
         // GET api/<ShopsController>/5
