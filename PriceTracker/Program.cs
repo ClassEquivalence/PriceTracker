@@ -1,7 +1,13 @@
 using Microsoft.EntityFrameworkCore;
-using PriceTracker.Models.BaseAppModels;
-using PriceTracker.Models.BaseAppModels.ShopCollections;
-using PriceTracker.Models.DbRelatedModels;
+using PriceTracker.Models.DomainModels;
+using PriceTracker.Models.DataAccess.EFCore;
+using PriceTracker.Models.Services.ShopService;
+using PriceTracker.Models.Services.Mapping.MicroMappers;
+using PriceTracker.Models.Services.MerchService;
+using PriceTracker.Routing;
+using PriceTracker.Models.DataAccess.Mapping;
+using PriceTracker.Models.DataAccess.Repositories;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace PriceTracker
 {
@@ -19,13 +25,27 @@ namespace PriceTracker
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddSingleton<IShopCollection, ShopsFromDatabase>();
+
+            builder.Services.AddSingleton<IShopService, ShopService>();
+            builder.Services.AddSingleton<IMerchService, MerchService>();
+            builder.Services.AddSingleton<IMerchToDtoMapper, MerchToDtoMapper>();
+            builder.Services.AddSingleton<IShopToDtoMapper, ShopToDtoMapper>();
+            builder.Services.AddSingleton<MerchRepository>();
+            builder.Services.AddSingleton<ShopRepository>();
+            builder.Services.AddSingleton<TimestampedPriceRepository>();
+            builder.Services.AddSingleton<APILinkBuilder>();
+
             builder.Services.AddSingleton<PriceTrackerContext>();
+            builder.Services.AddSingleton<DbContext>(sp => sp.GetRequiredService<PriceTrackerContext>());
 
-            //Не уверен что это правильно.
-            builder.Services.AddSingleton<ICollection<Shop>, DbDataExtractor<Shop>>();
+            string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
-            //builder.Services.AddSingleton<ICollection<Shop>, DbDataExtractor<Shop>>();
+            // TODO: Сделать потом нормальный конфиг подключения.
+            //builder.Services.AddDbContext<PriceTrackerContext>(options => options.UseNpgsql(connection));
+
+            builder.Services.AddSingleton<EntityToModelMappingContext>();
+
+
 
             var app = builder.Build();
 

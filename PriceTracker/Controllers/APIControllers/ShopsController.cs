@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PriceTracker.Models.BaseAppModels;
-using PriceTracker.Models.BaseAppModels.ShopCollections;
+using PriceTracker.Models.DomainModels;
+using PriceTracker.Models.DTOModels.ForAPI.Shop;
+using PriceTracker.Models.Services.Mapping.MicroMappers;
+using PriceTracker.Models.Services.ShopService;
+using PriceTracker.Routing;
+
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,38 +15,55 @@ namespace PriceTracker.Controllers.APIControllers
     [ApiController]
     public class ShopsController : ControllerBase
     {
-        public IShopCollection ShopCollection { get; set; }
-        public ILogger Logger { get; set; }
-        public ShopsController(ILogger<Program> logger, IShopCollection shopCollection)
+        private readonly IShopService _shopService;
+        private readonly ILogger _logger;
+
+
+        // TODO: [ARCH] эти поля должны находиться в DTO Composer'е, и построение DTO
+        // моделей не должно быть здесь.
+        // Также обратный маппинг не должен выполняться в контроллере.
+        private readonly IShopToDtoMapper _shopToDtoMapper;
+        private readonly APILinkBuilder _linkBuilder;
+
+        public ShopsController(ILogger<Program> logger, IShopService shopService,
+            IShopToDtoMapper shopDtoMapper, APILinkBuilder linkBuilder)
         {
-            Logger = logger;
-            ShopCollection = shopCollection;
-            
+            _logger = logger;
+            _shopService = shopService;
+            _shopToDtoMapper = shopDtoMapper;
+            _linkBuilder = linkBuilder;
         }
 
         // GET api/<ShopsController>
         [HttpGet]
-        public IEnumerable<Shop> GetShops()
+        public IActionResult GetShops()
         {
-            return ShopCollection.AllShops;
+            return Ok(_shopService.Shops.Select(_shopToDtoMapper.ToShopName));
         }
 
         // GET api/<ShopsController>/5
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var shop = ShopCollection.GetShopById(id);
-            return shop != null ? Content(shop.ToString()) : NotFound();
+            var shop = _shopService.GetShopById(id);
+            var link = _linkBuilder.GetShopMerchesPath(id);
+            return shop != null ?
+                Ok(_shopToDtoMapper.ToShopOverview(shop, link)) 
+                : NotFound();
         }
 
         // POST api/<ShopsController>
         [HttpPost]
-        public IActionResult PostShop(string shopName)
+        public IActionResult PostShop(ShopNameDto shop)
         {
-            var shop = new Shop(shopName, Logger, new List<ShopMerch>());
-            bool isAdded = ShopCollection.AddShop(shop);
+            if(string.IsNullOrWhiteSpace(shop.Name))
+            {
+                return BadRequest("Название магазина не может быть пустым.");
+            }
+            bool isAdded = _shopService.AddShop(new(shop.Name, []));
+
             if (isAdded)
-                return Ok();
+                return CreatedAtAction(nameof(Get), new {id = shop.Id }, shop);
             else
                 return Conflict();
         }
@@ -51,8 +72,8 @@ namespace PriceTracker.Controllers.APIControllers
         [HttpPut("{id}")]
         public IActionResult ChangeName(int id, string shopName)
         {
-            var shop = ShopCollection.GetShopById(id);
-            bool isNameChanged = ShopCollection.ChangeShopName(shop, shopName);
+            var shop = _shopService.GetShopById(id);
+            bool isNameChanged = shop!=null && _shopService.ChangeShopName(shop, shopName);
             if (isNameChanged)
                 return Ok();
             else
@@ -63,9 +84,9 @@ namespace PriceTracker.Controllers.APIControllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            bool isRemoved = ShopCollection.RemoveShopById(id);
+            bool isRemoved = _shopService.RemoveShopById(id);
             if (isRemoved)
-                return Ok();
+                return NoContent();
             else
                 return NotFound();
         }
