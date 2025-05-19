@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace PriceTracker.Models.DomainModels
 {
-    public class ShopModel: BaseModel
+    public class ShopModel: BaseDomain
     {
         public string Name { get; set; }
         public virtual List<MerchModel> Merches { get; set; }

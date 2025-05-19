@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using PriceTracker.Models.DataAccess.Entities;
+using PriceTracker.Models.DataAccess.Entities.Domain;
 using PriceTracker.Models.DomainModels;
 using PriceTracker.Models.Services.Mapping;
 using System.Runtime.CompilerServices;
@@ -14,11 +14,20 @@ namespace PriceTracker.Models.DataAccess.Repositories
     необходимых для проекции, каждый раз новый запрос к БД (вместо использования Local кеша).
      */
     public abstract class EFGenericRepository<TDomain, TEntity> : IRepository<TDomain>
-        where TEntity : BaseEntity where TDomain: BaseModel
+        where TEntity : BaseEntity where TDomain: BaseDomain
     {
         protected DbContext dbContext;
-        protected DbSet<TEntity> entities;
-        protected IEnumerable<TDomain> domainModels => entities.Select(EntityToModel);
+        protected DbSet<TEntity> entities { get; set; }
+
+        // TODO: Поле создано для инклюда всех связанных сущностей. Переосмыслить выборку данных из БД,
+        // вместе с существованием этого поля.
+
+        /// <summary>
+        /// TODO: Поле создано для инклюда всех связанных сущностей. Переосмыслить выборку данных из БД,
+        /// вместе с существованием этого поля.
+        /// </summary>
+        protected abstract List<TEntity> listOfEntities { get; }
+        protected IEnumerable<TDomain> domainModels => listOfEntities.Select(EntityToModel);
 
         private readonly ConditionalWeakTable<TEntity, TDomain> cache;
 
@@ -98,7 +107,7 @@ namespace PriceTracker.Models.DataAccess.Repositories
         /// <exception cref="InvalidOperationException"></exception>
         protected TEntity? GetEntity(int id)
         {
-            return entities.SingleOrDefault(e => e.Id == id);
+            return listOfEntities.SingleOrDefault(e => e.Id == id);
         }
 
         /// <summary>

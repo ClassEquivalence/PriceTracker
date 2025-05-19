@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PriceTracker.Models.DataAccess.Entities;
+using PriceTracker.Models.DataAccess.Entities.Domain;
 using PriceTracker.Models.DomainModels;
 
 namespace PriceTracker.Models.DataAccess.EFCore
@@ -13,6 +13,8 @@ namespace PriceTracker.Models.DataAccess.EFCore
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // TODO: Можно вынести все эти строки в отдельные классы конфигурации.
+
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<MerchPriceHistoryEntity>()

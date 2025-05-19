@@ -2,7 +2,7 @@
 
 namespace PriceTracker.Models.DomainModels
 {
-    public class TimestampedPrice : BaseModel
+    public class TimestampedPrice : BaseDomain
     {
         public TimestampedPrice(decimal price, DateTime dateTime, int id = default): base(id) 
         { 

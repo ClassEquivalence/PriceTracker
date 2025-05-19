@@ -2,7 +2,7 @@
 
 namespace PriceTracker.Models.DomainModels
 {
-    public class MerchPriceHistory: BaseModel
+    public class MerchPriceHistory: BaseDomain
     {
         public IReadOnlyList<TimestampedPrice> TimestampedPrices => TimestampedPricesList;
         protected List<TimestampedPrice> TimestampedPricesList { get; set; }

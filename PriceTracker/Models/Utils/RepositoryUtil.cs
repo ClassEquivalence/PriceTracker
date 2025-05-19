@@ -17,7 +17,7 @@ namespace PriceTracker.Models.Utils
         /// notFoundErrorText - текст, записывающийся в логгер при не найденном объекте.
         ///</summary>
         public static T? TryGetSingle<T>(IRepository<T> repository, Func<T, bool> getCondition, string notFoundErrorText,
-            string foundMultipleErrorText) where T : BaseModel
+            string foundMultipleErrorText) where T : BaseDomain
         {
             try
             {
@@ -49,7 +49,7 @@ namespace PriceTracker.Models.Utils
         /// foundMultipleErrorText - текст, записывающийся в логгер при неоднозначности выбора объекта
         ///</summary>
         public static bool TryRemoveSingle<T>(IRepository<T> repository, Func<T, bool> removeCondition, string notFoundErrorText,
-            string foundMultipleErrorText) where T : BaseModel
+            string foundMultipleErrorText) where T : BaseDomain
         {
             try
             {
@@ -76,7 +76,7 @@ namespace PriceTracker.Models.Utils
         /// информация об ошибке.
         /// errorText - текст, записывающийся в логгер при какой либо ошибке при выполнении метода.
         ///</summary>
-        public static T? TryGetSingle<T>(IRepository<T> repository, Func<T, bool> getCondition, string errorText) where T : BaseModel
+        public static T? TryGetSingle<T>(IRepository<T> repository, Func<T, bool> getCondition, string errorText) where T : BaseDomain
         {
             return TryGetSingle(repository, getCondition, errorText, errorText);
         }
@@ -85,7 +85,7 @@ namespace PriceTracker.Models.Utils
         /// Попытаться удалить один элемент репозитория. true - удаление успешно, false - провально.
         /// errorText - текст, записывающийся в логгер при какой либо ошибке при выполнении метода.
         ///</summary>
-        public static bool TryRemoveSingle<T>(IRepository<T> repository, Func<T, bool> removeCondition, string errorText) where T : BaseModel
+        public static bool TryRemoveSingle<T>(IRepository<T> repository, Func<T, bool> removeCondition, string errorText) where T : BaseDomain
         {
             return TryRemoveSingle(repository, removeCondition, errorText, errorText);
         }

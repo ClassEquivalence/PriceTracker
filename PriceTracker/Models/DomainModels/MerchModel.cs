@@ -2,7 +2,7 @@
 
 namespace PriceTracker.Models.DomainModels
 {
-    public class MerchModel: BaseModel, IMerchModel
+    public class MerchModel: BaseDomain, IMerchModel
     {
         public string Name { get; set; }
 

@@ -4,7 +4,7 @@ using PriceTracker.Models.DomainModels;
 
 namespace PriceTracker.Models.DataAccess.Repositories
 {
-    public interface IRepository<TDomain> where TDomain : BaseModel
+    public interface IRepository<TDomain> where TDomain : BaseDomain
     {
 
         /// <summary>

@@ -8,6 +8,9 @@ using PriceTracker.Routing;
 using PriceTracker.Models.DataAccess.Mapping;
 using PriceTracker.Models.DataAccess.Repositories;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using PriceTracker.Models.Services.ScrapingServices.ShopSpecificModels.Citilink;
+using HtmlAgilityPack;
+using PriceTracker.Models.DataAccess.Repositories.MerchRepository;
 
 namespace PriceTracker
 {
@@ -15,6 +18,7 @@ namespace PriceTracker
     {
         public static void Main(string[] args)
         {
+
             var builder = WebApplication.CreateBuilder(args);
 
             //builder.Services.AddLogging();
@@ -43,7 +47,7 @@ namespace PriceTracker
             // TODO: Сделать потом нормальный конфиг подключения.
             //builder.Services.AddDbContext<PriceTrackerContext>(options => options.UseNpgsql(connection));
 
-            builder.Services.AddSingleton<EntityToModelMappingContext>();
+            builder.Services.AddSingleton<BidirectionalEntityModelMappingContext>();
 
 
 
@@ -75,6 +79,7 @@ namespace PriceTracker
             app.MapControllers();
 
             app.Run();
+
         }
     }
 }

@@ -1,18 +1,27 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PriceTracker.Models.DomainModels;
 using PriceTracker.Models.DataAccess.EFCore;
-using PriceTracker.Models.DataAccess.Entities;
 using PriceTracker.Models.DataAccess.Mapping.FullMicroMappers.Base;
 using PriceTracker.Models.DataAccess.Mapping;
+using PriceTracker.Models.DataAccess.Entities.Domain;
 
 namespace PriceTracker.Models.DataAccess.Repositories
 {
     public class ShopRepository: EFGenericRepository<ShopModel, ShopEntity>
     {
 
-        private readonly IDomainToEntityMapper<ShopModel, ShopEntity> _mappingContext;
+        private readonly IBidirectionalDomainEntityMapper<ShopModel, ShopEntity> _mappingContext;
 
-        public ShopRepository(PriceTrackerContext context, EntityToModelMappingContext mappingContext) : base(context)
+        protected override List<ShopEntity> listOfEntities
+        {
+            get
+            {
+                return entities.Include(s => s.Merches).ThenInclude(m => m.PriceHistory)
+                    .Include(s=>s.Merches).ToList();
+            }
+        }
+
+        public ShopRepository(PriceTrackerContext context, BidirectionalEntityModelMappingContext mappingContext) : base(context)
         {
             _mappingContext = mappingContext;
         }

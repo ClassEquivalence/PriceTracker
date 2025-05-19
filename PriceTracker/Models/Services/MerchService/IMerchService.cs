@@ -2,7 +2,7 @@
 
 namespace PriceTracker.Models.Services.MerchService
 {
-    public interface IMerchService
+    public interface IMerchService<Merch> where Merch : MerchModel
     {
         /*
          TODO:
@@ -19,16 +19,20 @@ namespace PriceTracker.Models.Services.MerchService
          
 
          */
-        public List<MerchModel> Merches { get; }
-        public List<MerchModel> GetMerchesOfShop(int shopId);
-        public MerchModel? GetMerch(int merchId);
+        public List<Merch> Merches { get; }
+        public List<Merch> GetMerchesOfShop(int shopId);
+        public Merch? GetMerch(int merchId);
 
-        public bool TryCreate(MerchModel merch);
+        public bool TryCreate(Merch merch);
         public bool TryDelete(int merchId);
         public bool TryChangeName(int merchId, string newName);
         public bool TryAddTimestampedPrice(int merchId, TimestampedPrice timestampedPrice);
         public bool SetCurrentPrice(int merchId, decimal currentPrice);
         public bool RemoveSingleTimestampedPrice(int timestampedPriceId);
         public bool ClearOldPrices(int merchId);
+    }
+    public interface IMerchService: IMerchService<MerchModel>
+    {
+
     }
 }
