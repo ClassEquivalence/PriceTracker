@@ -3,8 +3,8 @@
     /*
      
      */
-    public class BaseDomain(int Id) : BaseModel
+    public class BaseDomain(int Id) : BaseModel(Id)
     {
-        public int Id { get; set; } = Id;
+
     }
 }

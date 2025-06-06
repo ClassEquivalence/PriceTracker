@@ -10,7 +10,6 @@ using System.Runtime.CompilerServices;
 using System.Web;
 using Microsoft.Playwright;
 using System;
-using PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine.GUIExtractors.ShopSpecific.Citilink.ExtractionInstructions.ExecutionState;
 
 
 
@@ -37,7 +36,7 @@ namespace PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine
             _logger = logger;
         }
 
-        public async IAsyncEnumerable<CitilinkMerchParsingDto> RetreiveAll(ParsingExecutionState?
+        public async IAsyncEnumerable<CitilinkMerchParsingDto> RetreiveAll(CitilinkParsingExecutionState?
             executionState = null)
         {
             await foreach (var dto in ParseAll(executionState, false))
@@ -46,7 +45,7 @@ namespace PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine
             }
         }
 
-        public async IAsyncEnumerable<CitilinkMerchParsingDto> ContinueRetrieval(ParsingExecutionState executionState)
+        public async IAsyncEnumerable<CitilinkMerchParsingDto> ContinueRetrieval(CitilinkParsingExecutionState executionState)
         {
             await foreach (var dto in ParseAll(executionState, true))
             {
@@ -54,10 +53,12 @@ namespace PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine
             }
         }
 
-        protected async IAsyncEnumerable<CitilinkMerchParsingDto> ParseAll(ParsingExecutionState? execState = null,
+        protected async IAsyncEnumerable<CitilinkMerchParsingDto> ParseAll(CitilinkParsingExecutionState? execState = null,
             bool continueFromExecState = false)
         {
             var catalogUrls = RetrieveAllMerchCatalogsUrls();
+            bool hasExtractionContinued = false;
+
 
             await foreach (var url in catalogUrls)
             {
@@ -78,16 +79,21 @@ namespace PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine
                 if (execState != null)
                     execState.CurrentCatalogUrl = url;
 
-                var catalogMerches = RetrieveMerchesFromCatalog(url, execState?.
-                    CatalogRetreiveExecState, continueFromExecState);
+                // Если процесс продолжается с прошлой остановки, продолжить со страницы остановки.
+                // Иначе - действовать сначала.
+                bool continueFromPage = continueFromExecState && !hasExtractionContinued;
+                var catalogMerches = RetrieveMerchesFromCatalog(url, execState, 
+                    continueFromPage);
                 await foreach (var dto in catalogMerches)
                     yield return dto;
+
+                hasExtractionContinued = true;
             }
 
         }
 
         public async IAsyncEnumerable<CitilinkMerchParsingDto> RetrieveMerchesFromCatalog(string catalogUrl,
-            ParseFromCatalogExecutionState? execState = null, bool continueFromExecState = false)
+            CitilinkParsingExecutionState? execState = null, bool continueFromExecState = false)
         {
             _logger?.LogDebug($"{nameof(RetrieveMerchesFromCatalog)}: начато извлечение товаров из каталога {catalogUrl}");
             int numberOfPages = ParsePageCount(await _scraper.UrlToNode(catalogUrl));
@@ -97,7 +103,7 @@ namespace PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine
 
             int i = 1;
             if (continueFromExecState && execState != null)
-                i = execState.PageNumber;
+                i = execState.CatalogPageNumber;
 
             for (; i <= numberOfPages; i++)
             {
@@ -106,7 +112,7 @@ namespace PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine
                     yield return dto;
                 }
                 if (execState != null)
-                    execState.PageNumber = i;
+                    execState.CatalogPageNumber = i;
             }
         }
 

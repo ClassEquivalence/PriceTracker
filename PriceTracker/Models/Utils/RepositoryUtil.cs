@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using PriceTracker.Models.DataAccess.Entities;
-using PriceTracker.Models.DataAccess.Repositories;
 using PriceTracker.Models.DomainModels;
+using PriceTracker.Modules.Repository.DataAccess.Repositories;
 
 namespace PriceTracker.Models.Utils
 {

@@ -1,16 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using PriceTracker.Models.DomainModels;
-using PriceTracker.Models.DataAccess.EFCore;
 using PriceTracker.Models.Services.ShopService;
 using PriceTracker.Models.Services.Mapping.MicroMappers;
 using PriceTracker.Models.Services.MerchService;
 using PriceTracker.Routing;
-using PriceTracker.Models.DataAccess.Mapping;
-using PriceTracker.Models.DataAccess.Repositories;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using PriceTracker.Models.Services.ScrapingServices.ShopSpecificModels.Citilink;
 using HtmlAgilityPack;
-using PriceTracker.Models.DataAccess.Repositories.MerchRepository;
+using PriceTracker.Modules.Repository.DataAccess.EFCore;
+using PriceTracker.Modules.Repository.DataAccess.Mapping;
+using PriceTracker.Modules.Repository.DataAccess.Repositories;
+using PriceTracker.Modules.Repository.DataAccess.Repositories.MerchRepository;
 
 namespace PriceTracker
 {

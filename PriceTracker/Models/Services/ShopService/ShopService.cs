@@ -1,11 +1,11 @@
 ﻿using PriceTracker.Models.DomainModels;
-using PriceTracker.Models.DataAccess.Repositories;
 using PriceTracker.Models.Utils;
 using PriceTracker.Models.Services.MerchService;
 using PriceTracker.Models.Services.Mapping.Extensions;
 using PriceTracker.Models.Services.Mapping.MicroMappers;
 using PriceTracker.Models.DTOModels.ForAPI.Shop;
 using PriceTracker.Routing;
+using PriceTracker.Modules.Repository.DataAccess.Repositories;
 
 
 namespace PriceTracker.Models.Services.ShopService

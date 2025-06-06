@@ -1,7 +1,7 @@
 ﻿using PriceTracker.Models.DataAccess.Entities;
-using PriceTracker.Models.DataAccess.Repositories;
-using PriceTracker.Models.DataAccess.Repositories.MerchRepository;
 using PriceTracker.Models.DomainModels;
+using PriceTracker.Modules.Repository.DataAccess.Repositories;
+using PriceTracker.Modules.Repository.DataAccess.Repositories.MerchRepository;
 using System.Reflection.Metadata.Ecma335;
 
 namespace PriceTracker.Models.Services.MerchService

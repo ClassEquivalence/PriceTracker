@@ -1,5 +1,5 @@
 ﻿using PriceTracker.Models.DTOModels.ForParsing;
-using PriceTracker.Models.Services.MerchDataExtraction.ExtractionInstructions;
+using PriceTracker.Models.Services.MerchDataExtraction.ExecutionState;
 using PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine;
 using PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine.GUIExtractors.ShopSpecific.Citilink.ExtractionInstructions;
 using System.Runtime.InteropServices;

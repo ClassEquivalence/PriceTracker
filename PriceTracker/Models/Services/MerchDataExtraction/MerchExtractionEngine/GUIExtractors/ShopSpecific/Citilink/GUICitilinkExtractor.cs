@@ -1,36 +1,37 @@
-﻿using PriceTracker.Models.DTOModels.ForParsing;
-using PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine.GUIExtractors.ShopSpecific.Citilink.ExecutionState;
+﻿using PriceTracker.Models.DataAccess.Repositories.Process;
+using PriceTracker.Models.DTOModels.ForParsing;
 using PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine.GUIExtractors.ShopSpecific.Citilink.ExtractionInstructions;
 
 namespace PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine.GUIExtractors.ShopSpecific.Citilink
 {
     public class GUICitilinkExtractor: IMerchDataExtractor<CitilinkMerchParsingDto, 
-        CitilinkMerchExtractionInstruction>
+        CitilinkParsingExecutionState>
     {
         // TODO [Arch]: Зарефакторить бы логику на этом и более нижнем уровне.
         private readonly CitilinkMerchParser _parser;
-        private CitilinkMerchExtractionInstruction? _extractionData;
+        private CitilinkParsingExecutionState? _extractionData;
 
 
-        public GUICitilinkExtractor(CitilinkScraper scraper, ILogger? logger = null) 
+        public GUICitilinkExtractor(CitilinkScraper scraper, 
+            ILogger? logger = null) 
         {
             _parser = new(scraper, logger);
         }
         public async IAsyncEnumerable<CitilinkMerchParsingDto> 
-            RunExtractionProcess(CitilinkMerchExtractionInstruction? extractionData = null)
+            RunExtractionProcess(CitilinkParsingExecutionState? extractionData = null)
         {
             _extractionData = extractionData;
 
             if(_extractionData == null)
             {
-                _extractionData = new(new("", new(0)), false);
+                _extractionData = new("", 0, false);
 
                 await foreach (var merch in _parser.RetreiveAll(_extractionData.ExecutionState))
                     yield return merch;
             }
             else if(extractionData != null)
             {
-                if (!extractionData.ExtractionProcessNew)
+                if (!extractionData.IsResumed)
                     await foreach (var merch in
                         _parser.ContinueRetrieval(extractionData.ExecutionState))
                         yield return merch;
@@ -41,7 +42,7 @@ namespace PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine
             }
         }
 
-        public CitilinkMerchExtractionInstruction? GetProgress()
+        public CitilinkParsingExecutionState? GetProgress()
         {
             return _extractionData;
         }

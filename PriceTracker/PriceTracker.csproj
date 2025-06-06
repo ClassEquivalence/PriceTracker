@@ -16,4 +16,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="7.3.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Modules\Repository\DataAccess\Mapping\FullMicroMappers\Common\Process\" />
+    <Folder Include="Modules\MerchExtractor\" />
+    <Folder Include="Modules\WebInterface\" />
+  </ItemGroup>
+
 </Project>

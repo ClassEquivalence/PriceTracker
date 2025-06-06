@@ -1,6 +1,7 @@
 ﻿using PriceTracker.Models.DTOModels.ForParsing;
-using PriceTracker.Models.Services.MerchDataExtraction.ExtractionInstructions;
+using PriceTracker.Models.Services.MerchDataExtraction.ExecutionState;
 using PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine;
+using PriceTracker.Modules.Repository.DataAccess.Repositories.Process;
 
 namespace PriceTracker.Models.Services.MerchDataExtraction
 {
@@ -16,7 +17,7 @@ namespace PriceTracker.Models.Services.MerchDataExtraction
     }
 
     public class MerchExtractionAgent<Dto, ExtractionProcessInfo> : MerchExtractionAgent
-        where Dto: MerchParsingDto where ExtractionProcessInfo: ExtractionAgentExecutionStateInfo
+        where Dto: MerchParsingDto where ExtractionProcessInfo: ExtractionExecutionStateInfo
     {
 
         public IMerchDataConsumer<Dto> Consumer;
