@@ -17,9 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Modules\Repository\DataAccess\Mapping\FullMicroMappers\Common\Process\" />
-    <Folder Include="Modules\MerchExtractor\" />
-    <Folder Include="Modules\WebInterface\" />
+    <Folder Include="Core\Models\Process\" />
+    <Folder Include="Modules\MerchDataProvider\MerchDataExtraction\MerchExtractionEngine\GUIExtractors\" />
+    <Folder Include="Modules\Repository\Mapping\Process\" />
   </ItemGroup>
 
 </Project>

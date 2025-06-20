@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PriceTracker.Models.DomainModels;
-using PriceTracker.Modules.Repository.DataAccess.Entities.Domain;
+using PriceTracker.Modules.Repository.Entities.Domain;
+using PriceTracker.Modules.Repository.Entities.Process;
+using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
 
 namespace PriceTracker.Modules.Repository.DataAccess.EFCore
 {
@@ -10,6 +12,10 @@ namespace PriceTracker.Modules.Repository.DataAccess.EFCore
         public DbSet<MerchEntity> Merches { get; set; }
         public DbSet<TimestampedPriceEntity> TimestampedPrices { get; set; }
         public DbSet<MerchPriceHistoryEntity> MerchPriceHistoryEntities { get; set; }
+
+        public DbSet<TimeExtractionProcessHappened> TimeExtractionProcessHappened { get; set; }
+        public DbSet<CitilinkParsingExecutionStateEntity> CitilinkParsingExecutionStateEntity
+        { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

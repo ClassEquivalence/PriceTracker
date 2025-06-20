@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using PriceTracker.Models.Services.ScrapingServices.ShopSpecificModels.Citilink;
-using PriceTracker.Models.DTOModels.ForParsing;
 using Microsoft.Playwright;
 using PriceTracker.Models.Services.ScrapingServices.HttpClients.Browser;
 using PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine.ScrapingServices.ShopSpecificModels.Citilink;
 using PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine.GUIExtractors.ScrapingServices.ShopSpecific.Citilink;
-using PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine.GUIExtractors.ShopSpecific.Citilink;
+using PriceTracker.Modules.MerchDataProvider.Models.ForParsing;
+using PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.ShopSpecific.Citilink;
 
 namespace PriceTrackerTest.Services.ScrapingServices.ShopSpecificModels.Citilink
 {

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
 using PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine.GUIExtractors.ScrapingServices.HttpClients.Browser;
-using PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine.GUIExtractors.ShopSpecific.Citilink;
+using PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.ShopSpecific.Citilink;
 using PriceTrackerTest.Utils.CustomAttributes;
 using PriceTrackerTest.Utils.Logging.LoggerProviders;
 using Xunit.Abstractions;
