@@ -1,0 +1,11 @@
+<h1>Трекер цен товаров магазина ситилинк</h1>
+
+<div>
+  <p>Для обзора истории цен, введите код товара в поле ниже.</p>
+  <div>
+    <p>Код товара: </p>
+    <input type="text" #merchCodeInput>
+  </div>
+  <button (click)="tryOpenProductPage(merchCodeInput.value)" name="FindMerchByCode">Найти</button>
+</div>
+

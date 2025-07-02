@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-
-namespace PriceTracker.Modules.WebInterface.DTOModels.ForAPI.Shop
+﻿namespace PriceTracker.Modules.WebInterface.DTOModels.ForAPI.Shop
 {
     public record ShopOverviewDto : ShopNameDto
     {

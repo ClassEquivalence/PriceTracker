@@ -1,6 +1,4 @@
-﻿using PriceTracker.Models.DTOModels;
-
-namespace PriceTracker.Modules.Repository.Entities.Domain
+﻿namespace PriceTracker.Modules.Repository.Entities.Domain
 {
     public class ShopEntity : BaseEntity
     {

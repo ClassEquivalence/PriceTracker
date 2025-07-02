@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Routing;
-using PriceTracker.Modules.WebInterface.Controllers.APIControllers;
+﻿using PriceTracker.Modules.WebInterface.Controllers.APIControllers;
 
 namespace PriceTracker.Modules.WebInterface.Routing
 {

@@ -1,9 +1,8 @@
-﻿using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
-using PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.ShopSpecific.Citilink;
+﻿using PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.ShopSpecific.Citilink;
 
 namespace PriceTracker.Modules.Repository.Facade
 {
-    public interface IRepositoryFacade: ICitilinkMerchRepositoryFacade,
+    public interface IRepositoryFacade : ICitilinkMerchRepositoryFacade,
         IShopSelectorFacade, IExtractionExecutionStateProvider<CitilinkParsingExecutionState>,
         IMerchRepositoryFacade, IShopRepositoryFacade, IPriceHistoryRepositoryFacade,
         ITimestampedPriceRepositoryFacade

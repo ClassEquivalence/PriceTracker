@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using PriceTracker.Core.Models.Domain;
-using PriceTracker.Modules.Repository.Mapping.Domain;
+﻿using PriceTracker.Core.Models.Domain;
 using PriceTracker.Modules.WebInterface.DTOModels.ForAPI.Merch;
 using PriceTracker.Modules.WebInterface.DTOModels.ForAPI.Shop;
 using PriceTracker.Modules.WebInterface.Mapping.Merch;
 using PriceTracker.Modules.WebInterface.Mapping.Shop;
-using PriceTracker.Modules.WebInterface.Routing;
 using PriceTracker.Modules.WebInterface.Services.MerchService;
 using PriceTracker.Modules.WebInterface.Services.MerchService.Citilink;
 using PriceTracker.Modules.WebInterface.Services.ShopService;
@@ -21,12 +18,14 @@ namespace PriceTracker.Modules.WebInterface.Services.InterfaceServices
 
         private readonly IMerchService _merchService;
         private readonly IShopService _shopService;
+        private readonly ICitilinkMerchService _citilinkMerchService;
 
 
         public AdminAPIService(IDetailedMerchDtoMapper detailedMerchDtoMapper,
             IOverviewMerchDtoMapper overviewMerchDtoMapper, IMerchService merchService,
-            IShopService shopService, IShopNameMapper shopNameMapper, 
-            IShopOverviewMapper shopOverviewMapper)
+            IShopService shopService, IShopNameMapper shopNameMapper,
+            IShopOverviewMapper shopOverviewMapper, ICitilinkMerchService
+            citilinkMerchService)
         {
 
             _detailedMerchMapper = detailedMerchDtoMapper;
@@ -36,6 +35,7 @@ namespace PriceTracker.Modules.WebInterface.Services.InterfaceServices
 
             _merchService = merchService;
             _shopService = shopService;
+            _citilinkMerchService = citilinkMerchService;
 
         }
 
@@ -53,6 +53,13 @@ namespace PriceTracker.Modules.WebInterface.Services.InterfaceServices
             return merchModel != null ? _detailedMerchMapper.Map(merchModel) : null;
         }
 
+        public DetailedMerchDto? GetDetailedCitilinkMerch(string citilinkMerchCode)
+        {
+            var citilinkMerchModel = _citilinkMerchService.GetByCitilinkId(citilinkMerchCode);
+            return citilinkMerchModel != null ? _detailedMerchMapper.
+                Map(citilinkMerchModel) : null;
+        }
+
         /// <summary>
         /// </summary>
         /// <param name="shopId"></param>
@@ -65,7 +72,7 @@ namespace PriceTracker.Modules.WebInterface.Services.InterfaceServices
             if (shop == null)
                 return false;
 
-            MerchPriceHistoryDto priceHistoryDto = new(default, [], new(default, 
+            MerchPriceHistoryDto priceHistoryDto = new(default, [], new(default,
                 merch.CurrentPrice, DateTime.Now, default), merch.Id);
             bool isAdded = _merchService.TryCreate(new MerchDto(merch.Id, merch.Name, priceHistoryDto,
                 default, default));
@@ -93,7 +100,7 @@ namespace PriceTracker.Modules.WebInterface.Services.InterfaceServices
 
         public bool AddPreviousPrice(int merchId, TimestampedPriceDto timestampedPrice)
         {
-            
+
             DateTime dateTime = timestampedPrice.DateTime == default ?
                 DateTime.Now : timestampedPrice.DateTime;
 
@@ -112,14 +119,14 @@ namespace PriceTracker.Modules.WebInterface.Services.InterfaceServices
             return isPriceSet;
         }
 
-        
+
         public bool RemoveTimestampedPrice(int timestampedPriceId)
         {
             bool isRemoved = _merchService.RemoveSingleTimestampedPrice(timestampedPriceId);
             return isRemoved;
         }
 
-        
+
         public bool ClearOldPrices(int merchId)
         {
             bool areRemoved = _merchService.ClearOldPrices(merchId);
@@ -132,7 +139,7 @@ namespace PriceTracker.Modules.WebInterface.Services.InterfaceServices
             return _shopService.Shops.Select(_shopNameMapper.Map);
         }
 
-        
+
 
         public ShopOverviewDto? GetShop(int id)
         {
@@ -145,7 +152,7 @@ namespace PriceTracker.Modules.WebInterface.Services.InterfaceServices
                 _shopOverviewMapper.Map(shop) : null;
         }
 
-        
+
 
         public bool CreateShop(ShopNameDto shop)
         {
@@ -159,7 +166,7 @@ namespace PriceTracker.Modules.WebInterface.Services.InterfaceServices
             return isAdded;
         }
 
-        
+
 
         public bool ChangeShopName(int id, string shopName)
         {
@@ -168,7 +175,7 @@ namespace PriceTracker.Modules.WebInterface.Services.InterfaceServices
             return isNameChanged;
         }
 
-        
+
 
         public bool DeleteShop(int id)
         {

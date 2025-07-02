@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PriceTracker.Core.Models.Domain;
-using PriceTracker.Modules.WebInterface.DTOModels;
 using PriceTracker.Modules.WebInterface.DTOModels.ForAPI.Merch;
 using PriceTracker.Modules.WebInterface.Services.InterfaceServices;
-using PriceTracker.Modules.WebInterface.Services.MerchService;
-using PriceTracker.Modules.WebInterface.Services.ShopService;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -49,7 +46,7 @@ namespace PriceTracker.Modules.WebInterface.Controllers.APIControllers
         public IActionResult Post(int shopId, MerchOverviewDto merch)
         {
             bool isCreated = _adminApiService.CreateMerch(shopId, merch);
-            return isCreated ? Created() : 
+            return isCreated ? Created() :
                 StatusCode(StatusCodes.Status500InternalServerError);
         }
 
@@ -75,7 +72,7 @@ namespace PriceTracker.Modules.WebInterface.Controllers.APIControllers
         public IActionResult PostPrice(int merchId, TimestampedPriceDto timestampedPrice)
         {
             bool isAdded = _adminApiService.AddPreviousPrice(merchId, timestampedPrice);
-            
+
             if (isAdded)
                 return Ok();
             else
@@ -112,5 +109,13 @@ namespace PriceTracker.Modules.WebInterface.Controllers.APIControllers
             else
                 return Conflict();
         }
+
+
+        [HttpGet("citilink/{citilinkMerchCode}")]
+        public DetailedMerchDto? GetCitilinkMerch(string citilinkMerchCode)
+        {
+            return _adminApiService.GetDetailedCitilinkMerch(citilinkMerchCode);
+        }
+
     }
 }

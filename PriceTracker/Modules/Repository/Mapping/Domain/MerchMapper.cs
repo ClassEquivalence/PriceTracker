@@ -8,7 +8,7 @@ namespace PriceTracker.Modules.Repository.Mapping.Domain
     {
         private readonly IPriceHistoryMapper _priceHistoryMapper;
         public MerchMapper(Func<MerchDto, MerchEntity?> getEntityIfExists,
-            IPriceHistoryMapper priceHistoryMapper) : 
+            IPriceHistoryMapper priceHistoryMapper) :
             base(getEntityIfExists)
         {
             _priceHistoryMapper = priceHistoryMapper;
@@ -25,7 +25,7 @@ namespace PriceTracker.Modules.Repository.Mapping.Domain
         protected override MerchDto CreateModelFromEntity(MerchEntity entity)
         {
             MerchDto model = new(entity.Id, entity.Name, _priceHistoryMapper.Map(entity.PriceHistory),
-                entity.ShopId, entity.PriceHistoryId);
+                entity.ShopId, entity.PriceHistory.Id);
             return model;
         }
     }

@@ -1,7 +1,5 @@
-﻿
-
-using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
-using PriceTracker.Core.Utils;
+﻿using PriceTracker.Core.Models.Domain;
+using PriceTracker.Modules.Repository.Facade;
 
 
 namespace PriceTracker.Modules.WebInterface.Services.ShopService
@@ -9,28 +7,29 @@ namespace PriceTracker.Modules.WebInterface.Services.ShopService
     public class ShopService : IShopService
     {
         protected ILogger Logger;
-        public ShopRepository Repository { get; init; }
-        public List<ShopModel> Shops => Repository.GetAll();
-        public ShopService(ILogger<Program> logger, ShopRepository repository)
+        public IShopRepositoryFacade Repository { get; init; }
+
+        public List<ShopDto> Shops => Repository.GetAll();
+
+        public ShopService(ILogger<Program> logger, IShopRepositoryFacade repository)
         {
             Logger = logger;
             Repository = repository;
         }
 
-        public ShopModel? GetShopByName(string name)
+        public ShopDto? GetShopByName(string name)
         {
-            var shopModel = RepositoryUtil.TryGetSingle(Repository, shop => shop.Name == name,
-                $"Не удалось выбрать магазин с name={name}, так как не получилось однозначно его выбрать.");
+
+            var shopModel = Repository.SingleOrDefault(s => s.Name == name);
             return shopModel;
         }
 
-        public ShopModel? GetShopById(int id)
+        public ShopDto? GetShopById(int id)
         {
-            var shopModel = RepositoryUtil.TryGetSingle(Repository, shop => shop.Id == id,
-                $"Не удалось выбрать магазин с id={id}, так как не получилось однозначно его выбрать.");
+            var shopModel = Repository.GetModel(id);
             return shopModel;
         }
-        public virtual bool AddShop(ShopModel shop)
+        public virtual bool AddShop(ShopDto shop)
         {
 
             if (IsShopUnique(shop))
@@ -47,22 +46,22 @@ namespace PriceTracker.Modules.WebInterface.Services.ShopService
         }
         public bool RemoveShopById(int id)
         {
-            return RepositoryUtil.TryRemoveSingle(Repository, shop => shop.Id == id, $"Не удалось удалить магазин с id={id}");
+            return Repository.Delete(id);
         }
 
-        public bool ChangeShopName(ShopModel shop, string newName)
+        public bool ChangeShopName(ShopDto shop, string newName)
         {
             if (IsNameUnique(newName) && shop != null)
             {
-                shop.Name = newName;
-                Repository.Update(shop);
+                ShopDto updated = new(shop.Id, newName, shop.Merches);
+                Repository.Update(updated);
                 return true;
             }
             else
                 return false;
         }
 
-        protected bool IsShopUnique(ShopModel shop)
+        protected bool IsShopUnique(ShopDto shop)
         {
             return IsNameUnique(shop.Name);
         }
@@ -71,6 +70,7 @@ namespace PriceTracker.Modules.WebInterface.Services.ShopService
         {
             return !Repository.Any(s => s.Name == name);
         }
+
 
     }
 }

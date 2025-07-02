@@ -1,5 +1,4 @@
 ﻿using PriceTracker.Core.Models;
-using PriceTracker.Core.Models.Domain;
 
 namespace PriceTracker.Modules.Repository.Repositories.Base
 {

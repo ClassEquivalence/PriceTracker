@@ -32,10 +32,4 @@
     <ProjectReference Include="..\PriceTracker\PriceTracker.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Services\ScrapingServices\ShopSpecificModels\Citilink\ParsablePages\merchCatalog1.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

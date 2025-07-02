@@ -14,7 +14,7 @@ namespace PriceTracker.Modules.WebInterface.Services.MerchService
         private readonly ITimestampedPriceRepositoryFacade _timestampedPriceRepository;
 
         public List<MerchDto> Merches => _merchRepository.
-            Where(m=>true);
+            Where(m => true);
 
         public MerchService(ILogger<Program> logger, IRepositoryFacade repository)
         {

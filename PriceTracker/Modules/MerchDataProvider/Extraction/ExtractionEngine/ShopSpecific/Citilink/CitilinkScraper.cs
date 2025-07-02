@@ -1,7 +1,5 @@
 ﻿using HtmlAgilityPack;
-using Microsoft.Playwright;
 using PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.ScrapingServices.HttpClients.Browser;
-using System;
 
 namespace PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.ShopSpecific.Citilink
 {

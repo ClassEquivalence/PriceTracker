@@ -1,7 +1,4 @@
-﻿using PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine.GUIExtractors.ShopSpecific.Citilink.ExtractionInstructions.ExecutionState;
-using PriceTracker.Modules.Repository.Entities.Domain;
-
-namespace PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction
+﻿namespace PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction
 {
     public class CitilinkParsingExecutionStateEntity : BaseEntity
     {

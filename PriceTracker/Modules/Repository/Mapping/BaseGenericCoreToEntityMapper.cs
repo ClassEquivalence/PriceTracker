@@ -1,7 +1,5 @@
 ﻿using PriceTracker.Core.Models;
-using PriceTracker.Models.DomainModels;
-using PriceTracker.Modules.Repository.Base;
-using PriceTracker.Modules.Repository.Entities.Domain;
+using PriceTracker.Modules.Repository.Entities;
 
 namespace PriceTracker.Modules.Repository.Mapping
 {

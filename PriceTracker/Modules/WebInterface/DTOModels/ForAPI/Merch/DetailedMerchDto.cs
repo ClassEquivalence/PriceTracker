@@ -12,7 +12,7 @@ namespace PriceTracker.Modules.WebInterface.DTOModels.ForAPI.Merch
         public int ShopId { get; init; }
 
         public DetailedMerchDto(MerchPriceHistoryDto priceHistory, string name, int shopId,
-            int merchId = default): base(merchId)
+            int merchId = default) : base(merchId)
         {
             Name = name;
             MerchPriceHistory = priceHistory;

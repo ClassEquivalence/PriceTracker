@@ -1,12 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
-using PriceTracker.Core.Models;
-using PriceTracker.Core.Models.Domain;
-using PriceTracker.Models.DomainModels;
-using PriceTracker.Models.Services.Mapping;
-using PriceTracker.Modules.Repository.Entities.Domain;
+﻿using PriceTracker.Core.Models;
+using PriceTracker.Modules.Repository.Entities;
 using PriceTracker.Modules.Repository.Mapping;
-using System.Runtime.CompilerServices;
 
 
 
@@ -25,13 +19,15 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
         private readonly ICoreToEntityMapper<TCoreDto, TEntity> _mapper;
         private readonly EFGenericEntityRepository<TEntity> _entityRepository;
 
-
+        private readonly ILogger? _logger;
 
         public EFGenericRepository(EFGenericEntityRepository<TEntity> entityRepository,
-            ICoreToEntityMapper<TCoreDto, TEntity> mapper)
+            ICoreToEntityMapper<TCoreDto, TEntity> mapper, ILogger? logger = null)
         {
             _entityRepository = entityRepository;
             _mapper = mapper;
+
+            _logger = logger;
         }
         public List<TCoreDto> Where(Func<TCoreDto, bool> predicate)
         {
@@ -64,7 +60,13 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
 
         public void Create(TCoreDto model)
         {
-            _entityRepository.Create(ModelToEntity(model));
+            _logger?.LogTrace($"{this.GetType().Name}, {_mapper.GetType().Name}:" +
+                $" попытка отмаппить и сохранить данные в entityRepository.");
+            var entity = ModelToEntity(model);
+            _logger?.LogTrace($"{this.GetType().Name}, {_mapper.GetType().Name}:" +
+                $" отмапплена {entity.GetType().Name}, её содержимое:\n" +
+                $"{entity}");
+            _entityRepository.Create(entity);
         }
         public bool Update(TCoreDto model)
         {

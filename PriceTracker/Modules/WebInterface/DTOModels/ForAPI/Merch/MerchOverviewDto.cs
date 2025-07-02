@@ -1,6 +1,4 @@
-﻿using PriceTracker.Modules.WebInterface.DTOModels;
-
-namespace PriceTracker.Modules.WebInterface.DTOModels.ForAPI.Merch
+﻿namespace PriceTracker.Modules.WebInterface.DTOModels.ForAPI.Merch
 {
     public record MerchOverviewDto : BaseDomainWebInterfaceDto
     {

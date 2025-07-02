@@ -1,6 +1,4 @@
-﻿using PriceTracker.Modules.WebInterface.DTOModels;
-
-namespace PriceTracker.Modules.WebInterface.DTOModels.ForAPI.Shop
+﻿namespace PriceTracker.Modules.WebInterface.DTOModels.ForAPI.Shop
 {
     public record ShopNameDto : BaseDomainWebInterfaceDto
     {

@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PriceTracker.Core.Models;
-using PriceTracker.Core.Models.Domain;
+﻿using PriceTracker.Core.Models.Domain;
 
 namespace PriceTracker.Modules.Repository.Repositories.Base
 {

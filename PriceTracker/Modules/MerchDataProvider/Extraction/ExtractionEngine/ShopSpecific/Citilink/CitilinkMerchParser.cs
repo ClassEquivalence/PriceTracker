@@ -1,15 +1,6 @@
 ﻿using HtmlAgilityPack;
-using PriceTracker.Models.DomainModels;
-using PriceTracker.Models.DomainModels.ShopSpecificModels.Citilink;
-using PriceTracker.Models.Services.MerchService.Citilink;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Web;
-using Microsoft.Playwright;
-using System;
-using PriceTracker.Modules.MerchDataProvider.Models.ForParsing;
 using PriceTracker.Core.Utils;
+using PriceTracker.Modules.MerchDataProvider.Models.ForParsing;
 
 
 
@@ -69,7 +60,7 @@ namespace PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.Sho
                 {
                     if (url != execState.CurrentCatalogUrl)
                     {
-                        _logger?.LogDebug($"Пропускаем {url}, ждём, когда попадётся " +
+                        _logger?.LogTrace($"Пропускаем {url}, ждём, когда попадётся " +
                             $"{execState.CurrentCatalogUrl}");
                         continue;
                     }
@@ -131,7 +122,7 @@ namespace PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.Sho
             {
                 string subCatalogUrl = baseUrl + subCatalogRelativeUrl.
                     SubstringWithAndAfterFirstEntryOrEmpty("/catalog");
-                _logger?.LogDebug($"{nameof(RecursiveMerchCatalogRetreive)}: " +
+                _logger?.LogTrace($"{nameof(RecursiveMerchCatalogRetreive)}: " +
                     $"Сформирован URL: {subCatalogUrl}");
 
                 var subCatalogNode = await _scraper.UrlToNode(subCatalogUrl);

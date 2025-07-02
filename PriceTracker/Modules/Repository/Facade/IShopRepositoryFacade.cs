@@ -2,7 +2,7 @@
 
 namespace PriceTracker.Modules.Repository.Facade
 {
-    public interface IShopRepositoryFacade: IDomainRepositoryFacade<ShopDto>
+    public interface IShopRepositoryFacade : IDomainRepositoryFacade<ShopDto>
     {
     }
 }

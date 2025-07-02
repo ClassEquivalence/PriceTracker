@@ -1,6 +1,4 @@
-﻿using PriceTracker.Modules.Repository.Entities.Domain;
-
-namespace PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific
+﻿namespace PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific
 {
     public class CitilinkMerchEntity : MerchEntity
     {
@@ -13,6 +11,11 @@ namespace PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific
             CitilinkId = citilinkId;
         }
 
+        public override string ToString()
+        {
+            return $"{this.GetType()}: Name = {Name}, CitilinkId = {CitilinkId}, " +
+                $"Id = {Id}, ShopId = {ShopId}, PriceHistoryId = {PriceHistory.Id}";
+        }
 
     }
 }

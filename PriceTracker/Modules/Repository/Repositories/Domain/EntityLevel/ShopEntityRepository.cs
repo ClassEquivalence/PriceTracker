@@ -9,12 +9,14 @@ namespace PriceTracker.Modules.Repository.Repositories.Domain.EntityLevel
 
         protected override IQueryable<ShopEntity> entitiesWithIncludes =>
             entities.Include(s => s.Merches).ThenInclude(m => m.PriceHistory)
+            .ThenInclude(ph=>ph.CurrentPricePointer).
+            Include(s=>s.Merches).ThenInclude(m => m.PriceHistory)
             .ThenInclude(ph => ph.TimestampedPrices);
 
         public ShopEntityRepository(DbContext dbContext) : base(dbContext)
         {
         }
 
-        
+
     }
 }

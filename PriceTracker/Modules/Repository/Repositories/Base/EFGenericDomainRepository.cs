@@ -1,8 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PriceTracker.Core.Models.Domain;
-using PriceTracker.Modules.Repository.Entities.Domain;
+﻿using PriceTracker.Core.Models.Domain;
+using PriceTracker.Modules.Repository.Entities;
 using PriceTracker.Modules.Repository.Mapping;
-using System.Runtime.CompilerServices;
 
 namespace PriceTracker.Modules.Repository.Repositories.Base
 {
@@ -12,7 +10,8 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
         where TEntity : BaseEntity where TDomain : DomainDto
     {
         protected EFGenericDomainRepository(EFGenericEntityRepository<TEntity> entityRepository,
-            ICoreToEntityMapper<TDomain, TEntity> mapper) : base(entityRepository, mapper)
+            ICoreToEntityMapper<TDomain, TEntity> mapper, ILogger? logger = null) : 
+            base(entityRepository, mapper, logger)
         {
 
         }

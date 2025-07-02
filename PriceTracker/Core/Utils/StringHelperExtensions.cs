@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
-
-namespace PriceTracker.Core.Utils
+﻿namespace PriceTracker.Core.Utils
 {
     public static class StringHelperExtensions
     {

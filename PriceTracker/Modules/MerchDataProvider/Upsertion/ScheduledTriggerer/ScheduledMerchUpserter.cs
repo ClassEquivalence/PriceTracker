@@ -32,34 +32,44 @@ namespace PriceTracker.Modules.MerchDataProvider.Upsertion.ScheduledTriggerer
             + Configs.PriceUpdatePeriod - DateTime.Now;
 
         private readonly MerchExtractionCoordinator _coordinator;
+        private readonly ILogger? _logger;
         public ScheduledMerchUpserter(MerchExtractionCoordinator coordinator,
             (DateTime lastTimeExtractionStarted, DateTime lastTimeExtractionFinished)
-            extractionTimingData, IRepositoryFacade repository)
+            extractionTimingData, IRepositoryFacade repository, ILogger? logger = null)
         {
             _coordinator = coordinator;
             _lastTimeExtractionFinished = extractionTimingData.lastTimeExtractionFinished;
             _lastTimeExtractionStarted = extractionTimingData.lastTimeExtractionStarted;
             _repository = repository;
+            _logger = logger;
         }
 
         // TODO: контроль за временем.
         private async Task OnStartRestart()
         {
+            _logger?.LogTrace($"{nameof(ScheduledMerchUpserter)}: OnStartRestart метод запущен.");
             if (_previousExtractionFinished && _extractionTimeoutExpired)
             {
+                _logger?.LogTrace($"{nameof(ScheduledMerchUpserter)}: запущен новый сеанс извлечения" +
+                    $"товаров.");
                 await StartNewExtraction();
             }
             else if (!_previousExtractionFinished)
             {
+                _logger?.LogTrace($"{nameof(ScheduledMerchUpserter)}: продолжается предыдущий сеанс" +
+                    $"извлечения товаров.");
                 await ContinuePreviousExtraction();
             }
             else if (_previousExtractionFinished && !_extractionTimeoutExpired)
             {
                 // do nothing.
+                _logger?.LogTrace($"{nameof(ScheduledMerchUpserter)}: Извлечение товаров пока не" +
+                    $"осуществляется.");
             }
         }
         private async Task LaunchRepeatedExtraction()
         {
+            _logger?.LogTrace($"{nameof(ScheduledMerchUpserter)}: Запущен {nameof(LaunchRepeatedExtraction)}.");
             while (true)
             {
                 if (_extractionTimeoutExpired)

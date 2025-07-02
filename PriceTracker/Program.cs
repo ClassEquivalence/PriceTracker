@@ -1,16 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using PriceTracker.Models.DomainModels;
-using PriceTracker.Models.Services.Mapping.MicroMappers;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using PriceTracker.Models.Services.ScrapingServices.ShopSpecificModels.Citilink;
-using HtmlAgilityPack;
+using PriceTracker.Core.Utils;
+using PriceTracker.Modules.MerchDataProvider;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
-using PriceTracker.Modules.Repository.DataAccess.Mapping;
-using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
-using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel.MerchRepository;
-using PriceTracker.Modules.WebInterface.Routing;
-using PriceTracker.Modules.WebInterface.Services.ShopService;
-using PriceTracker.Modules.WebInterface.Services.MerchService;
+using PriceTracker.Modules.WebInterface.Services.InterfaceServices;
 
 namespace PriceTracker
 {
@@ -30,28 +22,34 @@ namespace PriceTracker
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddSingleton<IShopService, ShopService>();
-            builder.Services.AddSingleton<IMerchService, MerchService>();
-            builder.Services.AddSingleton<IMerchToDtoMapper, MerchToDtoMapper>();
-            builder.Services.AddSingleton<IShopToDtoMapper, ShopToDtoMapper>();
-            builder.Services.AddSingleton<MerchRepository>();
-            builder.Services.AddSingleton<ShopRepository>();
-            builder.Services.AddSingleton<TimestampedPriceRepository>();
-            builder.Services.AddSingleton<APILinkBuilder>();
 
             builder.Services.AddSingleton<PriceTrackerContext>();
             builder.Services.AddSingleton<DbContext>(sp => sp.GetRequiredService<PriceTrackerContext>());
+
+            DependencyInjector.InjectRepositoryDependencies(builder.Services);
+            DependencyInjector.InjectWebInterfaceDependencies(builder.Services);
+            DependencyInjector.InjectMerchDataProviderDependencies(builder.Services);
 
             string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
             // TODO: Сделать потом нормальный конфиг подключения.
             //builder.Services.AddDbContext<PriceTrackerContext>(options => options.UseNpgsql(connection));
 
-            builder.Services.AddSingleton<BidirectionalEntityModelMappingContext>();
 
-
+            // Добавим политику CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngularDev", policy =>
+                {
+                    policy.WithOrigins("https://localhost:4200")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
 
             var app = builder.Build();
+
+            // app.Services.GetService<IMerchDataProviderFacade>()?.ProcessMerchUpsertion();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -59,13 +57,15 @@ namespace PriceTracker
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+                
 
             }
             else
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(); //opts => opts.SwaggerEndpoint("swagger", "v1"));
-
+                // Применяем CORS перед MapControllers
+                app.UseCors("AllowAngularDev");
             }
 
             app.UseHttpsRedirection();

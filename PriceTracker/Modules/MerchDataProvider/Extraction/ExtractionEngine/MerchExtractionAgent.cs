@@ -25,24 +25,33 @@ namespace PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine
         public IMerchDataExtractor<Dto, ExtractionProcessInfo> Extractor;
         private readonly IExtractionExecutionStateProvider<ExtractionProcessInfo>
             _stateProvider;
+        private readonly ILogger? _logger;
 
         public MerchExtractionAgent(IMerchDataConsumer<Dto> consumer,
             IMerchDataExtractor<Dto, ExtractionProcessInfo> extractor,
-            IExtractionExecutionStateProvider<ExtractionProcessInfo> stateProvider)
+            IExtractionExecutionStateProvider<ExtractionProcessInfo> stateProvider,
+            ILogger? logger = null)
         {
             Consumer = consumer;
             Extractor = extractor;
             _stateProvider = stateProvider;
             Extractor.OnExecutionStateUpdate += _stateProvider.Save;
+            _logger = logger;
         }
 
         public override async Task StartNewExtraction()
         {
+            _logger?.LogTrace($"{nameof(MerchExtractionAgent)}: запускается" +
+                $"извлечение товаров в {Consumer.GetType().Name}" +
+                $"из {Extractor.GetType().Name}");
             await Consumer.ReceiveAsync(Extractor.RunExtractionProcess());
         }
 
         public override async Task ContinueExtraction()
         {
+            _logger?.LogTrace($"{nameof(MerchExtractionAgent)}: продолжается" +
+                $"извлечение товаров в {Consumer.GetType().Name}" +
+                $"из {Extractor.GetType().Name}");
             await Consumer.ReceiveAsync(Extractor.
                 RunExtractionProcess(_stateProvider.Provide()));
         }

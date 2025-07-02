@@ -1,10 +1,9 @@
-﻿using PriceTracker.Core.Models;
-using PriceTracker.Core.Models.Domain;
+﻿using PriceTracker.Core.Models.Domain;
 
 namespace PriceTracker.Modules.Repository.Facade
 {
     public interface IDomainRepositoryFacade<Domain>
-        where Domain: DomainDto
+        where Domain : DomainDto
     {
         public List<Domain> Where(Func<Domain, bool> predicate);
 

@@ -2,7 +2,7 @@
 
 namespace PriceTracker.Modules.Repository.Facade
 {
-    public interface IMerchRepositoryFacade: IDomainRepositoryFacade<MerchDto>
+    public interface IMerchRepositoryFacade : IDomainRepositoryFacade<MerchDto>
     {
     }
 }

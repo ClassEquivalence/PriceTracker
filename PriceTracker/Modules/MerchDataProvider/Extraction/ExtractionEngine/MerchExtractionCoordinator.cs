@@ -12,9 +12,12 @@ namespace PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine
     {
 
         private readonly List<MerchExtractionAgent> _extractionAgents;
+        private readonly ILogger? _logger;
 
-        public MerchExtractionCoordinator(List<MerchExtractionAgent> agents)
+        public MerchExtractionCoordinator(List<MerchExtractionAgent> agents,
+            ILogger? logger = null)
         {
+            _logger = logger;
             _extractionAgents = agents;
         }
 
@@ -25,6 +28,8 @@ namespace PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine
          */
         public async Task StartNewExtraction()
         {
+            _logger?.LogTrace($"{nameof(MerchExtractionCoordinator)}: поочередно инициируются" +
+                $"новые инстансы процессов извлечения товаров магазинов.");
             foreach (var agent in _extractionAgents)
             {
                 await agent.StartNewExtraction();
@@ -33,6 +38,8 @@ namespace PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine
 
         public async Task ContinuePreviousExtraction()
         {
+            _logger?.LogTrace($"{nameof(MerchExtractionCoordinator)}: поочередно возобновляются" +
+                $"процессы извлечения товаров магазинов.");
             foreach (var agent in _extractionAgents)
             {
                 await agent.ContinueExtraction();

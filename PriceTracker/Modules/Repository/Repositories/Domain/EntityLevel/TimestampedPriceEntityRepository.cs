@@ -11,8 +11,6 @@ namespace PriceTracker.Modules.Repository.Repositories.Domain.EntityLevel
         }
 
         protected override IQueryable<TimestampedPriceEntity> entitiesWithIncludes =>
-            entities.Include(tp => tp.MerchPriceHistory).ThenInclude(ph => ph.Merch)
-            .ThenInclude(m => m.Shop).ThenInclude(s => s.Merches).
-            ThenInclude(m => m.PriceHistory).ThenInclude(ph => ph.TimestampedPrices);
+            entities.Include(tp => tp.MerchPriceHistory);
     }
 }

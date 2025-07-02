@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PriceTracker.Modules.WebInterface.DTOModels.ForAPI.Shop;
-using PriceTracker.Modules.WebInterface.Routing;
 using PriceTracker.Modules.WebInterface.Services.InterfaceServices;
-using PriceTracker.Modules.WebInterface.Services.ShopService;
 
 
 

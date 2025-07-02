@@ -1,7 +1,6 @@
 ﻿using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;
 using PriceTracker.Modules.Repository.Mapping.Domain;
-using System.Reflection.Metadata.Ecma335;
 
 namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific
 {
@@ -19,14 +18,15 @@ namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific
         {
             CitilinkMerchEntity entity = new(model.Name, model.CitilinkId, model.Id);
             entity.ShopId = model.ShopId;
-            entity.PriceHistoryId = model.PriceHistoryId;
-            return new CitilinkMerchEntity(model.Name, model.CitilinkId, model.Id);
+            entity.PriceHistory = _priceHistoryMapper.Map(model.PriceTrack);
+            entity.PriceHistory.Id = model.PriceHistoryId;
+            return entity;
         }
 
         protected override CitilinkMerchDto CreateModelFromEntity(CitilinkMerchEntity entity)
         {
             return new CitilinkMerchDto(entity.Id, entity.Name, _priceHistoryMapper.Map(entity.PriceHistory),
-                entity.CitilinkId, entity.ShopId, entity.PriceHistoryId);
+                entity.CitilinkId, entity.ShopId, entity.PriceHistory.Id);
         }
     }
 }

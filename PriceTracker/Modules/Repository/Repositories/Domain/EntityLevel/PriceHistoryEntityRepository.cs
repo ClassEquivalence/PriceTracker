@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PriceTracker.Modules.Repository.Entities.Domain;
+using PriceTracker.Modules.Repository.Entities.Domain.MerchPriceHistory;
 using PriceTracker.Modules.Repository.Repositories.Base;
 
 namespace PriceTracker.Modules.Repository.Repositories.Domain.EntityLevel
@@ -12,8 +12,7 @@ namespace PriceTracker.Modules.Repository.Repositories.Domain.EntityLevel
         }
 
         protected override IQueryable<MerchPriceHistoryEntity> entitiesWithIncludes =>
-            entities.Include(ph => ph.Merch).ThenInclude(m => m.Shop).
-            ThenInclude(s => s.Merches).ThenInclude(m => m.PriceHistory).
-            ThenInclude(ph => ph.TimestampedPrices);
+            entities.Include(ph => ph.Merch).Include(ph => ph.CurrentPricePointer).
+            ThenInclude(cpp=>cpp.CurrentPrice).Include(ph => ph.TimestampedPrices);
     }
 }

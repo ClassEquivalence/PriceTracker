@@ -6,8 +6,8 @@
 
     // TODO: Уточнить на что именно влияет задержка.
     /// <summary>
-    /// Задержка действий браузера в миллисекундах.
+    /// Задержка действий браузера в секундах.
     /// </summary>
-    public static readonly (float minDelay, float maxDelay) 
-        HeadlessBrowserDelayRange = (15000, 30000);
+    public static readonly (float minDelay, float maxDelay)
+        HeadlessBrowserDelayRange = (15, 30);
 }

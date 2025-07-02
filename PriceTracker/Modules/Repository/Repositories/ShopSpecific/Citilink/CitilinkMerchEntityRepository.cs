@@ -10,7 +10,9 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
 
         protected override IQueryable<CitilinkMerchEntity> entitiesWithIncludes =>
             entities.Include(m => m.Shop).Include(m => m.PriceHistory).
-            ThenInclude(ph => ph.TimestampedPrices);
+            ThenInclude(ph => ph.TimestampedPrices)
+            .Include(m => m.PriceHistory).
+            ThenInclude(ph => ph.CurrentPricePointer);
 
         public CitilinkMerchEntityRepository(DbContext dbContext) : base(dbContext)
         {

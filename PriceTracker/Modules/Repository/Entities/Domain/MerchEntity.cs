@@ -1,10 +1,14 @@
-﻿namespace PriceTracker.Modules.Repository.Entities.Domain
+﻿using PriceTracker.Modules.Repository.Entities.Domain.MerchPriceHistory;
+
+namespace PriceTracker.Modules.Repository.Entities.Domain
 {
     public class MerchEntity : BaseEntity
     {
         public string Name { get; set; }
         public MerchPriceHistoryEntity PriceHistory { get; set; }
-        public int PriceHistoryId { get; set; }
+
+
+        //public int PriceHistoryId { get; set; } //убрать
 
         public ShopEntity Shop { get; set; }
         public int ShopId { get; set; }

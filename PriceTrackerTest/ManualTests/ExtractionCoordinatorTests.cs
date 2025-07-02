@@ -1,4 +1,4 @@
-﻿using PriceTracker.Models.Services.MerchDataExtraction.MerchExtractionEngine.GUIExtractors.ShopSpecific.Citilink.ExtractionInstructions;
+﻿
 using PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine;
 using PriceTracker.Modules.MerchDataProvider.Models.ForParsing;
 using System;
@@ -15,7 +15,7 @@ namespace PriceTrackerTest.ManualTests
         public List<MerchExtractionAgent> Agents;
         public ExtractionCoordinatorTests()
         {
-
+            /*
             Agents = new();
             var agent = new MerchExtractionAgent<CitilinkMerchParsingDto,
                 CitilinkMerchExtractionInstruction>()
@@ -23,6 +23,7 @@ namespace PriceTrackerTest.ManualTests
 
 
             Coordinator = new(Agents);
+            */
         }
 
     }
