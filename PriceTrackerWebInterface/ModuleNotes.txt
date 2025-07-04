@@ -13,4 +13,5 @@ https://colorscheme.ru/#3z11Tdt--w0w0
 
 Реализовать "О сайте" в хедере.
 
-Добавить инфу о лицензиях (Angular? Node.js? ASP.NET Core? (MVC)? Playwright? ngx charts? (d3)? )
+Добавить инфу о лицензиях (Angular? Node.js? ASP.NET Core? (MVC)? Playwright? ngx charts? (d3)?
+Postgresql? (and check nuget packages licenses)? )

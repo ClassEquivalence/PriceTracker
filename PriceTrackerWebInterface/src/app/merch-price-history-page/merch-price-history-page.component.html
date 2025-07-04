@@ -1,9 +1,11 @@
 <div>
   hmmm... jj
   {{ rteee }}
-  <div *ngIf="product!=null">
-    heh
-    {{ product.name}}
-    {{ product }}
-  </div >
+  @if (product!=null) {
+    <div>
+      heh
+      {{ product.name}}
+      {{ product }}
+    </div >
+  }
 </div>
