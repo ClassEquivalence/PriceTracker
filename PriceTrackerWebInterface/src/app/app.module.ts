@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -10,20 +10,14 @@ import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { LayoutComponent } from './layout/layout.component';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    CitilinkPriceTrackerPageComponent,
-    MerchPriceHistoryPageComponent,
-    HeaderComponent,
-    FooterComponent,
-    LayoutComponent
-  ],
-  imports: [
-    BrowserModule, HttpClientModule,
-    AppRoutingModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        CitilinkPriceTrackerPageComponent,
+        MerchPriceHistoryPageComponent,
+        HeaderComponent,
+        FooterComponent,
+        LayoutComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }
