@@ -6,9 +6,10 @@ import { AppRoutes } from '../routes'
 import { firstValueFrom } from 'rxjs';
 
 @Component({
-  selector: 'app-citilink-price-tracker-page',
-  templateUrl: './citilink-price-tracker-page.component.html',
-  styleUrl: './citilink-price-tracker-page.component.css'
+    selector: 'app-citilink-price-tracker-page',
+    templateUrl: './citilink-price-tracker-page.component.html',
+    styleUrl: './citilink-price-tracker-page.component.css',
+    standalone: false
 })
 export class CitilinkPriceTrackerPageComponent implements OnInit {
   constructor(private titleService: Title,

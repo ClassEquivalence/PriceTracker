@@ -8,9 +8,10 @@ import { ApiClientService } from '../api/api-client.service';
 import { DetailedMerchDto } from '../api/models/detailed-merch-dto';
 
 @Component({
-  selector: 'app-merch-price-history-page',
-  templateUrl: './merch-price-history-page.component.html',
-  styleUrl: './merch-price-history-page.component.css'
+    selector: 'app-merch-price-history-page',
+    templateUrl: './merch-price-history-page.component.html',
+    styleUrl: './merch-price-history-page.component.css',
+    standalone: false
 })
 export class MerchPriceHistoryPageComponent implements OnInit {
   constructor(private titleService: Title,
