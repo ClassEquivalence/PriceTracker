@@ -1,1 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
+
+
+.gamma-light {
+  background-color: #C8E5FF;
+}
+
+.gamma-normal {
+  background-color: #B4DCFF;
+}
+
+.gamma-dark {
+}
+
+body{
+    margin:0;
+}

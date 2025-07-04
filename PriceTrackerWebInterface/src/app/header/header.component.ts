@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 
+import { AppRoutes } from '../routes';
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -7,4 +9,5 @@ import { Component } from '@angular/core';
 })
 export class HeaderComponent {
 
+  mainPageUrl: string = AppRoutes.mainPage;
 }

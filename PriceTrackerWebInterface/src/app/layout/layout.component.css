@@ -1,0 +1,9 @@
+app-footer {
+
+  margin-top: auto;
+  min-height: 5rem; /* Footer height */
+}
+
+:host{
+    
+}

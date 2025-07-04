@@ -1,0 +1,29 @@
+:host {
+  border-bottom: solid black 0.1rem;
+  border-top: 0;
+}
+
+
+h1 {
+  color: #87A5BF;
+  position: relative;
+  text-align: left;
+  margin: 1rem;
+}
+
+.top-border-line {
+  border-top: black solid 0.1rem;
+  position: sticky;
+}
+
+.site-header{
+
+}
+
+nav{
+    margin: 1rem;
+}
+
+a{
+    margin: 1rem;
+}

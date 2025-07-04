@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PriceTracker.Core.Utils;
-using PriceTracker.Modules.MerchDataProvider;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
-using PriceTracker.Modules.WebInterface.Services.InterfaceServices;
 
 namespace PriceTracker
 {
@@ -57,7 +55,7 @@ namespace PriceTracker
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
-                
+
 
             }
             else

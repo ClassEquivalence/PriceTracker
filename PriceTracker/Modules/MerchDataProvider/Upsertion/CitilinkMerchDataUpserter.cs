@@ -42,7 +42,7 @@ namespace PriceTracker.Modules.MerchDataProvider.Upsertion
                     List<TimestampedPriceDto> previousPrices = citilinkMerch.PriceTrack.PreviousTimestampedPricesList.
                         Append(citilinkMerch.PriceTrack.CurrentPrice).ToList();
 
-                    MerchPriceHistoryDto priceHistoryDto = new(default, previousPrices, 
+                    MerchPriceHistoryDto priceHistoryDto = new(default, previousPrices,
                         new(default, parsingDto.Price, DateTime.Now, default), citilinkMerch.Id);
 
                     CitilinkMerchDto updatedCitilinkMerch = new(default, citilinkMerch.Name, priceHistoryDto,
@@ -53,7 +53,7 @@ namespace PriceTracker.Modules.MerchDataProvider.Upsertion
                 }
                 else
                 {
-                    
+
                     MerchPriceHistoryDto newPriceHistory = new(default, [], new(default, parsingDto.Price,
                         DateTime.Now, default), default);
                     CitilinkMerchDto newMerch = new CitilinkMerchDto(default, parsingDto.Name, newPriceHistory,

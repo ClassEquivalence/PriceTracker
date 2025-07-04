@@ -1,10 +1,13 @@
-﻿using PriceTracker.Modules.WebInterface.Controllers.APIControllers;
+﻿using PriceTracker.Modules.WebInterface.Controllers.APIControllers.ForAdmin;
 
 namespace PriceTracker.Modules.WebInterface.Routing
 {
-    public class APILinkBuilder
+    public class APIRouteLinkBuilder
     {
-        public APILinkBuilder(LinkGenerator linkGenerator)
+        public static ControllerRoutes ControllerRoutes = new();
+
+
+        public APIRouteLinkBuilder(LinkGenerator linkGenerator)
         {
             _linkGenerator = linkGenerator;
         }
@@ -14,8 +17,8 @@ namespace PriceTracker.Modules.WebInterface.Routing
         {
             var link = _linkGenerator.GetPathByAction
                 (
-                action: nameof(MerchController.Get),
-                controller: nameof(MerchController),
+                action: nameof(AdminMerchController.Get),
+                controller: nameof(AdminMerchController),
                 values: new { id = shopId }
                 );
             return link == null ? throw new InvalidOperationException("Не удалось сгенерировать ссылку") : link;

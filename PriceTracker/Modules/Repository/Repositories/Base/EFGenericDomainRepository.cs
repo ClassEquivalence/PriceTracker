@@ -10,7 +10,7 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
         where TEntity : BaseEntity where TDomain : DomainDto
     {
         protected EFGenericDomainRepository(EFGenericEntityRepository<TEntity> entityRepository,
-            ICoreToEntityMapper<TDomain, TEntity> mapper, ILogger? logger = null) : 
+            ICoreToEntityMapper<TDomain, TEntity> mapper, ILogger? logger = null) :
             base(entityRepository, mapper, logger)
         {
 

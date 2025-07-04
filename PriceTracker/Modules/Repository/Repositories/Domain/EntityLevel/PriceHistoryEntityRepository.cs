@@ -13,6 +13,6 @@ namespace PriceTracker.Modules.Repository.Repositories.Domain.EntityLevel
 
         protected override IQueryable<MerchPriceHistoryEntity> entitiesWithIncludes =>
             entities.Include(ph => ph.Merch).Include(ph => ph.CurrentPricePointer).
-            ThenInclude(cpp=>cpp.CurrentPrice).Include(ph => ph.TimestampedPrices);
+            ThenInclude(cpp => cpp.CurrentPrice).Include(ph => ph.TimestampedPrices);
     }
 }

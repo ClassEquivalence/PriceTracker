@@ -41,7 +41,7 @@ namespace PriceTracker.Modules.Repository.DataAccess.EFCore
                 .OnDelete(DeleteBehavior.Restrict);
 
             */
-            
+
 
         }
 

@@ -1,6 +1,16 @@
 TODO:
 
+Сделать красивый footer, header, layout.
+В гамме наверное должен быть синий цвет. Мне так хочется.
+https://colorscheme.ru/#3z11Tw0w0w0w0
+
+https://colorscheme.ru/#3z11Tdt--w0w0
+
 Оптимизировать запрос в src->app, при переходе с price tracker page
 в merch price history page: не должен на бекенд 2 раза за кратчайшее время приходить
 запрос на одну и ту же сущность (существование которой мы в price tracker page проверяем,
 получая её, и в price history выдаём клиенту).
+
+Реализовать "О сайте" в хедере.
+
+Добавить инфу о лицензиях (Angular? Node.js? ASP.NET Core? (MVC)? Playwright? ngx charts? (d3)? )

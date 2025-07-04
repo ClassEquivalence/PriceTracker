@@ -1,38 +1,42 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PriceTracker.Modules.Repository.Facade;
 using PriceTracker.Modules.WebInterface.DTOModels.ForAPI.Shop;
-using PriceTracker.Modules.WebInterface.Services.InterfaceServices;
+using PriceTracker.Modules.WebInterface.Mapping.MapperProvider;
+using PriceTracker.Modules.WebInterface.Routing;
+using PriceTracker.Modules.WebInterface.Services.ShopService;
 
 
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace PriceTracker.Modules.WebInterface.Controllers.APIControllers
+namespace PriceTracker.Modules.WebInterface.Controllers.APIControllers.ForAdmin
 {
-    [Route("api/[controller]")]
+    [Route(ControllerRoutes.AdminShopControllerRoute)]
     [ApiController]
-    public class ShopsController : ControllerBase
+    public class AdminShopsController : ControllerBase
     {
-        private readonly AdminAPIService _service;
+        private readonly ShopService _service;
 
         private readonly ILogger _logger;
 
 
-        public ShopsController(ILogger<Program> logger, AdminAPIService service)
+        public AdminShopsController(ILogger<Program> logger, IShopRepositoryFacade repository,
+            IWebInterfaceMapperProvider mapperProvider)
         {
-            _service = service;
+            _service = new(logger, repository, mapperProvider);
 
             _logger = logger;
         }
 
-        // GET api/<ShopsController>
+        // As ShopNameDto
         [HttpGet]
         public IActionResult GetShops()
         {
             return Ok(_service.GetShops());
         }
 
-        // GET api/<ShopsController>/5
+        // As ShopOverviewDto
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
@@ -41,19 +45,14 @@ namespace PriceTracker.Modules.WebInterface.Controllers.APIControllers
                 Ok(shop) : NotFound();
         }
 
-        // POST api/<ShopsController>
+
         [HttpPost]
         public IActionResult PostShop(ShopNameDto shop)
         {
-            bool shopCreated = _service.CreateShop(shop);
-
-            if (shopCreated)
-                return Created();
-            else
-                return Conflict();
+            _service.CreateShop(shop);
+            return Created();
         }
 
-        // PUT api/<ShopsController>/5
         [HttpPut("{id}")]
         public IActionResult ChangeName(int id, string shopName)
         {
@@ -61,7 +60,6 @@ namespace PriceTracker.Modules.WebInterface.Controllers.APIControllers
             return nameChanged ? Ok() : Conflict();
         }
 
-        // DELETE api/<ShopsController>/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PriceTracker", "PriceTracker\PriceTracker.csproj", "{AAF22E61-ECC4-4EAE-9C1F-72233E06BB60}"
-	ProjectSection(ProjectDependencies) = postProject
-		{99C02EBF-D7C5-45D3-990A-37DFC01DF592} = {99C02EBF-D7C5-45D3-990A-37DFC01DF592}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PriceTrackerTest", "PriceTrackerTest\PriceTrackerTest.csproj", "{55B90B7D-89B0-4346-BBBA-CAB2ED73400C}"
 EndProject

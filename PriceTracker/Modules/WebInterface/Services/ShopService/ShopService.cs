@@ -1,78 +1,70 @@
 ﻿using PriceTracker.Core.Models.Domain;
 using PriceTracker.Modules.Repository.Facade;
-
+using PriceTracker.Modules.WebInterface.DTOModels.ForAPI.Shop;
+using PriceTracker.Modules.WebInterface.Mapping.MapperProvider;
+using PriceTracker.Modules.WebInterface.Mapping.Shop;
 
 namespace PriceTracker.Modules.WebInterface.Services.ShopService
 {
-    public class ShopService : IShopService
+    public class ShopService
     {
-        protected ILogger Logger;
-        public IShopRepositoryFacade Repository { get; init; }
 
-        public List<ShopDto> Shops => Repository.GetAll();
+        private readonly ILogger _logger;
+        private readonly IShopRepositoryFacade _repository;
 
-        public ShopService(ILogger<Program> logger, IShopRepositoryFacade repository)
+        private readonly IShopNameMapper _shopNameMapper;
+        private readonly IShopOverviewMapper _shopOverviewMapper;
+
+        public ShopService(ILogger logger, IShopRepositoryFacade repository,
+            IWebInterfaceMapperProvider mapperProvider)
         {
-            Logger = logger;
-            Repository = repository;
+            _logger = logger;
+            _repository = repository;
+            _shopNameMapper = mapperProvider.ShopNameMapper;
+            _shopOverviewMapper = mapperProvider.ShopOverviewMapper;
         }
 
-        public ShopDto? GetShopByName(string name)
-        {
 
-            var shopModel = Repository.SingleOrDefault(s => s.Name == name);
-            return shopModel;
+        // As ShopNameDto
+        public List<ShopNameDto> GetShops()
+        {
+            return _repository.GetAll().Select(_shopNameMapper.Map).ToList();
         }
 
-        public ShopDto? GetShopById(int id)
-        {
-            var shopModel = Repository.GetModel(id);
-            return shopModel;
-        }
-        public virtual bool AddShop(ShopDto shop)
-        {
+        // As ShopOverviewDto
 
-            if (IsShopUnique(shop))
+        public ShopOverviewDto? GetShop(int id)
+        {
+            var model = _repository.GetModel(id);
+            return model != null ? _shopOverviewMapper.Map(model) : null;
+        }
+
+
+        public void CreateShop(ShopNameDto shop)
+        {
+            ShopDto shopDto = new(default, shop.Name, []);
+            _repository.Create(shopDto);
+
+        }
+
+
+        public bool ChangeShopName(int id, string shopName)
+        {
+            var model = _repository.GetModel(id);
+            if (model != null)
             {
-                Repository.Create(shop);
-                Logger.LogInformation($"Добавлен магазин {shop.Name}");
-                return true;
+                ShopDto updated = new(model.Id, shopName, model.Merches);
+                return _repository.Update(updated);
             }
-            else
-            {
-                Logger.LogError($"Не удалось добавить магазин {shop.Name}: магазин с таким названием уже существует.");
-                return false;
-            }
-        }
-        public bool RemoveShopById(int id)
-        {
-            return Repository.Delete(id);
+            return false;
         }
 
-        public bool ChangeShopName(ShopDto shop, string newName)
-        {
-            if (IsNameUnique(newName) && shop != null)
-            {
-                ShopDto updated = new(shop.Id, newName, shop.Merches);
-                Repository.Update(updated);
-                return true;
-            }
-            else
-                return false;
-        }
 
-        protected bool IsShopUnique(ShopDto shop)
+        public bool DeleteShop(int id)
         {
-            return IsNameUnique(shop.Name);
-        }
-
-        protected bool IsNameUnique(string name)
-        {
-            return !Repository.Any(s => s.Name == name);
+            return _repository.Delete(id);
         }
 
 
     }
 }
-
-

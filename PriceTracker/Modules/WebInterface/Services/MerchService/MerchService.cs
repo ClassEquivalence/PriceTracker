@@ -1,102 +1,156 @@
 ﻿using PriceTracker.Core.Models.Domain;
 using PriceTracker.Modules.Repository.Facade;
-
-
+using PriceTracker.Modules.WebInterface.DTOModels.ForAPI.Merch;
+using PriceTracker.Modules.WebInterface.Mapping.Merch;
 
 namespace PriceTracker.Modules.WebInterface.Services.MerchService
 {
-    public class MerchService : IMerchService
+    public class MerchService
     {
 
         private readonly ILogger _logger;
+        private readonly IShopRepositoryFacade _shopRepository;
         private readonly IMerchRepositoryFacade _merchRepository;
         private readonly IPriceHistoryRepositoryFacade _priceHistoryRepository;
         private readonly ITimestampedPriceRepositoryFacade _timestampedPriceRepository;
+        private readonly ICitilinkMerchRepositoryFacade _citilinkMerchRepository;
 
-        public List<MerchDto> Merches => _merchRepository.
-            Where(m => true);
-
-        public MerchService(ILogger<Program> logger, IRepositoryFacade repository)
+        private readonly IDetailedMerchDtoMapper _detailedMerchDtoMapper;
+        private readonly IOverviewMerchDtoMapper _overviewMerchDtoMapper;
+        public MerchService(ILogger logger, IRepositoryFacade repository,
+            IDetailedMerchDtoMapper detailedMerchDtoMapper,
+            IOverviewMerchDtoMapper overviewMerchDtoMapper)
         {
             _logger = logger;
             _merchRepository = repository;
             _timestampedPriceRepository = repository;
             _priceHistoryRepository = repository;
+            _shopRepository = repository;
+            _citilinkMerchRepository = repository;
+
+            _detailedMerchDtoMapper = detailedMerchDtoMapper;
+            _overviewMerchDtoMapper = overviewMerchDtoMapper;
         }
 
-        public List<MerchDto> GetMerchesOfShop(int shopId)
+
+        public IEnumerable<MerchOverviewDto> GetMerchesOfShop(int shopId)
         {
-            return _merchRepository.Where(m => m.ShopId == shopId);
-        }
-        public MerchDto? GetMerch(int merchId)
-        {
-            return _merchRepository.GetModel(merchId);
+            return _merchRepository.Where(m => m.ShopId == shopId)
+                .Select(_overviewMerchDtoMapper.Map);
         }
 
-        // TODO: [Валидация] добавить проверку уникальности товара.
-        // впрочем, это потом - когда появятся уникальные признаки товара
-        // в рамках магазина.
-        public virtual bool TryCreate(MerchDto merch)
+
+        public DetailedMerchDto? Get(int merchId)
         {
-            _merchRepository.Create(merch);
+            var model = _merchRepository.GetModel(merchId);
+            return model == null ? null : _detailedMerchDtoMapper.Map(model);
+        }
+
+
+        public bool Post(int shopId, MerchOverviewDto merch)
+        {
+            var shop = _shopRepository.GetModel(shopId);
+            if (shop == null)
+                return false;
+
+            TimestampedPriceDto currentPrice = new(default, merch.CurrentPrice,
+                DateTime.Now, default);
+            MerchPriceHistoryDto priceHistoryDto = new(default, [],
+                currentPrice, default);
+            MerchDto merchDto = new(merch.Id, merch.Name, priceHistoryDto, shopId, default);
+
+            _merchRepository.Create(merchDto);
             return true;
         }
-        public bool TryDelete(int merchId)
+
+
+        public bool Put(int merchId, string name)
+        {
+            var model = _merchRepository.GetModel(merchId);
+            if (model == null)
+                return false;
+
+            MerchDto updated = new(model.Id, name, model.PriceTrack, model.ShopId,
+                model.PriceHistoryId);
+            return _merchRepository.Update(updated);
+        }
+
+        public bool Delete(int merchId)
         {
             return _merchRepository.Delete(merchId);
         }
-        public bool TryChangeName(int merchId, string newName)
+
+        public bool PostPrice(int merchId, TimestampedPriceDto timestampedPrice)
         {
-            var model = _merchRepository.GetModel(merchId);
-            if (model == null) return false;
+            var priceHistory = getPriceHistoryByMerch(merchId);
+            if (priceHistory == null)
+                return false;
 
-            MerchDto updatedModel = new(model.Id, newName, model.PriceTrack,
-                model.ShopId, model.PriceHistoryId);
+            priceHistory.PreviousTimestampedPricesList.Add(timestampedPrice);
+            return _priceHistoryRepository.Update(priceHistory);
 
-            return _merchRepository.Update(updatedModel);
         }
 
-        public bool TryAddTimestampedPrice(int merchId, TimestampedPriceDto timestampedPrice)
-        {
-            var model = _merchRepository.GetModel(merchId);
-            if (model == null) return false;
-            model.PriceTrack.PreviousTimestampedPricesList.Add(timestampedPrice);
-            return _merchRepository.Update(model);
-        }
         public bool SetCurrentPrice(int merchId, decimal currentPrice)
         {
-            var model = _merchRepository.GetModel(merchId);
-            if (model == null) return false;
+            var priceHistory = getPriceHistoryByMerch(merchId);
+            if (priceHistory == null)
+                return false;
 
-            var priceTrack = model.PriceTrack;
-            var previousPrices = priceTrack.PreviousTimestampedPricesList.
-                Append(priceTrack.CurrentPrice).ToList();
-            var currentTimestampedPrice = new TimestampedPriceDto(default, currentPrice,
-                DateTime.Now, priceTrack.Id);
+            List<TimestampedPriceDto> previousPrices = priceHistory.PreviousTimestampedPricesList;
+            previousPrices.Add(priceHistory.CurrentPrice);
 
-            var updatedPriceTrack = new MerchPriceHistoryDto(priceTrack.Id,
-                previousPrices, currentTimestampedPrice, priceTrack.MerchId);
+            TimestampedPriceDto updatedCurrentPrice = new(default, currentPrice,
+                DateTime.Now, default);
+            MerchPriceHistoryDto updated = new(priceHistory.Id, previousPrices,
+                updatedCurrentPrice, priceHistory.MerchId);
 
-            return _priceHistoryRepository.Update(updatedPriceTrack);
-
+            return _priceHistoryRepository.Update(updated);
 
         }
 
-        public bool RemoveSingleTimestampedPrice(int timestampedPriceId)
+
+        public bool RemoveTimestampedPrice(int timestampedPriceId)
         {
-            return _timestampedPriceRepository.Delete(timestampedPriceId);
+            var timestampedPrice = _timestampedPriceRepository.GetModel(timestampedPriceId);
+            if (timestampedPrice == null)
+                return false;
+            var priceHistory = _priceHistoryRepository.GetModel(timestampedPrice.MerchPriceHistoryId);
+            if (priceHistory == null)
+                return false;
+
+            // В строке ниже CurrentPrice, по задуманной логике, удалить нельзя. Можно только
+            // одну из прежних.
+            return priceHistory.PreviousTimestampedPricesList.Remove(timestampedPrice);
+
         }
+
         public bool ClearOldPrices(int merchId)
         {
-            var merch = _merchRepository.GetModel(merchId);
-            if (merch == null) return false;
-            var priceTrack = merch.PriceTrack;
+            var priceHistory = getPriceHistoryByMerch(merchId);
+            if (priceHistory == null)
+                return false;
+            priceHistory.PreviousTimestampedPricesList.Clear();
 
-            MerchPriceHistoryDto updatedPriceTrack = new(priceTrack.Id, [],
-                priceTrack.CurrentPrice, priceTrack.MerchId);
-
-            return _priceHistoryRepository.Update(updatedPriceTrack);
+            return _priceHistoryRepository.Update(priceHistory);
         }
 
+
+        public DetailedMerchDto? GetCitilinkMerch(string citilinkMerchCode)
+        {
+            bool isGotten = _citilinkMerchRepository.TryGetSingleByCitilinkId
+                (citilinkMerchCode, out var dto);
+
+            if (!isGotten || dto == null)
+                return null;
+            else
+                return _detailedMerchDtoMapper.Map(dto);
+        }
+
+        private MerchPriceHistoryDto? getPriceHistoryByMerch(int merchId)
+        {
+            var priceHistory = _priceHistoryRepository.Where(ph => ph.MerchId == merchId).SingleOrDefault();
+            return priceHistory;
+        }
     }
 }

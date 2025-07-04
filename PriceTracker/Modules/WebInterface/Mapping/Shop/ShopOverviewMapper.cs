@@ -6,8 +6,8 @@ namespace PriceTracker.Modules.WebInterface.Mapping.Shop
 {
     public class ShopOverviewMapper : IShopOverviewMapper
     {
-        private readonly APILinkBuilder _linkBuilder;
-        public ShopOverviewMapper(APILinkBuilder linkBuilder)
+        private readonly APIRouteLinkBuilder _linkBuilder;
+        public ShopOverviewMapper(APIRouteLinkBuilder linkBuilder)
         {
             _linkBuilder = linkBuilder;
         }

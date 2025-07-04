@@ -5,7 +5,7 @@ namespace PriceTracker.Modules.Repository.Entities.Domain
     public class TimestampedPriceEntity : BaseEntity
     {
         public MerchPriceHistoryEntity MerchPriceHistory { get; set; }
-        public int MerchPriceHistoryId { get; set; } 
+        public int MerchPriceHistoryId { get; set; }
         public decimal Price { get; set; }
         public DateTime DateTime { get; set; }
 

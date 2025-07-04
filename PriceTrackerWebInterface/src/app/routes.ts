@@ -1,5 +1,6 @@
 
 
 export const AppRoutes = {
-  citilinkProduct: (id: number) => `productcitilink/${id}`,
+  mainPage: '/',
+  citilinkProduct: (id: number) => `/productcitilink/${id}`,
 };
