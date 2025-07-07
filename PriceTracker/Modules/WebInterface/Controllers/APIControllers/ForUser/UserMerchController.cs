@@ -30,5 +30,12 @@ namespace PriceTracker.Modules.WebInterface.Controllers.APIControllers.ForUser
         {
             return _merchService.Get(merchId);
         }
+
+        [HttpGet("citilink/{citilinkMerchCode}")]
+        public DetailedMerchDto? GetCitilinkMerch(string citilinkMerchCode)
+        {
+            return _merchService.GetCitilinkMerch(citilinkMerchCode);
+        }
+
     }
 }

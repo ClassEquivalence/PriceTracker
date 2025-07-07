@@ -1,11 +1,73 @@
-<h1>Трекер цен товаров магазина ситилинк</h1>
+<h1 class="gamma-light">Трекер цен товаров магазина ситилинк</h1>
 
-<div>
-  <p>Для обзора истории цен, введите код товара в поле ниже.</p>
-  <div>
-    <p>Код товара: </p>
-    <input type="text" #merchCodeInput>
+<div class="container">
+
+
+  <div class="shopOverview">
+    <img src="/assets/images/logotypes/Citilink_logo.jpg" />
+    <div class="shop-description-text">
+    <p>
+      "Ситилинк" — одна из крупнейших сетей магазинов и интернет-магазин электроники,
+      бытовой техники и других товаров. Ситилинк предлагает широкий ассортимент продукции,
+      включая компьютеры, смартфоны, телевизоры, холодильники, стиральные машины и
+      многое другое по выгодным ценам.
+    </p>
+    <p>
+      Чтобы посмотреть  историю цен интересующего вас товара, введите артикул
+      (код товара) в поле справа.
+    </p>
   </div>
-  <button (click)="tryOpenProductPage(merchCodeInput.value)" name="FindMerchByCode">Найти</button>
 </div>
 
+<div class="productField">
+
+  <div class="productSearchTool">
+    <p>Для обзора истории цен, введите код товара в поле ниже.</p>
+    <div class="merchCodeInsert" id="merchCodeInsertBlock">
+      <p>Код товара: </p>
+      <input type="text" #merchCodeInput>
+    </div>
+    <button (click)="tryLoadProductPage(merchCodeInput.value)" name="FindMerchByCode">Найти</button>
+
+  </div>
+  <div class="productChartField">
+
+
+    @if(!productComponentLoaded){
+
+    <h2>Здесь появится история цен товара</h2>
+
+    @if(productComponentLoading){
+    <mat-progress-spinner mode="indeterminate"
+                          diameter="40"
+                          color="primary">
+    </mat-progress-spinner>
+    }
+    @else if(productComponentLoadFailed){
+    <h4 class="failToLoadText">Не удалось загрузить информацию о товаре</h4>
+    }
+
+
+    }
+    @else{
+
+    @if(productComponentLoading){
+    <mat-progress-spinner mode="indeterminate"
+                          diameter="40"
+                          color="primary">
+    </mat-progress-spinner>
+    }
+    @else{
+    <app-merch-price-history-page [product]="merch"></app-merch-price-history-page>
+    }
+
+
+    }
+
+
+
+  </div>
+</div>
+
+
+</div>

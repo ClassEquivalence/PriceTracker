@@ -1,21 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 
-interface WeatherForecast {
-  date: string;
-  temperatureC: number;
-  temperatureF: number;
-  summary: string;
-}
+import { LayoutComponent } from './layout/layout.component';
 
 @Component({
     selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrl: './app.component.css',
-    standalone: false
+  templateUrl: './app.component.html',
+  standalone: true,
+  styleUrl: './app.component.css',
+  imports: [LayoutComponent],
 })
 export class AppComponent implements OnInit {
-  public forecasts: WeatherForecast[] = [];
 
   constructor(private http: HttpClient) {}
 

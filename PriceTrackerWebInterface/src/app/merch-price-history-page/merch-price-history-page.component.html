@@ -1,11 +1,12 @@
+
+
+
+
+@if (product!=null && timestampedPrices!=null
+&& timestampedPrices!=undefined && timestampedPrices.length>0) {
+
 <div>
-  hmmm... jj
-  {{ rteee }}
-  @if (product!=null) {
-    <div>
-      heh
-      {{ product.name}}
-      {{ product }}
-    </div >
-  }
+  <h2>История цен товара "{{ product.name }}"</h2>
+  <app-price-history-chart [timestampedPricesArray]="timestampedPrices"></app-price-history-chart>
 </div>
+}

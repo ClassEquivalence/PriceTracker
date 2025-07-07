@@ -1,7 +1,7 @@
 export interface TimestampedPriceDto {
   id: number;
   price: number;
-  dateTime: Date;
+  dateTime: string;
   merchPriceHistoryId: number;
 }
 

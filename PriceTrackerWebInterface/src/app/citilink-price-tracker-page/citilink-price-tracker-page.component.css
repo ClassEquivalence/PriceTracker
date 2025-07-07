@@ -1,0 +1,117 @@
+:host {
+  min-height: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column; /* или row — зависит от цели */
+}
+
+h1{
+    margin: 0;
+    padding: 1rem;
+    border-bottom: solid black 0.1rem;
+}
+
+.container {
+  display: flex;
+  flex-grow: 1;
+  align-self: stretch;
+}
+
+.shopOverview {
+  width: 35%;
+  margin: 1rem;
+  padding: 1rem;
+  margin-left: 2rem;
+  text-align: left;
+  font-size: 1.2rem;
+
+  border-radius: 12px; /* Скругление углов */
+  box-shadow: 10px 5px 5px rgb(0, 0, 0, 0.1);
+  height: calc(90% - 2rem);
+}
+
+
+
+img {
+  border-radius: 0.5rem; /* Скругление углов */
+  box-shadow: 10px 5px 5px rgb(0, 0, 0, 0.1);
+  float: left; /* или right — для обтекания справа */
+  margin: 0 2rem 15px 0;
+  width: 50%; /* увеличили ширину изображения */
+  height: auto;
+}
+
+.shop-description-text{
+    margin-right: 2rem;
+}
+
+.productField {
+  display: flex;
+  flex-direction: column; /* важен порядок */
+  width: 65%;
+  height: calc(100% - 2rem);
+  flex-grow: 1;
+  margin: 1rem;
+  margin-right: 2rem;
+  font-size: 1.2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0px 0px 20px 8px rgb(0, 0, 0, 0.1);
+}
+
+
+  .productField button {
+    border-radius: 0.4rem;
+    padding: 0.4rem;
+    font-family: Arial;
+    font-size: 1.2rem;
+    color: white;
+    background-color: #326FA6;
+  }
+
+
+    .productField button:hover {
+      color: #326FA6;
+      background-color: white;
+    }
+
+    .productField button:active {
+      color: #326FA6;
+      background-color: white;
+    }
+
+
+
+
+
+
+
+
+
+  .productField * {
+    margin: 1rem;
+  }
+
+#merchCodeInsertBlock {
+    margin: 0;
+}
+
+.productSearchTool {
+  justify-self: flex-start;
+  border-radius: 0.5rem;
+  box-shadow: 0px 0px 20px 8px rgb(0, 0, 0, 0.1);
+}
+
+.productChartField {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  border-radius: 0.5rem;
+  box-shadow: 0px 0px 20px 8px rgb(0, 0, 0, 0.1);
+}
+
+.failToLoadText{
+    color: rgb(255, 0, 0, 38);
+}

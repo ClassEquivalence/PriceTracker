@@ -1,7 +1,7 @@
 import { MerchPriceHistoryDto } from './price-history-dto';
 
 export interface DetailedMerchDto {
-  priceHistory: MerchPriceHistoryDto;
+  merchPriceHistory: MerchPriceHistoryDto;
   name: string;
   shopId: number;
   id: number;

@@ -6,7 +6,7 @@ import { CitilinkPriceTrackerPageComponent } from
 import { MerchPriceHistoryPageComponent } from
   './merch-price-history-page/merch-price-history-page.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', redirectTo: 'citilinktracker', pathMatch: 'full' },
   { path: "citilinktracker", component: CitilinkPriceTrackerPageComponent },
   { path: "productcitilink/:id", component: MerchPriceHistoryPageComponent },

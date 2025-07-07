@@ -3,5 +3,10 @@
 }
 
 p{
-    margin: 0.5rem;
+    margin: 1rem;
+    
+}
+
+.container{
+    padding: 1rem 5rem 1rem 5rem;
 }
