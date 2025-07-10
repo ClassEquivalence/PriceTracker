@@ -1,23 +1,39 @@
 ﻿using HtmlAgilityPack;
-using PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.ScrapingServices.HttpClients.Browser;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
 
-namespace PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.ShopSpecific.Citilink
+namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.Engine
 {
     public class CitilinkScraper
     {
         private readonly BrowserAdapter _browser;
         private readonly ILogger? _logger;
-        private readonly int _functionWaitPollingInterval;
-        private readonly int _maxAddressBarRequests;
+
+
+        private readonly (int documentRequestCount, TimeSpan period) _maxPageRequestPerTime;
         private int requestIteration = 0;
 
-        public CitilinkScraper(BrowserAdapter browserAdapter, ILogger? logger = null,
-            int maxAddressBarGetRequestsCount = 300)
+        private DateTime lastTimeRequestHappened;
+
+        public DateTime WhenRequestingAvailable
         {
+            get
+            {
+                return (requestIteration < _maxPageRequestPerTime.documentRequestCount) ?
+                    DateTime.Now : lastTimeRequestHappened;
+            }
+        }
+        public event Action<DateTime>? MaxPageRequestPerTimeReached;
+
+        public CitilinkScraper(BrowserAdapter browserAdapter, ILogger? logger = null,
+            (int documentRequestCount, TimeSpan period)? maxPageRequestPerTime = null)
+        {
+            lastTimeRequestHappened = DateTime.Now;
+
+            _maxPageRequestPerTime = maxPageRequestPerTime ??
+                (300, TimeSpan.FromHours(12));
+
             _browser = browserAdapter;
             _logger = logger;
-            _functionWaitPollingInterval = 1000;
-            _maxAddressBarRequests = maxAddressBarGetRequestsCount;
         }
 
         public async Task<HtmlNode> UrlToNode(string url)
@@ -76,12 +92,12 @@ namespace PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.Sho
 
         private async Task GotoAsync(string url)
         {
-            if (requestIteration < _maxAddressBarRequests)
-                requestIteration++;
+            if (TryPassRequestPerTimeLimit())
+                await _browser.GotoAsync(url);
             else
-                throw new InvalidOperationException($"{GotoAsync}: Исчерпан лимит запросов " +
-                    $"{_maxAddressBarRequests}");
-            await _browser.GotoAsync(url);
+                throw new InvalidOperationException($"{nameof(CitilinkScraper)}" +
+                    $" недоступен в силу достижения указанного PageRequestsPerTime" +
+                    $" лимита. Вызвать метод следовало бы позже.");
         }
         private async Task WaitForPortionLoadedAsync()
         {
@@ -96,6 +112,42 @@ namespace PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.Sho
                     el.getAttribute('data-meta-product-id')?.trim().length > 0
                     );
                 }");
+        }
+
+
+        // TODO: Метод несовершенен, и может запрещать доступ тогда, когда
+        // он должен быть разрешен. Но не наоборот.
+        private bool TryPassRequestPerTimeLimit()
+        {
+            if (DateTime.Now > lastTimeRequestHappened)
+            {
+                requestIteration = 1;
+
+                lastTimeRequestHappened = DateTime.Now + _maxPageRequestPerTime.period;
+                return true;
+            }
+            else if (requestIteration < _maxPageRequestPerTime.documentRequestCount)
+            {
+                requestIteration++;
+
+                lastTimeRequestHappened = DateTime.Now + _maxPageRequestPerTime.period;
+
+                if (requestIteration == _maxPageRequestPerTime.documentRequestCount - 1)
+                {
+                    MaxPageRequestPerTimeReached?.Invoke(lastTimeRequestHappened);
+                }
+
+                return true;
+            }
+            else
+            {
+                MaxPageRequestPerTimeReached?.Invoke(lastTimeRequestHappened);
+                return false;
+            }
+
+
+            // если возвращаем true - то WhenRequestingAvailable = DateTime.Now + period;
+            // если false то этого не нужно.
         }
     }
 }

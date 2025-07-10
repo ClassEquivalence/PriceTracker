@@ -10,4 +10,6 @@
     /// </summary>
     public static readonly (float minDelay, float maxDelay)
         HeadlessBrowserDelayRange = (15, 30);
+
+    public static readonly (int requests, TimeSpan period) MaxPageRequestsPerTime = (300, TimeSpan.FromHours(12));
 }

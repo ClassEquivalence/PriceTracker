@@ -6,14 +6,14 @@
 
         public int CatalogPageNumber { get; set; }
 
-        public bool IsResumed { get; set; }
+        public bool IsCompleted { get; set; }
 
         public CitilinkParsingExecutionStateEntity(string currentCatalogUrl,
-            int catalogPageNumber, bool isResumed, int id = default) : base(id)
+            int catalogPageNumber, bool isCompleted, int id = default) : base(id)
         {
             CurrentCatalogUrl = currentCatalogUrl;
             CatalogPageNumber = catalogPageNumber;
-            IsResumed = isResumed;
+            IsCompleted = isCompleted;
         }
     }
 }

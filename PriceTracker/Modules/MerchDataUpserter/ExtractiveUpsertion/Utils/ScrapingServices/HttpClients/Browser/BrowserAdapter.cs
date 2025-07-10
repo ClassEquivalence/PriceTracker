@@ -1,6 +1,6 @@
 ﻿using Microsoft.Playwright;
 
-namespace PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.ScrapingServices.HttpClients.Browser
+namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser
 {
     public class BrowserAdapter
     {

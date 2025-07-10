@@ -1,8 +1,7 @@
 ﻿
 using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
-using PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.ScrapingServices.HttpClients.Browser;
-using PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.ShopSpecific.Citilink;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.Engine;
 using PriceTrackerTest.Utils.CustomAttributes;
 using PriceTrackerTest.Utils.Logging.LoggerProviders;
 using Xunit.Abstractions;
@@ -32,8 +31,8 @@ namespace PriceTrackerTest.ManualTests
 
             var playwrightTask = Playwright.CreateAsync();
             var browser = playwrightTask.Result.Chromium.LaunchAsync().Result;
-            
-            
+
+
             var browserAdapter = new BrowserAdapter(browser, (3, 6));
             var scraper = new CitilinkScraper(browserAdapter, logger);
             _scraper = scraper;
@@ -47,7 +46,7 @@ namespace PriceTrackerTest.ManualTests
         public async void ParsePortion_ManualCheck(string url)
         {
             var result = await parser.ParsePortionFromUrl(url);
-            
+
             foreach (var item in result)
             {
                 _output.WriteLine($"CitilinkId: {item.CitilinkId}, Price: {item.Price}, Name: {item.Name}");
@@ -57,10 +56,10 @@ namespace PriceTrackerTest.ManualTests
         [ManualFact]
         public async void RetrieveAllMerchCatalogsUrls_ManualCheck()
         {
-            
+
             var result = parser.RetrieveAllMerchCatalogsUrls();
-            
-            await foreach(var item in result)
+
+            await foreach (var item in result)
             {
                 _output.WriteLine(item);
             }
@@ -92,7 +91,7 @@ namespace PriceTrackerTest.ManualTests
         public void RetrieveMerchesFromCatalog_ManualCheck(string catalogUrl)
         {
             var result = parser.RetrieveMerchesFromCatalog(catalogUrl).ToBlockingEnumerable();
-            foreach(var item in result)
+            foreach (var item in result)
             {
                 _output.WriteLine($"CitilinkId: {item.CitilinkId}, Price: {item.Price}, Name: {item.Name}");
             }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PriceTracker.Core.Utils;
+using PriceTracker.Modules.MerchDataProvider;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 
 namespace PriceTracker
@@ -47,7 +48,7 @@ namespace PriceTracker
 
             var app = builder.Build();
 
-            // app.Services.GetService<IMerchDataProviderFacade>()?.ProcessMerchUpsertion();
+            app.Services.GetService<IMerchDataProviderFacade>()?.ProcessMerchUpsertion();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

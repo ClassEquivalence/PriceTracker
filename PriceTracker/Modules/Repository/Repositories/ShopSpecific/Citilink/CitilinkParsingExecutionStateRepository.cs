@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.ShopSpecific.Citilink;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
 
@@ -31,7 +31,7 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
         {
             var entity = _execState.Single();
             CitilinkParsingExecutionState stateDto = new(entity.CurrentCatalogUrl,
-                entity.CatalogPageNumber, entity.IsResumed);
+                entity.CatalogPageNumber, entity.IsCompleted);
             return stateDto;
         }
 
@@ -40,7 +40,7 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
             var entity = _execState.Single();
             entity.CurrentCatalogUrl = info.CurrentCatalogUrl;
             entity.CatalogPageNumber = info.CatalogPageNumber;
-            entity.IsResumed = info.IsResumed;
+            entity.IsCompleted = info.IsCompleted;
             _dbContext.SaveChanges();
         }
 

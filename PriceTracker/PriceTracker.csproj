@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <Folder Include="Core\Models\Process\" />
-    <Folder Include="Modules\MerchDataProvider\MerchDataExtraction\MerchExtractionEngine\GUIExtractors\" />
     <Folder Include="Modules\Repository\Mapping\Process\" />
   </ItemGroup>
 

@@ -1,9 +1,9 @@
-﻿using PriceTracker.Modules.MerchDataProvider.MerchDataExtraction.ExecutionState;
+﻿using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion;
 
 namespace PriceTracker.Modules.Repository.Facade
 {
     public interface IExtractionExecutionStateProvider
-        <ExtractionStateInfo> where ExtractionStateInfo : ExtractionExecutionStateInfo
+        <ExtractionStateInfo> where ExtractionStateInfo : ExtractionState
     {
         /// <summary>
         /// Предоставляет экземпляр состояния извлечения данных.

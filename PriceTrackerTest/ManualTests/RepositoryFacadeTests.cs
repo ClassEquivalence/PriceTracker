@@ -1,19 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
 using PriceTracker.Core.Models.Domain;
 using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Facade;
-using PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink;
-using PriceTrackerTest.Utils.CustomAttributes;
-using PriceTrackerTest.Utils.Logging;
 using PriceTrackerTest.Utils.Logging.LoggerProviders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit.Abstractions;
 
 namespace PriceTrackerTest.ManualTests

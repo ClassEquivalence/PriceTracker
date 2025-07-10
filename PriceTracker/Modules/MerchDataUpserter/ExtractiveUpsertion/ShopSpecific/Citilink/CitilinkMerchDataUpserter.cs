@@ -1,13 +1,11 @@
 ﻿using PriceTracker.Core.Models.Domain;
 using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
-using PriceTracker.Modules.MerchDataProvider.MerchDataExtraction;
-using PriceTracker.Modules.MerchDataProvider.Models.ForParsing;
-using PriceTracker.Modules.MerchDataProvider.Upsert;
+using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
 using PriceTracker.Modules.Repository.Facade;
 
-namespace PriceTracker.Modules.MerchDataProvider.Upsertion
+namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink
 {
-    public class CitilinkMerchDataUpserter : MerchDataUpserter<CitilinkMerchDto, CitilinkMerchParsingDto>,
+    public class CitilinkMerchDataUpserter :
         IMerchDataConsumer<CitilinkMerchParsingDto>
     {
         private readonly ICitilinkMerchRepositoryFacade _merchRepository;
@@ -22,12 +20,7 @@ namespace PriceTracker.Modules.MerchDataProvider.Upsertion
 
             _logger = logger;
         }
-        public async Task ReceiveAsync(IAsyncEnumerable<CitilinkMerchParsingDto> parsingDtos)
-        {
-            await Upsert(parsingDtos);
-        }
-
-        protected async override Task Upsert(IAsyncEnumerable<CitilinkMerchParsingDto> complementaryData)
+        public async Task Upsert(IAsyncEnumerable<CitilinkMerchParsingDto> complementaryData)
         {
             _logger?.LogTrace($"{nameof(CitilinkMerchDataUpserter)}: Upsertion инициирован.");
             // TODO: Хорошо бы вынести логику добавления информации, или раздробить, пересмотреть ответсвтенность

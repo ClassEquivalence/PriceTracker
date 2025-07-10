@@ -1,4 +1,4 @@
-﻿using PriceTracker.Modules.MerchDataProvider.Extraction.ExtractionEngine.ShopSpecific.Citilink;
+﻿using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink;
 
 namespace PriceTracker.Modules.Repository.Facade
 {
