@@ -2,8 +2,6 @@
 {
     public class ExtractionCoordinatorTests
     {
-        public MerchExtractionCoordinator Coordinator;
-        public List<MerchExtractionAgent> Agents;
         public ExtractionCoordinatorTests()
         {
             /*

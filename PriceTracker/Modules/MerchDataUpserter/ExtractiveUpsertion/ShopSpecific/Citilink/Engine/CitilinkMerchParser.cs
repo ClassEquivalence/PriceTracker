@@ -22,13 +22,10 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         private readonly ILogger? _logger;
 
-        // Не рекомендуется брать скрапер из этого поля.
-        // Брать скрапер лучше из метода GetScraperIfAvailable,
-        // так как он ведет проверку о возможности использования
-        // скрапера.
-        private readonly CitilinkScraper _scraper;
 
-        public CitilinkMerchParser(CitilinkScraper scraper, ILogger? logger = null)
+        private readonly ICitilinkScraper _scraper;
+
+        public CitilinkMerchParser(ICitilinkScraper scraper, ILogger? logger = null)
         {
             // TODO: оптимизировать до нормальной асинхронности можно.
             _scraper = scraper;
@@ -104,8 +101,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             CitilinkParsingExecutionState execState, bool continueFromExecState = false)
         {
             _logger?.LogDebug($"{nameof(RetrieveMerchesFromCatalog)}: начато извлечение товаров из каталога {catalogUrl}");
-            var scraper = await GetScraperIfAvailable();
-            int numberOfPages = ParsePageCount(await scraper.UrlToNode(catalogUrl));
+
+            int numberOfPages = ParsePageCount(await _scraper.UrlToNode(catalogUrl));
             var urlWithoutQuery = catalogUrl.SubstringBeforeFirstEntryOrEmpty("?");
 
             string urlWithQueryWithoutPage = urlWithoutQuery + merchCatalogPaginationQueryString; // + int page;
@@ -131,8 +128,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             _logger?.LogTrace($"{nameof(CitilinkMerchParser)} {nameof(RetrieveAllMerchCatalogsUrls)}:" +
                 $"Вытягивание информации о всех каталогах товаров начато.");
 
-            var scraper = await GetScraperIfAvailable();
-            var mainCatalogSectionsNode = await scraper.UrlToNode("https://www.citilink.ru/catalog/");
+            var mainCatalogSectionsNode = await _scraper.UrlToNode("https://www.citilink.ru/catalog/");
 
 
 
@@ -143,8 +139,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                 _logger?.LogTrace($"{nameof(RecursiveMerchCatalogRetreive)}: " +
                     $"Сформирован URL: {subCatalogUrl}");
 
-                var scraper = await GetScraperIfAvailable();
-                var subCatalogNode = await scraper.UrlToNode(subCatalogUrl);
+                var subCatalogNode = await _scraper.UrlToNode(subCatalogUrl);
                 if (IsCatalogForMerches(subCatalogNode))
                     yield return subCatalogUrl;
                 else
@@ -291,8 +286,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         public async Task<List<CitilinkMerchParsingDto>> ParsePortionFromUrl(string url)
         {
-            var scraper = await GetScraperIfAvailable();
-            var scrapTask = scraper.ScrapProductPortionFromUrl(url);
+            var scrapTask = _scraper.ScrapProductPortionFromUrl(url);
             return ParsePortionFromHtml(await scrapTask);
         }
         protected List<CitilinkMerchParsingDto> ParsePortionFromHtml(HtmlNode htmlDocument)
@@ -388,20 +382,6 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                     $"Тег извлечения(если есть): {nameNode?.OuterHtml}");
             else
                 return name;
-        }
-
-        private async Task WaitUntilScraperUsable()
-        {
-            while (DateTime.Now < _scraper.WhenRequestingAvailable)
-            {
-                await Task.Delay(_scraper.WhenRequestingAvailable - DateTime.Now);
-            }
-        }
-
-        private async Task<CitilinkScraper> GetScraperIfAvailable()
-        {
-            await WaitUntilScraperUsable();
-            return _scraper;
         }
 
     }

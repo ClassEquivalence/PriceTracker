@@ -4,6 +4,7 @@ using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
 using PriceTracker.Modules.Repository.Facade;
+using PriceTracker.Modules.Repository.Facade.Citilink;
 
 
 /*
@@ -18,13 +19,17 @@ namespace PriceTracker.Modules.MerchDataProvider
     public class MerchDataProviderFacade : IMerchDataProviderFacade
     {
         private readonly UpsertionService _scheduledUpserter;
+        private readonly IRepositoryFacade _repository;
         private readonly ILogger _logger;
+
         public MerchDataProviderFacade(IRepositoryFacade repository, ILogger<Program> logger)
         {
             _logger = logger;
 
             IExtractionExecutionStateProvider<CitilinkParsingExecutionState> executionStateProvider
                 = repository;
+            _repository = repository;
+            
 
             CitilinkMerchDataUpserter consumer = new(repository, repository.GetCitilinkShop(),
                 _logger);
@@ -32,12 +37,16 @@ namespace PriceTracker.Modules.MerchDataProvider
             var browser = Playwright.CreateAsync().Result.Chromium.LaunchAsync().Result;
             BrowserAdapter browserAdapter = new(browser, Configs.HeadlessBrowserDelayRange,
                 _logger);
-            IMerchDataExtractor<CitilinkMerchParsingDto, CitilinkParsingExecutionState>
-                extractor = new GUICitilinkExtractor(browserAdapter, Configs.MaxPageRequestsPerTime, _logger);
 
-            ScheduledMerchUpserter<CitilinkMerchParsingDto, CitilinkParsingExecutionState>
+            string CitilinkStorageState = ((ICitilinkMiscellaneousRepositoryFacade)_repository).
+                GetExtractorStorageState();
+            GUICitilinkExtractor extractor =
+                new(browserAdapter, Configs.MaxPageRequestsPerTime, _logger, storageState: 
+                CitilinkStorageState);
+
+            ScheduledCitilinkMerchUpserter
                 scheduledCitilinkMerchUpserter = new(consumer, extractor, Configs.PriceUpdatePeriod,
-                DateTime.Now, executionStateProvider.Provide());
+                DateTime.Now, executionStateProvider.Provide(), repository);
 
             _scheduledUpserter = new([scheduledCitilinkMerchUpserter]);
 
@@ -47,6 +56,11 @@ namespace PriceTracker.Modules.MerchDataProvider
         {
             _logger.LogTrace("Запущен процесс upsert'а товаров.");
             await _scheduledUpserter.ProcessUpsertion();
+        }
+
+        public async Task OnShutdownAsync()
+        {
+            await _scheduledUpserter.OnShutdown();
         }
     }
 }

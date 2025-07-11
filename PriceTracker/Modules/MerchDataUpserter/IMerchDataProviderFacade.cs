@@ -7,5 +7,6 @@ namespace PriceTracker.Modules.MerchDataProvider
     public interface IMerchDataProviderFacade
     {
         public Task ProcessMerchUpsertion();
+        public Task OnShutdownAsync();
     }
 }

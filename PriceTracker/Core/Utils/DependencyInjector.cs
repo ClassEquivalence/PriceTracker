@@ -1,5 +1,6 @@
 ﻿using PriceTracker.Modules.MerchDataProvider;
 using PriceTracker.Modules.Repository.Facade;
+using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.WebInterface.Mapping.MapperProvider;
 using PriceTracker.Modules.WebInterface.Routing;
 

@@ -1,6 +1,7 @@
 ﻿using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.Engine;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
+using System.Data.SqlTypes;
 
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink
 {
@@ -11,22 +12,30 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         private readonly CitilinkMerchParser _parser;
         private CitilinkParsingExecutionState? _extractionData;
         private readonly ILogger? _logger;
+        private readonly CitilinkScraper _baseScraper;
+        private string? _storageState;
 
         public event Action<CitilinkParsingExecutionState>? OnExecutionStateUpdate;
         public event Action? ExtractionProcessFinished;
 
+
+
         public GUICitilinkExtractor(BrowserAdapter browser, (int requests, TimeSpan period)
-            maxPageRequestsPerTime, ILogger? logger = null)
+            maxPageRequestsPerTime, ILogger? logger = null, string? storageState = null)
         {
-            CitilinkScraper scraper = new(browser, logger, maxPageRequestsPerTime);
+            CitilinkScraper baseScraper = _baseScraper = new(browser, logger);
+            
+            CitilinkScraperSafeAccessAdapter scraper = new(baseScraper, 
+                maxPageRequestsPerTime);
             _parser = new CitilinkMerchParser(scraper, logger);
 
             _logger = logger;
-
+            _storageState = storageState;
         }
         public async IAsyncEnumerable<CitilinkMerchParsingDto>
             RunExtractionProcess()
         {
+            await _baseScraper.PerformInitialRunup(_storageState);
             _extractionData = new("", 0, false);
 
             _logger?.LogTrace($"{nameof(GUICitilinkExtractor)}: начался новый процесс извлечения" +
@@ -87,6 +96,11 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         public CitilinkParsingExecutionState? GetProgress()
         {
             return _extractionData;
+        }
+
+        public async Task<string> GetScraperStorageStateAsync()
+        {
+            return await _baseScraper.GetStorageStateAsync();
         }
 
     }

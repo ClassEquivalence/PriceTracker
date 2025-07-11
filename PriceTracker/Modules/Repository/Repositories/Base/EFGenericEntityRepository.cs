@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities;
 
 namespace PriceTracker.Modules.Repository.Repositories.Base
@@ -6,6 +8,8 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
     public abstract class EFGenericEntityRepository<TEntity>
         where TEntity : BaseEntity
     {
+
+
         //TODO: Прописать инклюды всякие.
         protected DbContext dbContext;
         protected DbSet<TEntity> entities { get; set; }

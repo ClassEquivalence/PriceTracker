@@ -1,5 +1,6 @@
 ﻿using PriceTracker.Core.Models.Domain;
 using PriceTracker.Modules.Repository.Facade;
+using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.WebInterface.DTOModels.ForAPI.Merch;
 using PriceTracker.Modules.WebInterface.Mapping.Merch;
 

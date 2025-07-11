@@ -7,6 +7,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion
     public abstract class ScheduledMerchUpserter : IMerchUpserter
     {
         public abstract Task ProcessUpsertion();
+        public virtual async Task OnShutDown() { }
     }
 
     public class ScheduledMerchUpserter<MerchParsedDto, ExecutionState> :
@@ -15,7 +16,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion
         where MerchParsedDto : MerchParsingDto
     {
         private readonly IMerchDataConsumer<MerchParsedDto> _dataConsumer;
-        private readonly IMerchDataExtractor<MerchParsedDto, ExecutionState>
+        protected readonly IMerchDataExtractor<MerchParsedDto, ExecutionState>
             _dataExtractor;
 
         private readonly TimeSpan _upsertionCyclePeriod;
@@ -64,6 +65,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion
 
             }
         }
+
+        
 
     }
 }

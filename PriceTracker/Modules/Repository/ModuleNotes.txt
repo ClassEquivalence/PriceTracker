@@ -2,6 +2,7 @@
 TODO:
 1. Исправить ошибку с тем, что к одному DbContext могут обращаться одновременно
 несколько объектов.
+2. Реализовать ICitilinkMiscellaneousRepositoryFacade.
 
 
 Implementation details:

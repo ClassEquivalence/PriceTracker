@@ -3,34 +3,15 @@ using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingS
 
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.Engine
 {
-    public class CitilinkScraper
+    public class CitilinkScraper: ICitilinkScraper
     {
         private readonly BrowserAdapter _browser;
         private readonly ILogger? _logger;
+        private readonly string _citilinkCatalogPageUrl = "https://www.citilink.ru/catalog/";
 
 
-        private readonly (int documentRequestCount, TimeSpan period) _maxPageRequestPerTime;
-        private int requestIteration = 0;
-
-        private DateTime lastTimeRequestHappened;
-
-        public DateTime WhenRequestingAvailable
+        public CitilinkScraper(BrowserAdapter browserAdapter, ILogger? logger = null)
         {
-            get
-            {
-                return (requestIteration < _maxPageRequestPerTime.documentRequestCount) ?
-                    DateTime.Now : lastTimeRequestHappened;
-            }
-        }
-        public event Action<DateTime>? MaxPageRequestPerTimeReached;
-
-        public CitilinkScraper(BrowserAdapter browserAdapter, ILogger? logger = null,
-            (int documentRequestCount, TimeSpan period)? maxPageRequestPerTime = null)
-        {
-            lastTimeRequestHappened = DateTime.Now;
-
-            _maxPageRequestPerTime = maxPageRequestPerTime ??
-                (300, TimeSpan.FromHours(12));
 
             _browser = browserAdapter;
             _logger = logger;
@@ -61,7 +42,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                 {
                     await GotoAsync(url);
 
-                    await WaitForPortionLoadedAsync();
+                    await WaitForProductPortionLoadedAsync();
 
                     break;
                 }
@@ -92,14 +73,9 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         private async Task GotoAsync(string url)
         {
-            if (TryPassRequestPerTimeLimit())
-                await _browser.GotoAsync(url);
-            else
-                throw new InvalidOperationException($"{nameof(CitilinkScraper)}" +
-                    $" недоступен в силу достижения указанного PageRequestsPerTime" +
-                    $" лимита. Вызвать метод следовало бы позже.");
+            await _browser.GotoAsync(url);
         }
-        private async Task WaitForPortionLoadedAsync()
+        private async Task WaitForProductPortionLoadedAsync()
         {
             await _browser.WaitForFunctionAsync(
                 @"() => {
@@ -114,40 +90,20 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                 }");
         }
 
-
-        // TODO: Метод несовершенен, и может запрещать доступ тогда, когда
-        // он должен быть разрешен. Но не наоборот.
-        private bool TryPassRequestPerTimeLimit()
+        public async Task PerformInitialRunup(string? storageState = null)
         {
-            if (DateTime.Now > lastTimeRequestHappened)
-            {
-                requestIteration = 1;
-
-                lastTimeRequestHappened = DateTime.Now + _maxPageRequestPerTime.period;
-                return true;
-            }
-            else if (requestIteration < _maxPageRequestPerTime.documentRequestCount)
-            {
-                requestIteration++;
-
-                lastTimeRequestHappened = DateTime.Now + _maxPageRequestPerTime.period;
-
-                if (requestIteration == _maxPageRequestPerTime.documentRequestCount - 1)
-                {
-                    MaxPageRequestPerTimeReached?.Invoke(lastTimeRequestHappened);
-                }
-
-                return true;
-            }
+            if(storageState!=null)
+                await _browser.LoadStorageStateAsync(storageState);
             else
             {
-                MaxPageRequestPerTimeReached?.Invoke(lastTimeRequestHappened);
-                return false;
+                var gotoTask = _browser.GotoAsync(_citilinkCatalogPageUrl);
+                var minimumWaitTask = Task.Delay(10000);
+                await Task.WhenAll([gotoTask, minimumWaitTask]);
             }
-
-
-            // если возвращаем true - то WhenRequestingAvailable = DateTime.Now + period;
-            // если false то этого не нужно.
+        }
+        public async Task<string> GetStorageStateAsync()
+        {
+            return await _browser.GetStorageStateAsync();
         }
     }
 }

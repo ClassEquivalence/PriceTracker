@@ -1,4 +1,6 @@
-﻿namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion
+﻿using System.Threading.Tasks;
+
+namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion
 {
     public class UpsertionService
     {
@@ -16,6 +18,18 @@
             foreach (var upserter in _merchUpserters)
             {
                 tasks[i] = upserter.ProcessUpsertion();
+                i++;
+            }
+            await Task.WhenAll(tasks);
+        }
+
+        public async Task OnShutdown()
+        {
+            Task[] tasks = new Task[_merchUpserters.Count];
+            int i = 0;
+            foreach (var upserter in _merchUpserters)
+            {
+                tasks[i] = upserter.OnShutDown();
                 i++;
             }
             await Task.WhenAll(tasks);

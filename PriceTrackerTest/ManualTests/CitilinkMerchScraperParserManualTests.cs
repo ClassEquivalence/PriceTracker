@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.Engine;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
 using PriceTrackerTest.Utils.CustomAttributes;
 using PriceTrackerTest.Utils.Logging.LoggerProviders;
 using Xunit.Abstractions;
@@ -12,6 +13,7 @@ namespace PriceTrackerTest.ManualTests
     {
 
         CitilinkMerchParser parser;
+        MerchCatalogUrlsExtractor urlsExtractor;
         private readonly ITestOutputHelper _output;
         private readonly CitilinkScraper _scraper;
         private readonly ILogger _testLogger;
@@ -32,11 +34,13 @@ namespace PriceTrackerTest.ManualTests
             var playwrightTask = Playwright.CreateAsync();
             var browser = playwrightTask.Result.Chromium.LaunchAsync().Result;
 
-
-            var browserAdapter = new BrowserAdapter(browser, (3, 6));
+            var browserAdapter = new BrowserAdapter(browser, (15, 30));
             var scraper = new CitilinkScraper(browserAdapter, logger);
             _scraper = scraper;
             parser = new(scraper, logger);
+
+            urlsExtractor = new(scraper, logger);
+
         }
 
         [ManualTheory]
@@ -56,8 +60,8 @@ namespace PriceTrackerTest.ManualTests
         [ManualFact]
         public async void RetrieveAllMerchCatalogsUrls_ManualCheck()
         {
-
-            var result = parser.RetrieveAllMerchCatalogsUrls();
+            
+            var result = urlsExtractor.RetrieveAllMerchCatalogsUrls();
 
             await foreach (var item in result)
             {
@@ -68,12 +72,14 @@ namespace PriceTrackerTest.ManualTests
         [ManualFact]
         public async void RetreiveAllMerches_ManualCheck()
         {
+            /*
             var asyncEnumerable = parser.RetreiveAll();
             await foreach (var merch in asyncEnumerable)
             {
                 _testLogger.LogDebug($"Извлечен товар: Name:{merch.Name}, " +
                     $"Price:{merch.Price}, CitilinkId:{merch.CitilinkId}");
             }
+            */
         }
 
         [ManualTheory]
@@ -90,11 +96,13 @@ namespace PriceTrackerTest.ManualTests
         [InlineData("https://www.citilink.ru/catalog/sendvichnicy/?ref=mainmenu_plate")]
         public void RetrieveMerchesFromCatalog_ManualCheck(string catalogUrl)
         {
+            /*
             var result = parser.RetrieveMerchesFromCatalog(catalogUrl).ToBlockingEnumerable();
             foreach (var item in result)
             {
                 _output.WriteLine($"CitilinkId: {item.CitilinkId}, Price: {item.Price}, Name: {item.Name}");
             }
+            */
         }
     }
 }

@@ -5,7 +5,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.Scrap
     public class BrowserAdapter
     {
         private readonly IBrowser _browser;
-        private readonly IPage _page;
+        private IBrowserContext _browserContext;
+        private IPage _page;
         // Delay between requests
         private readonly (float minDelay, float maxDelay) _delayRange;
         private readonly ILogger? _logger;
@@ -14,7 +15,10 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.Scrap
             ILogger? logger = null, Random? numberGenerator = null)
         {
             _browser = browser;
-            _page = _browser.NewPageAsync().Result;
+            _browserContext = _browser.NewContextAsync().Result;
+            
+            
+            _page = _browserContext.NewPageAsync().Result;
             _delayRange = delayRange;
             _logger = logger;
 
@@ -90,6 +94,25 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.Scrap
         {
             await _page.WaitForFunctionAsync(func, new PageWaitForFunctionOptions()
             { PollingInterval = pollingInterval });
+        }
+
+        public async Task<string> GetStorageStateAsync()
+        {
+            return await _browserContext.StorageStateAsync();
+        }
+
+        public async Task LoadStorageStateAsync(string storageState)
+        {
+            
+            var previousContext = _browserContext;
+
+            var taskNewContext = _browser.NewContextAsync(new() { StorageState = storageState });
+            var taskDisposePreviousContext = previousContext.DisposeAsync();
+
+            _browserContext = await taskNewContext;
+            var taskNewPage = _browserContext.NewPageAsync();
+            _page = await taskNewPage;
+            await taskDisposePreviousContext;
         }
     }
 }

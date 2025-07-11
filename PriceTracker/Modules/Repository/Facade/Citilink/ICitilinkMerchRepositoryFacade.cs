@@ -1,6 +1,6 @@
 ﻿using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
 
-namespace PriceTracker.Modules.Repository.Facade
+namespace PriceTracker.Modules.Repository.Facade.Citilink
 {
     public interface ICitilinkMerchRepositoryFacade
     {
