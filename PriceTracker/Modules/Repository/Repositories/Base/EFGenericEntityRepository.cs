@@ -1,62 +1,71 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities;
 
 namespace PriceTracker.Modules.Repository.Repositories.Base
 {
-    public abstract class EFGenericEntityRepository<TEntity>
+
+
+    public abstract class EFGenericEntityRepository<TEntity, SpecificDbContext> :
+        IEntityRepository<TEntity>
         where TEntity : BaseEntity
+        where SpecificDbContext : DbContext
     {
 
+        protected virtual IDbContextFactory<SpecificDbContext> _dbContextFactory
+        { get; set; }
 
         //TODO: Прописать инклюды всякие.
-        protected DbContext dbContext;
-        protected DbSet<TEntity> entities { get; set; }
 
-        /// <summary>
-        /// Поле создано для инклюда всех связанных сущностей.
-        /// Поле должно находиться в состоянии уже после инклюдов.
-        /// </summary>
-        protected abstract IQueryable<TEntity> entitiesWithIncludes { get; }
-
-
-        public EFGenericEntityRepository(DbContext dbContext)
+        public EFGenericEntityRepository(IDbContextFactory<SpecificDbContext> dbContextFactory)
         {
-            this.dbContext = dbContext;
-            entities = dbContext.Set<TEntity>();
+            _dbContextFactory = dbContextFactory;
+
         }
 
 
         public List<TEntity> Where(Func<TEntity, bool>? predicate = null)
         {
             predicate ??= ((e) => true);
-            return entitiesWithIncludes.Where(predicate).ToList();
+            using SpecificDbContext context =
+                _dbContextFactory.CreateDbContext();
+            return GetWithIncludedEntities(context).Where(predicate).ToList();
         }
         public bool Any(Func<TEntity, bool>? predicate = null)
         {
             predicate ??= ((e) => true);
-            return entitiesWithIncludes.Any(predicate);
+            using SpecificDbContext context =
+                _dbContextFactory.CreateDbContext();
+            return GetWithIncludedEntities(context).Any(predicate);
         }
 
         public void Create(TEntity entity)
         {
-            entities.Add(entity);
-            SaveChanges();
+            using SpecificDbContext context =
+                _dbContextFactory.CreateDbContext();
+            context.Add(entity);
+            context.SaveChanges();
         }
         public bool Update(TEntity entity)
         {
-            entities.Update(entity);
-            dbContext.SaveChanges();
+            using SpecificDbContext context =
+                _dbContextFactory.CreateDbContext();
+
+            context.Update(entity);
+            context.SaveChanges();
+
+            // TODO: Возврат - бессмысленная заглушка.
             return true;
         }
         public bool Delete(int id)
         {
-            var e = GetEntity(id);
-            if (e != null && entities.Contains(e))
+            using SpecificDbContext context =
+                _dbContextFactory.CreateDbContext();
+
+            var e = GetEntity(context, id);
+            if (e != null && GetWithIncludedEntities(context).Contains(e))
             {
-                entities.Remove(e);
-                SaveChanges();
+                context.Remove(e);
+                context.SaveChanges();
                 return true;
             }
             else
@@ -64,7 +73,9 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
         }
         public void SaveChanges()
         {
-            dbContext.SaveChanges();
+            // TODO: Пустая заглушка. Хотелось бы, чтобы она однако была функциональной,
+            // либо убрать.
+            //dbContext.SaveChanges();
         }
 
         /// <summary>
@@ -76,9 +87,30 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
         /// <exception cref="InvalidOperationException"></exception>
         public TEntity? GetEntity(int id)
         {
-            return entitiesWithIncludes.SingleOrDefault(e => e.Id == id);
+            using var context = _dbContextFactory.CreateDbContext();
+
+            return GetEntity(context, id);
         }
 
 
+        private TEntity? GetEntity(SpecificDbContext context, int id)
+        {
+            return GetWithIncludedEntities(context).SingleOrDefault(e => e.Id == id);
+        }
+
+
+        protected IQueryable<TEntity> GetWithIncludedEntities(SpecificDbContext context)
+        {
+            var set = context.Set<TEntity>();
+            return GetWithIncludedEntities(set);
+        }
+
+
+
+        /// <summary>
+        /// Метод создан для инклюда всех связанных сущностей.
+        /// Возвращаемый IQueryable должно находиться в состоянии уже после инклюдов.
+        /// </summary>
+        protected abstract IQueryable<TEntity> GetWithIncludedEntities(DbSet<TEntity> entities);
     }
 }

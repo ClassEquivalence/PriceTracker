@@ -1,6 +1,7 @@
 ﻿using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models;
 
-namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion
+namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
 {
 
     /// <summary>

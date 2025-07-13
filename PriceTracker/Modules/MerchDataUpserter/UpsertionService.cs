@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+﻿using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services;
 
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion
 {

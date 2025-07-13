@@ -47,7 +47,6 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">Выбрасывается, если в последовательности имеется не менее 2 объектов с одинаковым Id.</exception>
         public bool Delete(int id);
-        public void SaveChanges();
 
         public bool Any(Func<TCoreDto, bool> predicate);
     }

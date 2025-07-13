@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using PriceTracker.Core.Utils;
 using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
 
 
 
@@ -60,7 +61,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
             await foreach (var url in catalogUrls)
             {
-                
+
                 if (continueFromExecState)
                 {
                     if (url != execState.CurrentCatalogUrl)

@@ -1,7 +1,8 @@
 ﻿using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.Engine;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
-using System.Data.SqlTypes;
 
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink
 {
@@ -24,8 +25,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             maxPageRequestsPerTime, ILogger? logger = null, string? storageState = null)
         {
             CitilinkScraper baseScraper = _baseScraper = new(browser, logger);
-            
-            CitilinkScraperSafeAccessAdapter scraper = new(baseScraper, 
+
+            CitilinkScraperSafeAccessAdapter scraper = new(baseScraper,
                 maxPageRequestsPerTime);
             _parser = new CitilinkMerchParser(scraper, logger);
 

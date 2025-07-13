@@ -3,6 +3,12 @@ TODO:
 1. Исправить ошибку с тем, что к одному DbContext могут обращаться одновременно
 несколько объектов.
 2. Реализовать ICitilinkMiscellaneousRepositoryFacade.
+3. Реализовать разделение моделей Process в различных семантиках. Желательно
+исправить бардак с репозиторием.
+4. 2 репозитория, CitilinkExtractionStateRepository и CitilinkExtractorStorageStateRepository,
+созданы по одному общему принципу, но у них нет общего предка, они используют dbContext
+вместо dbContextFactory. Исправить бы это и проконтроллировать чтобы не было проблем с
+многопоточным доступом.
 
 
 Implementation details:
@@ -15,3 +21,10 @@ Implementation details:
 родительской сущности. Это связано с ограничениями, накладываемыми, и моей ленью
 погружаться в тонкости EF. (написанное здесь следует учитывать при прописывании
 полей entitiesWithIncludes в entityRepository)
+
+Большинство репозиториев используют IDbContextFactory<PriceTrackerContext>
+для создания одного контекста на 1 запрос.
+
+Warnings:
+1. CitilinkParsingExecutionStateRepository использует один DbContext на весь репозиторий.
+Да и сделан он костыльно.

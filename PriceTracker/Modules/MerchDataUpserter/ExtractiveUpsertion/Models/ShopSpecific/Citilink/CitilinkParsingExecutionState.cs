@@ -1,4 +1,6 @@
-﻿namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink
+﻿using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models;
+
+namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink
 {
     public class CitilinkParsingExecutionState : ExtractionState
     {
@@ -6,8 +8,8 @@
         public int CatalogPageNumber { get; set; }
 
         public CitilinkParsingExecutionState(string currentCatalogUrl,
-            int pageNumber, bool isCompleted, int id = default) :
-            base(isCompleted, id)
+            int pageNumber, bool isCompleted) :
+            base(isCompleted)
         {
             CurrentCatalogUrl = currentCatalogUrl;
             CatalogPageNumber = pageNumber;

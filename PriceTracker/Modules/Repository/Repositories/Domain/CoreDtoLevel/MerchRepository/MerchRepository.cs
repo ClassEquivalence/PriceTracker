@@ -125,13 +125,6 @@ namespace PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel.Merch
         }
 
 
-        public void SaveChanges()
-        {
-            foreach (var repository in _repositoryAdapters)
-            {
-                repository.SaveChanges();
-            }
-        }
 
         public bool Any(Func<MerchDto, bool> predicate)
         {

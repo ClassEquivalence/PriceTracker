@@ -1,5 +1,4 @@
 ﻿using HtmlAgilityPack;
-using Microsoft.Playwright;
 
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.Engine
 {

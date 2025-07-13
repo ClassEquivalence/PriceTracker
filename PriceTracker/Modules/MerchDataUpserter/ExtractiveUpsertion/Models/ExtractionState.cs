@@ -1,9 +1,7 @@
-﻿namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion
+﻿namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models
 {
-    public abstract class ExtractionState(bool isCompleted,
-        int id = default)
+    public abstract class ExtractionState(bool isCompleted)
     {
-        public int Id = id;
 
         /// <summary>
         /// Переменная указывает, был ли завершен процесс.

@@ -34,10 +34,6 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
             return _actualRepository.Delete(id);
         }
 
-        public void SaveChanges()
-        {
-            _actualRepository.SaveChanges();
-        }
 
         public MerchDto? SingleOrDefault(Func<MerchDto, bool> predicate)
         {

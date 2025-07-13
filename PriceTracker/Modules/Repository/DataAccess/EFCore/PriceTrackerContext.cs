@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.Entities.Domain;
 using PriceTracker.Modules.Repository.Entities.Domain.MerchPriceHistory;
 using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;
+using PriceTracker.Modules.Repository.Entities.Infrastructure;
 using PriceTracker.Modules.Repository.Entities.Process;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
 
@@ -18,6 +20,7 @@ namespace PriceTracker.Modules.Repository.DataAccess.EFCore
         public DbSet<TimeExtractionProcessHappened> TimeExtractionProcessHappened { get; set; }
         public DbSet<CitilinkParsingExecutionStateEntity> CitilinkParsingExecutionStateEntity
         { get; set; }
+        public DbSet<CitilinkExtractorStorageStateEntity> CitilinkExtractionStorageStates { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -56,8 +59,8 @@ namespace PriceTracker.Modules.Repository.DataAccess.EFCore
         }
         public PriceTrackerContext(ILogger<Program>? logger = null)
         {
-            var isCreated = Database.EnsureCreated();
-            logger?.LogDebug($"БД была создана?: {isCreated}");
+            //var isCreated = Database.EnsureCreated();
+            //logger?.LogDebug($"БД была создана?: {isCreated}");
         }
     }
 }

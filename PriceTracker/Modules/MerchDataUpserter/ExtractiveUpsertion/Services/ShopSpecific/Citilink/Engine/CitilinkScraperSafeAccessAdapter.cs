@@ -26,7 +26,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         public HtmlNode HtmlToNode(string html)
         {
-            
+
             return _baseScraper.HtmlToNode(html);
         }
 

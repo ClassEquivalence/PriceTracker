@@ -16,8 +16,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.Scrap
         {
             _browser = browser;
             _browserContext = _browser.NewContextAsync().Result;
-            
-            
+
+
             _page = _browserContext.NewPageAsync().Result;
             _delayRange = delayRange;
             _logger = logger;
@@ -103,7 +103,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.Scrap
 
         public async Task LoadStorageStateAsync(string storageState)
         {
-            
+
             var previousContext = _browserContext;
 
             var taskNewContext = _browser.NewContextAsync(new() { StorageState = storageState });

@@ -16,7 +16,6 @@ namespace PriceTracker.Modules.Repository.Facade
         public bool Update(Domain entity);
 
         public bool Delete(int id);
-        public void SaveChanges();
 
         public bool Any(Func<Domain, bool> predicate);
 

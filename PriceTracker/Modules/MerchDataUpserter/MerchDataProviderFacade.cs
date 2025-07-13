@@ -1,6 +1,7 @@
 ﻿using Microsoft.Playwright;
-using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
+using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
 using PriceTracker.Modules.Repository.Facade;
@@ -26,10 +27,10 @@ namespace PriceTracker.Modules.MerchDataProvider
         {
             _logger = logger;
 
-            IExtractionExecutionStateProvider<CitilinkParsingExecutionState> executionStateProvider
+            IExtractionExecutionStateProvider<CitilinkExtractionStateDto> executionStateProvider
                 = repository;
             _repository = repository;
-            
+
 
             CitilinkMerchDataUpserter consumer = new(repository, repository.GetCitilinkShop(),
                 _logger);
@@ -38,15 +39,19 @@ namespace PriceTracker.Modules.MerchDataProvider
             BrowserAdapter browserAdapter = new(browser, Configs.HeadlessBrowserDelayRange,
                 _logger);
 
-            string CitilinkStorageState = ((ICitilinkMiscellaneousRepositoryFacade)_repository).
+            var CitilinkStorageState = ((ICitilinkMiscellaneousRepositoryFacade)_repository).
                 GetExtractorStorageState();
             GUICitilinkExtractor extractor =
-                new(browserAdapter, Configs.MaxPageRequestsPerTime, _logger, storageState: 
-                CitilinkStorageState);
+                new(browserAdapter, Configs.MaxPageRequestsPerTime, _logger, storageState:
+                CitilinkStorageState.StorageState);
+
+            var citilinkExtractionStateDto = executionStateProvider.Provide();
+            CitilinkParsingExecutionState citilinkExtractionState = new(citilinkExtractionStateDto.CurrentCatalogUrl,
+                citilinkExtractionStateDto.CatalogPageNumber, citilinkExtractionStateDto.IsCompleted);
 
             ScheduledCitilinkMerchUpserter
                 scheduledCitilinkMerchUpserter = new(consumer, extractor, Configs.PriceUpdatePeriod,
-                DateTime.Now, executionStateProvider.Provide(), repository);
+                DateTime.Now, citilinkExtractionState, repository);
 
             _scheduledUpserter = new([scheduledCitilinkMerchUpserter]);
 

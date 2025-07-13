@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink;
+using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
 
@@ -8,11 +9,15 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
     // TODO: Класс не наследует другие более общие классы, или интерфейсы.
     // Не входит в иерархию. Соответственно это костыль который можно переделать.
     // Ещё и маппинг прямо здесь реализован, что в теории перегружает ответственностью.
-    public class CitilinkParsingExecutionStateRepository
+
+    // Ещё в отличие от других репозиториев уровня сущности, этот использует 
+    // DbContext один на весь репозиторий, из-за чего при расширении его использования
+    // до многопоточного к нему доступа могут возникнуть проблемы. Уязвимое место!
+    public class CitilinkExtractionStateRepository
     {
         private readonly PriceTrackerContext _dbContext;
         private readonly DbSet<CitilinkParsingExecutionStateEntity> _execState;
-        public CitilinkParsingExecutionStateRepository(PriceTrackerContext dbContext)
+        public CitilinkExtractionStateRepository(PriceTrackerContext dbContext)
         {
             _dbContext = dbContext;
             _execState = dbContext.CitilinkParsingExecutionStateEntity;
@@ -27,15 +32,15 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
 
         }
 
-        public CitilinkParsingExecutionState Provide()
+        public CitilinkExtractionStateDto Provide()
         {
             var entity = _execState.Single();
-            CitilinkParsingExecutionState stateDto = new(entity.CurrentCatalogUrl,
-                entity.CatalogPageNumber, entity.IsCompleted);
+            CitilinkExtractionStateDto stateDto = new(entity.IsCompleted, 
+                entity.CurrentCatalogUrl, entity.CatalogPageNumber);
             return stateDto;
         }
 
-        public void Save(CitilinkParsingExecutionState info)
+        public void Save(CitilinkExtractionStateDto info)
         {
             var entity = _execState.Single();
             entity.CurrentCatalogUrl = info.CurrentCatalogUrl;

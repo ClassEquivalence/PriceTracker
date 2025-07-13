@@ -1,4 +1,5 @@
-﻿using PriceTracker.Core.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using PriceTracker.Core.Models;
 using PriceTracker.Modules.Repository.Entities;
 using PriceTracker.Modules.Repository.Mapping;
 
@@ -12,16 +13,18 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
     Проверить, строится ли при одинаковой проекции и загруженных в контекст элементах,
     необходимых для проекции, каждый раз новый запрос к БД (вместо использования Local кеша).
      */
-    public abstract class EFGenericRepository<TCoreDto, TEntity> : IRepository<TCoreDto>
+    public abstract class EFGenericRepository<TCoreDto, TEntity, SpecificDbContext> :
+        IRepository<TCoreDto>
         where TEntity : BaseEntity where TCoreDto : BaseDto
+        where SpecificDbContext : DbContext
     {
 
         private readonly ICoreToEntityMapper<TCoreDto, TEntity> _mapper;
-        private readonly EFGenericEntityRepository<TEntity> _entityRepository;
+        private readonly IEntityRepository<TEntity> _entityRepository;
 
         private readonly ILogger? _logger;
 
-        public EFGenericRepository(EFGenericEntityRepository<TEntity> entityRepository,
+        public EFGenericRepository(IEntityRepository<TEntity> entityRepository,
             ICoreToEntityMapper<TCoreDto, TEntity> mapper, ILogger? logger = null)
         {
             _entityRepository = entityRepository;
@@ -75,10 +78,6 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
         public bool Delete(int id)
         {
             return _entityRepository.Delete(id);
-        }
-        public void SaveChanges()
-        {
-            _entityRepository.SaveChanges();
         }
 
         /// <summary>

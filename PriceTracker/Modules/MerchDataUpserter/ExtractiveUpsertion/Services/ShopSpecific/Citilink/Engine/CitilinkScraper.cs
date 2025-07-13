@@ -3,7 +3,7 @@ using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingS
 
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.Engine
 {
-    public class CitilinkScraper: ICitilinkScraper
+    public class CitilinkScraper : ICitilinkScraper
     {
         private readonly BrowserAdapter _browser;
         private readonly ILogger? _logger;
@@ -92,7 +92,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         public async Task PerformInitialRunup(string? storageState = null)
         {
-            if(storageState!=null)
+            if (storageState != null)
                 await _browser.LoadStorageStateAsync(storageState);
             else
             {

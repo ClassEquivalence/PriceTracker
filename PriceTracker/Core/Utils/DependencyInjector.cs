@@ -1,4 +1,6 @@
-﻿using PriceTracker.Modules.MerchDataProvider;
+﻿using Microsoft.EntityFrameworkCore;
+using PriceTracker.Modules.MerchDataProvider;
+using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Facade;
 using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.WebInterface.Mapping.MapperProvider;
@@ -14,6 +16,10 @@ namespace PriceTracker.Core.Utils
         public static void InjectRepositoryDependencies(
             IServiceCollection collection)
         {
+
+            collection.AddSingleton<PriceTrackerContext>();
+            collection.AddSingleton<DbContext>(sp => sp.GetRequiredService<PriceTrackerContext>());
+            collection.AddDbContextFactory<PriceTrackerContext>();
             collection.AddSingleton<IRepositoryFacade, RepositoryFacade>();
             collection.AddSingleton<IShopRepositoryFacade>(s => s.GetRequiredService<IRepositoryFacade>());
             collection.AddSingleton<ICitilinkMerchRepositoryFacade>(s =>

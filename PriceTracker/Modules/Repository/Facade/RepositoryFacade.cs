@@ -1,7 +1,11 @@
-﻿using PriceTracker.Core.Models.Domain;
+﻿using Microsoft.EntityFrameworkCore;
+using PriceTracker.Core.Models.Domain;
 using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink;
+using PriceTracker.Core.Models.Infrastructure;
+using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
+using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.Repository.Mapping.Domain;
 using PriceTracker.Modules.Repository.Mapping.ShopSpecific;
 using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
@@ -19,8 +23,10 @@ namespace PriceTracker.Modules.Repository.Facade
     public class RepositoryFacade : IRepositoryFacade
     {
         private readonly LastTimeExtractionHappenedRepository _timeExtractionHappenedRepository;
-        private readonly CitilinkParsingExecutionStateRepository
+        private readonly CitilinkExtractionStateRepository
             _citilinkParsingExecutionStateRepository;
+        private readonly CitilinkExtractorStorageStateRepository
+            _citilinkExtractorStorageStateRepository;
 
 
         private readonly CitilinkMerchRepository _citilinkMerchRepository;
@@ -30,22 +36,24 @@ namespace PriceTracker.Modules.Repository.Facade
         private readonly TimestampedPriceRepository _timestampedPriceRepository;
 
 
-        public RepositoryFacade(PriceTrackerContext dbContext, ILogger? logger = null)
+        public RepositoryFacade(PriceTrackerContext dbContext, 
+            IDbContextFactory<PriceTrackerContext> dbcontextFactory, ILogger? logger = null)
         {
             _timeExtractionHappenedRepository = new(dbContext);
             _citilinkParsingExecutionStateRepository = new(dbContext);
+            _citilinkExtractorStorageStateRepository = new(dbContext);
 
             TimestampedPriceEntityRepository timestampedPriceEntityRepository
-                = new(dbContext);
+                = new(dbcontextFactory);
             TimestampedPriceMapper timestampedPriceMapper = new(dto => timestampedPriceEntityRepository.
             GetEntity(dto.Id));
 
-            PriceHistoryEntityRepository priceHistoryEntityRepository = new(dbContext);
+            PriceHistoryEntityRepository priceHistoryEntityRepository = new(dbcontextFactory);
             PriceHistoryMapper priceHistoryMapper = new(timestampedPriceMapper,
                 dto => priceHistoryEntityRepository.GetEntity(dto.Id));
 
 
-            CitilinkMerchEntityRepository citilinkMerchEntityRepository = new(dbContext);
+            CitilinkMerchEntityRepository citilinkMerchEntityRepository = new(dbcontextFactory);
             CitilinkMerchCoreToEntityMapper citilinkMerchMapper = new(priceHistoryMapper,
                 dto => citilinkMerchEntityRepository.GetEntity(dto.Id));
 
@@ -54,7 +62,7 @@ namespace PriceTracker.Modules.Repository.Facade
             MerchMapper merchMapper = new(dto => citilinkMerchEntityRepository.GetEntity(dto.Id),
                 priceHistoryMapper);
 
-            ShopEntityRepository shopEntityRepository = new(dbContext);
+            ShopEntityRepository shopEntityRepository = new(dbcontextFactory);
             ShopCoreToEntityMapper shopMapper = new(merchMapper, dto => shopEntityRepository.
             GetEntity(dto.Id));
 
@@ -133,12 +141,12 @@ namespace PriceTracker.Modules.Repository.Facade
             return _merchRepository.GetModel(id);
         }
 
-        public CitilinkParsingExecutionState Provide()
+        public CitilinkExtractionStateDto Provide()
         {
             return _citilinkParsingExecutionStateRepository.Provide();
         }
 
-        public void Save(CitilinkParsingExecutionState info)
+        public void Save(CitilinkExtractionStateDto info)
         {
             _citilinkParsingExecutionStateRepository.Save(info);
         }
@@ -286,24 +294,19 @@ namespace PriceTracker.Modules.Repository.Facade
             return _timestampedPriceRepository.GetModel(id);
         }
 
-        void IDomainRepositoryFacade<MerchDto>.SaveChanges()
+        void ICitilinkMiscellaneousRepositoryFacade.
+            SetExtractorStorageState(CitilinkExtractorStorageStateDto storageStateDto)
         {
-            _merchRepository.SaveChanges();
+            _citilinkExtractorStorageStateRepository.
+                SetExtractorStorageState(storageStateDto);
         }
 
-        void IDomainRepositoryFacade<ShopDto>.SaveChanges()
+        CitilinkExtractorStorageStateDto ICitilinkMiscellaneousRepositoryFacade.
+            GetExtractorStorageState()
         {
-            _shopRepository.SaveChanges();
+            return _citilinkExtractorStorageStateRepository.
+                GetExtractorStorageState();
         }
 
-        void IDomainRepositoryFacade<MerchPriceHistoryDto>.SaveChanges()
-        {
-            _priceHistoryRepository.SaveChanges();
-        }
-
-        void IDomainRepositoryFacade<TimestampedPriceDto>.SaveChanges()
-        {
-            _timestampedPriceRepository.SaveChanges();
-        }
     }
 }

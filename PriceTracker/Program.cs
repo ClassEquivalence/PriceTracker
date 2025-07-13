@@ -22,8 +22,6 @@ namespace PriceTracker
             builder.Services.AddSwaggerGen();
 
 
-            builder.Services.AddSingleton<PriceTrackerContext>();
-            builder.Services.AddSingleton<DbContext>(sp => sp.GetRequiredService<PriceTrackerContext>());
 
             DependencyInjector.InjectRepositoryDependencies(builder.Services);
             DependencyInjector.InjectWebInterfaceDependencies(builder.Services);
@@ -48,7 +46,7 @@ namespace PriceTracker
 
             var app = builder.Build();
 
-            app.Services.GetService<IMerchDataProviderFacade>()?.ProcessMerchUpsertion();
+            //app.Services.GetService<IMerchDataProviderFacade>()?.ProcessMerchUpsertion();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
