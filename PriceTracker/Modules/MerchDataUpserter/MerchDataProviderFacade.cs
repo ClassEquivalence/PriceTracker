@@ -19,6 +19,7 @@ namespace PriceTracker.Modules.MerchDataProvider
     /// </summary>
     public class MerchDataProviderFacade : IMerchDataProviderFacade
     {
+        private readonly GUICitilinkExtractor _citilinkExtractor;
         private readonly UpsertionService _scheduledUpserter;
         private readonly IRepositoryFacade _repository;
         private readonly ILogger _logger;
@@ -41,7 +42,7 @@ namespace PriceTracker.Modules.MerchDataProvider
 
             var CitilinkStorageState = ((ICitilinkMiscellaneousRepositoryFacade)_repository).
                 GetExtractorStorageState();
-            GUICitilinkExtractor extractor =
+            GUICitilinkExtractor extractor = _citilinkExtractor = 
                 new(browserAdapter, Configs.MaxPageRequestsPerTime, _logger, storageState:
                 CitilinkStorageState.StorageState);
 
@@ -66,6 +67,23 @@ namespace PriceTracker.Modules.MerchDataProvider
         public async Task OnShutdownAsync()
         {
             await _scheduledUpserter.OnShutdown();
+
+            var progress = _citilinkExtractor.GetProgress();
+            var progressDto = new CitilinkExtractionStateDto(progress.IsCompleted,
+                progress.CurrentCatalogUrl, progress.CatalogPageNumber);
+
+            ((IExtractionExecutionStateProvider<CitilinkExtractionStateDto>)_repository).
+                Save(progressDto);
+        }
+
+        public async Task StartAsync(CancellationToken cancellationToken)
+        {
+
+        }
+
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            await OnShutdownAsync();
         }
     }
 }

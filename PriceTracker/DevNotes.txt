@@ -20,4 +20,6 @@ Changelog:
 1. Добавлено разделение на сервисы и модели в MerchDataUpsertion->ExtractiveUpsertion.
 2. Исправлено разделение на модели у ExtractionState сущности/
 3. Небольшие правки в MerchDataUpserter.
+4. Добавлена заглушка (фильтр авторизации) на AdminApi. Доступ к нему закрыт.
+5. Небольшое изменение структуры папок в WebInterface.
 

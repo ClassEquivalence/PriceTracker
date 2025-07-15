@@ -3,9 +3,8 @@ using PriceTracker.Modules.MerchDataProvider;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Facade;
 using PriceTracker.Modules.Repository.Facade.Citilink;
-using PriceTracker.Modules.WebInterface.Mapping.MapperProvider;
-using PriceTracker.Modules.WebInterface.Routing;
-
+using PriceTracker.Modules.WebInterface.API.Mapping.MapperProvider;
+using PriceTracker.Modules.WebInterface.API.Routing;
 
 namespace PriceTracker.Core.Utils
 {

@@ -58,6 +58,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             var catalogUrls = RetrieveAllMerchCatalogsUrls();
             bool hasExtractionContinued = false;
 
+            if (string.IsNullOrWhiteSpace(execState.CurrentCatalogUrl))
+                continueFromExecState = false;
 
             await foreach (var url in catalogUrls)
             {
@@ -95,6 +97,9 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
                 hasExtractionContinued = true;
             }
+
+
+            execState.IsCompleted = true;
 
         }
 

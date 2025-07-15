@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.Entities.Domain;
 using PriceTracker.Modules.Repository.Entities.Domain.MerchPriceHistory;
 using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;

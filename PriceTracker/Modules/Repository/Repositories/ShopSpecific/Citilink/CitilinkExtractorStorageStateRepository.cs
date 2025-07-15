@@ -1,19 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PriceTracker.Core.Models.Infrastructure;
-using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Infrastructure;
-using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
-using PriceTracker.Modules.Repository.Mapping;
-using PriceTracker.Modules.Repository.Repositories.Base;
 
 namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
 {
-    public class CitilinkExtractorStorageStateRepository 
+    public class CitilinkExtractorStorageStateRepository
     {
 
         private readonly PriceTrackerContext _dbContext;
-        private readonly DbSet<CitilinkExtractorStorageStateEntity> 
+        private readonly DbSet<CitilinkExtractorStorageStateEntity>
             _citilinkExtractorStorageState;
 
         public CitilinkExtractorStorageStateRepository(PriceTrackerContext dbContext)

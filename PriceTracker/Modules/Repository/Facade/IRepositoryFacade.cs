@@ -1,5 +1,4 @@
 ﻿using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.Facade.Citilink;
 
 namespace PriceTracker.Modules.Repository.Facade
@@ -14,5 +13,7 @@ namespace PriceTracker.Modules.Repository.Facade
 
         void SetStartTimeExtractionProcessHappened(DateTime time);
         void SetFinishTimeExtractionProcessHappened(DateTime time);
+
+        void EnsureRepositoryInitialized();
     }
 }

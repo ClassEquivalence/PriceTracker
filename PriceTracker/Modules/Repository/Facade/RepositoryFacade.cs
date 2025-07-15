@@ -3,7 +3,6 @@ using PriceTracker.Core.Models.Domain;
 using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
 using PriceTracker.Core.Models.Infrastructure;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.Repository.Mapping.Domain;
@@ -36,7 +35,7 @@ namespace PriceTracker.Modules.Repository.Facade
         private readonly TimestampedPriceRepository _timestampedPriceRepository;
 
 
-        public RepositoryFacade(PriceTrackerContext dbContext, 
+        public RepositoryFacade(PriceTrackerContext dbContext,
             IDbContextFactory<PriceTrackerContext> dbcontextFactory, ILogger? logger = null)
         {
             _timeExtractionHappenedRepository = new(dbContext);
@@ -308,5 +307,10 @@ namespace PriceTracker.Modules.Repository.Facade
                 GetExtractorStorageState();
         }
 
+        public void EnsureRepositoryInitialized()
+        {
+            RepositoryInitializer initializer = new();
+            initializer.EnsureInitialized(_shopRepository);
+        }
     }
 }

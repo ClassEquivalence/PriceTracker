@@ -1,6 +1,4 @@
-﻿using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models;
-
-namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink
+﻿namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink
 {
     public class CitilinkParsingExecutionState : ExtractionState
     {

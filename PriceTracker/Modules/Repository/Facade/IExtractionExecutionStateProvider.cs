@@ -1,5 +1,4 @@
 ﻿using PriceTracker.Core.Models.Process;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models;
 
 namespace PriceTracker.Modules.Repository.Facade
 {

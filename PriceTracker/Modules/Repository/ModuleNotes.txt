@@ -27,4 +27,4 @@ Implementation details:
 
 Warnings:
 1. CitilinkParsingExecutionStateRepository использует один DbContext на весь репозиторий.
-Да и сделан он костыльно.
+Да и сделан он костыльно. То же самое - CitilinkExtractorStorageStateRepository.
