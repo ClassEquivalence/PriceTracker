@@ -19,5 +19,7 @@ namespace PriceTracker.Modules.Repository.Repositories.Domain.EntityLevel
             return entities.Include(ph => ph.Merch).Include(ph => ph.CurrentPricePointer).
             ThenInclude(cpp => cpp.CurrentPrice).Include(ph => ph.TimestampedPrices);
         }
+
+
     }
 }

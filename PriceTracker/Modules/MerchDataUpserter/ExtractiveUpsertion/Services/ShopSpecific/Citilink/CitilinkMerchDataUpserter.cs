@@ -2,6 +2,7 @@
 using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services;
+using PriceTracker.Modules.Repository.Facade;
 using PriceTracker.Modules.Repository.Facade.Citilink;
 
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink
@@ -18,7 +19,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         {
             _merchRepository = repository;
             _citilinkShop = citilink;
-
+            
             _logger = logger;
         }
         public async Task Upsert(IAsyncEnumerable<CitilinkMerchParsingDto> complementaryData)
@@ -36,10 +37,10 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                     List<TimestampedPriceDto> previousPrices = citilinkMerch.PriceTrack.PreviousTimestampedPricesList.
                         Append(citilinkMerch.PriceTrack.CurrentPrice).ToList();
 
-                    MerchPriceHistoryDto priceHistoryDto = new(default, previousPrices,
-                        new(default, parsingDto.Price, DateTime.Now, default), citilinkMerch.Id);
+                    MerchPriceHistoryDto priceHistoryDto = new(citilinkMerch.PriceHistoryId, previousPrices,
+                        new(default, parsingDto.Price, DateTime.Now, citilinkMerch.PriceHistoryId), citilinkMerch.Id);
 
-                    CitilinkMerchDto updatedCitilinkMerch = new(default, citilinkMerch.Name, priceHistoryDto,
+                    CitilinkMerchDto updatedCitilinkMerch = new(citilinkMerch.Id, citilinkMerch.Name, priceHistoryDto,
                         citilinkMerch.CitilinkId, citilinkMerch.ShopId, citilinkMerch.PriceHistoryId);
                     _logger?.LogTrace($"{nameof(CitilinkMerchDataUpserter)}: товар с CitilinkId = {citilinkMerch.CitilinkId}" +
                         $" заходит в репозиторий.");

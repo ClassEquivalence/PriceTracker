@@ -50,6 +50,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
                 Task task;
                 if (_executionState.IsCompleted)
                 {
+                    
                     task = _dataConsumer.Upsert(_dataExtractor.
                         RunExtractionProcess());
 

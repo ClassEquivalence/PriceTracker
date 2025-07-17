@@ -45,7 +45,7 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
             context.Add(entity);
             context.SaveChanges();
         }
-        public bool Update(TEntity entity)
+        public virtual bool Update(TEntity entity)
         {
             using SpecificDbContext context =
                 _dbContextFactory.CreateDbContext();

@@ -25,5 +25,12 @@ namespace PriceTracker.Modules.Repository.Mapping.Domain
             return new TimestampedPriceDto(entity.Id, entity.Price, entity.DateTime.ToLocalTime(),
                 entity.MerchPriceHistoryId);
         }
+
+        protected override void MapModelFieldsToEntity(TimestampedPriceDto model, TimestampedPriceEntity entity)
+        {
+            entity.Price = model.Price;
+            entity.MerchPriceHistoryId = model.MerchPriceHistoryId;
+            entity.DateTime = model.DateTime.ToUniversalTime();
+        }
     }
 }

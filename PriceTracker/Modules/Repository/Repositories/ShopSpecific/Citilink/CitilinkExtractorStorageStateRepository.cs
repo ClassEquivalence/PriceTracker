@@ -34,10 +34,12 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
             entity.StorageState = storageStateDto.StorageState;
             _dbContext.SaveChanges();
         }
-        public CitilinkExtractorStorageStateDto GetExtractorStorageState()
+        public CitilinkExtractorStorageStateDto? GetExtractorStorageState()
         {
             var entity = _citilinkExtractorStorageState.Single();
             CitilinkExtractorStorageStateDto stateDto = new(entity.StorageState);
+            if (string.IsNullOrEmpty(entity.StorageState))
+                return null;
             return stateDto;
         }
 

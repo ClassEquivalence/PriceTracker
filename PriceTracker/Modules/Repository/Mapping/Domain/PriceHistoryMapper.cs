@@ -47,5 +47,13 @@ namespace PriceTracker.Modules.Repository.Mapping.Domain
             return new MerchPriceHistoryDto(entity.Id, previousPricesAsCoreDtos, currentPriceAsCoreDto,
                 entity.MerchId);
         }
+
+        protected override void MapModelFieldsToEntity(MerchPriceHistoryDto model, MerchPriceHistoryEntity entity)
+        {
+            entity.CurrentPricePointer.CurrentPrice = _timestampedPriceMapper.Map(model.CurrentPrice);
+            entity.MerchId = model.MerchId;
+            entity.TimestampedPrices = model.PreviousTimestampedPricesList.Select(_timestampedPriceMapper.Map)
+                .ToList();
+        }
     }
 }

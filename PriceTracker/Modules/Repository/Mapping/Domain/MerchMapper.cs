@@ -28,5 +28,12 @@ namespace PriceTracker.Modules.Repository.Mapping.Domain
                 entity.ShopId, entity.PriceHistory.Id);
             return model;
         }
+
+        protected override void MapModelFieldsToEntity(MerchDto model, MerchEntity entity)
+        {
+            entity.Name = model.Name;
+            entity.PriceHistory = _priceHistoryMapper.Map(model.PriceTrack);
+            entity.ShopId = model.ShopId;
+        }
     }
 }

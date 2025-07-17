@@ -300,7 +300,7 @@ namespace PriceTracker.Modules.Repository.Facade
                 SetExtractorStorageState(storageStateDto);
         }
 
-        CitilinkExtractorStorageStateDto ICitilinkMiscellaneousRepositoryFacade.
+        CitilinkExtractorStorageStateDto? ICitilinkMiscellaneousRepositoryFacade.
             GetExtractorStorageState()
         {
             return _citilinkExtractorStorageStateRepository.

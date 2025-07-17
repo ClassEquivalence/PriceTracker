@@ -20,7 +20,7 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
             return entities.Include(m => m.Shop).Include(m => m.PriceHistory).
             ThenInclude(ph => ph.TimestampedPrices)
             .Include(m => m.PriceHistory).
-            ThenInclude(ph => ph.CurrentPricePointer);
+            ThenInclude(ph => ph.CurrentPricePointer).ThenInclude(cpp=>cpp.CurrentPrice);
         }
     }
 }

@@ -16,5 +16,6 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
             mapper, ILogger? logger = null) : base(entityRepository, mapper, logger)
         {
         }
+
     }
 }

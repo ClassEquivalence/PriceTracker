@@ -2,12 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using PriceTracker.Core.Utils;
 using PriceTracker.Modules.MerchDataProvider;
 using PriceTracker.Modules.Repository.Facade;
+using System.Threading.Tasks;
 
 namespace PriceTracker
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
 
             var builder = WebApplication.CreateBuilder(args);
@@ -46,9 +47,6 @@ namespace PriceTracker
 
             var app = builder.Build();
 
-            app.Services.GetService<IRepositoryFacade>()?.EnsureRepositoryInitialized();
-
-            app.Services.GetService<IMerchDataProviderFacade>()?.ProcessMerchUpsertion();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -77,7 +75,15 @@ namespace PriceTracker
             app.MapRazorPages();
             app.MapControllers();
 
-            app.Run();
+            app.Services.GetService<IRepositoryFacade>()?.EnsureRepositoryInitialized();
+
+            //var upsertionTask = app.Services.GetService<IMerchDataProviderFacade>()?.
+            //    ProcessMerchUpsertion();
+
+            var appTask = app.RunAsync();
+
+            //await upsertionTask;
+            await appTask;
 
         }
     }

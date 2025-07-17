@@ -27,7 +27,11 @@ namespace PriceTracker.Modules.Repository.Mapping
 
         public TEntity Map(TCoreModel model)
         {
-            return _getEntityIfExists(model) ?? CreateEntityFromModel(model);
+            var entity = _getEntityIfExists(model);
+            if(entity!=null)
+                MapModelFieldsToEntity(model, entity);
+
+            return entity ?? CreateEntityFromModel(model);
         }
 
         /// <summary>
@@ -45,5 +49,7 @@ namespace PriceTracker.Modules.Repository.Mapping
         /// <param name="entity"></param>
         /// <returns></returns>
         protected abstract TCoreModel CreateModelFromEntity(TEntity entity);
+
+        protected abstract void MapModelFieldsToEntity(TCoreModel model, TEntity entity);
     }
 }

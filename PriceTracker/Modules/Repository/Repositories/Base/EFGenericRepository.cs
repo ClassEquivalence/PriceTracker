@@ -20,7 +20,7 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
     {
 
         private readonly ICoreToEntityMapper<TCoreDto, TEntity> _mapper;
-        private readonly IEntityRepository<TEntity> _entityRepository;
+        protected readonly IEntityRepository<TEntity> _entityRepository;
 
         private readonly ILogger? _logger;
 
@@ -71,7 +71,7 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
                 $"{entity}");
             _entityRepository.Create(entity);
         }
-        public bool Update(TCoreDto model)
+        public virtual bool Update(TCoreDto model)
         {
             return _entityRepository.Update(ModelToEntity(model));
         }

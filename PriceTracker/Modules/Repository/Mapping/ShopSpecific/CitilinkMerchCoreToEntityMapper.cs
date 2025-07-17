@@ -28,5 +28,14 @@ namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific
             return new CitilinkMerchDto(entity.Id, entity.Name, _priceHistoryMapper.Map(entity.PriceHistory),
                 entity.CitilinkId, entity.ShopId, entity.PriceHistory.Id);
         }
+
+        protected override void MapModelFieldsToEntity(CitilinkMerchDto model, CitilinkMerchEntity entity)
+        {
+            entity.Name = model.Name;
+            entity.PriceHistory = _priceHistoryMapper.Map(model.PriceTrack);
+            entity.ShopId = model.ShopId;
+            entity.CitilinkId = model.CitilinkId;
+            
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Playwright;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Playwright;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
@@ -19,7 +20,6 @@ namespace PriceTracker.Modules.MerchDataProvider
     /// </summary>
     public class MerchDataProviderFacade : IMerchDataProviderFacade
     {
-        private readonly GUICitilinkExtractor _citilinkExtractor;
         private readonly UpsertionService _scheduledUpserter;
         private readonly IRepositoryFacade _repository;
         private readonly ILogger _logger;
@@ -42,9 +42,9 @@ namespace PriceTracker.Modules.MerchDataProvider
 
             var CitilinkStorageState = ((ICitilinkMiscellaneousRepositoryFacade)_repository).
                 GetExtractorStorageState();
-            GUICitilinkExtractor extractor = _citilinkExtractor = 
+            GUICitilinkExtractor extractor = 
                 new(browserAdapter, Configs.MaxPageRequestsPerTime, _logger, storageState:
-                CitilinkStorageState.StorageState);
+                CitilinkStorageState?.StorageState);
 
             var citilinkExtractionStateDto = executionStateProvider.Provide();
             CitilinkParsingExecutionState citilinkExtractionState = new(citilinkExtractionStateDto.CurrentCatalogUrl,
@@ -61,19 +61,27 @@ namespace PriceTracker.Modules.MerchDataProvider
         public async Task ProcessMerchUpsertion()
         {
             _logger.LogTrace("Запущен процесс upsert'а товаров.");
-            await _scheduledUpserter.ProcessUpsertion();
+            try
+            {
+                await _scheduledUpserter.ProcessUpsertion();
+            }
+            catch(DbUpdateException ex)
+            {
+                _logger.LogError(ex.Message);
+                _logger.LogError(ex.InnerException?.Message);
+            }
+            /*
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+            */
         }
 
         public async Task OnShutdownAsync()
         {
             await _scheduledUpserter.OnShutdown();
 
-            var progress = _citilinkExtractor.GetProgress();
-            var progressDto = new CitilinkExtractionStateDto(progress.IsCompleted,
-                progress.CurrentCatalogUrl, progress.CatalogPageNumber);
-
-            ((IExtractionExecutionStateProvider<CitilinkExtractionStateDto>)_repository).
-                Save(progressDto);
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -83,7 +91,11 @@ namespace PriceTracker.Modules.MerchDataProvider
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
+            _logger.LogInformation($"{nameof(MerchDataProviderFacade)}: shutdown" +
+                $"process started.");
             await OnShutdownAsync();
+            _logger.LogInformation($"{nameof(MerchDataProviderFacade)}: shutdown" +
+               $"process completed.");
         }
     }
 }

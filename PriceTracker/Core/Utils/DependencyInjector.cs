@@ -35,7 +35,10 @@ namespace PriceTracker.Core.Utils
         public static void InjectMerchDataProviderDependencies(
             IServiceCollection collection)
         {
+
             collection.AddSingleton<IMerchDataProviderFacade, MerchDataProviderFacade>();
+            collection.AddSingleton<IHostedService>(sp => sp.
+            GetRequiredService<IMerchDataProviderFacade>());
         }
 
     }

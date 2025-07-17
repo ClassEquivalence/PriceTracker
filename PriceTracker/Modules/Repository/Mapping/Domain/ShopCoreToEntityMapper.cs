@@ -25,5 +25,11 @@ namespace PriceTracker.Modules.Repository.Mapping.Domain
             return new ShopDto(entity.Id, entity.Name, entity.Merches.
                 Select(me => _merchMapper.Map(me)).ToList());
         }
+
+        protected override void MapModelFieldsToEntity(ShopDto model, ShopEntity entity)
+        {
+            entity.Merches = model.Merches.Select(_merchMapper.Map).ToList();
+            entity.Name = model.Name;
+        }
     }
 }

@@ -8,6 +8,6 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         public HtmlNode HtmlToNode(string html);
 
-        public Task<HtmlNode> ScrapProductPortionFromUrl(string url);
+        public Task<HtmlNode> ScrapProductPortionFromUrl(string url, int attemptCounts = 10);
     }
 }

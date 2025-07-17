@@ -31,10 +31,10 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             return doc.DocumentNode;
         }
 
-        public async Task<HtmlNode> ScrapProductPortionFromUrl(string url)
+        public async Task<HtmlNode> ScrapProductPortionFromUrl(string url, int attemptCounts = 10)
         {
+            
             _logger?.LogDebug($"{nameof(ScrapProductPortionFromUrl)}: попытка взять порцию из {url}.");
-            int attemptCounts = 3;
             string html;
             for (int i = 1; i <= attemptCounts; i++)
             {
@@ -73,6 +73,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         private async Task GotoAsync(string url)
         {
+            url = url.TrimEnd('/');
             await _browser.GotoAsync(url);
         }
         private async Task WaitForProductPortionLoadedAsync()
@@ -92,13 +93,20 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         public async Task PerformInitialRunup(string? storageState = null)
         {
-            if (storageState != null)
+            _logger?.LogDebug("Начальная инициализация скрапера ситилинка началась.");
+            if (!string.IsNullOrWhiteSpace(storageState))
+            {
                 await _browser.LoadStorageStateAsync(storageState);
+                _logger?.LogDebug("Загружен storagestate браузера для ситилинка." +
+                    "\nИнициализация скрапера ситилинка завершилась.");
+            }
             else
             {
                 var gotoTask = _browser.GotoAsync(_citilinkCatalogPageUrl);
                 var minimumWaitTask = Task.Delay(10000);
                 await Task.WhenAll([gotoTask, minimumWaitTask]);
+                _logger?.LogDebug("Созданы новые файлы куки для скрапера ситилинка." +
+                    "\nИнициализация скрапера ситилинка завершилась.");
             }
         }
         public async Task<string> GetStorageStateAsync()

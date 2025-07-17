@@ -34,7 +34,14 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
         public CitilinkExtractionStateDto Provide()
         {
             var entity = _execState.Single();
-            CitilinkExtractionStateDto stateDto = new(entity.IsCompleted,
+
+            bool isCompleted = entity.IsCompleted;
+            if (string.IsNullOrEmpty(entity.CurrentCatalogUrl))
+                isCompleted = true;
+
+            var currentCatalogUrl = entity.CurrentCatalogUrl;
+
+            CitilinkExtractionStateDto stateDto = new(isCompleted,
                 entity.CurrentCatalogUrl, entity.CatalogPageNumber);
             return stateDto;
         }
@@ -42,7 +49,10 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
         public void Save(CitilinkExtractionStateDto info)
         {
             var entity = _execState.Single();
-            entity.CurrentCatalogUrl = info.CurrentCatalogUrl;
+
+            var currentCatalogUrl = info.CurrentCatalogUrl;
+
+            entity.CurrentCatalogUrl = currentCatalogUrl;
             entity.CatalogPageNumber = info.CatalogPageNumber;
             entity.IsCompleted = info.IsCompleted;
             _dbContext.SaveChanges();

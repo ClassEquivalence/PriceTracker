@@ -4,9 +4,9 @@ using PriceTracker.Modules.Repository.Facade.Citilink;
 namespace PriceTracker.Modules.Repository.Facade
 {
     public interface IRepositoryFacade : ICitilinkMerchRepositoryFacade,
-        IShopSelectorFacade, IExtractionExecutionStateProvider<CitilinkExtractionStateDto>,
-        IMerchRepositoryFacade, IShopRepositoryFacade, IPriceHistoryRepositoryFacade,
-        ITimestampedPriceRepositoryFacade, ICitilinkMiscellaneousRepositoryFacade
+        IShopSelectorFacade, IMerchRepositoryFacade, IShopRepositoryFacade, 
+        IPriceHistoryRepositoryFacade, ITimestampedPriceRepositoryFacade, 
+        ICitilinkMiscellaneousRepositoryFacade
     {
 
         (DateTime lastTimeStart, DateTime lastTimeFinish) GetLastTimeExtractionProcessHappened();

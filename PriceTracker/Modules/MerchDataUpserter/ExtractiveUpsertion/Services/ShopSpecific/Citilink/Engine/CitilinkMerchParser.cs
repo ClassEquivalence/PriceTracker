@@ -18,7 +18,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
     public class CitilinkMerchParser
     {
 
-        const string merchCatalogPaginationQueryString = "?ref=mainmenu_plate&p=";
+        const string merchCatalogPaginationQueryString = "?ref=mainmenu&p=";
         const string baseUrl = "https://www.citilink.ru";
 
         private readonly ILogger? _logger;
@@ -64,9 +64,9 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             await foreach (var url in catalogUrls)
             {
 
-                if (continueFromExecState)
+                if (!hasExtractionContinued && continueFromExecState)
                 {
-                    if (url != execState.CurrentCatalogUrl)
+                    if (url.TrimEnd('/') != execState.CurrentCatalogUrl.TrimEnd('/'))
                     {
                         _logger?.LogTrace($"Пропускаем {url}, ждём, когда попадётся " +
                             $"{execState.CurrentCatalogUrl}");
@@ -115,7 +115,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
             int i = 1;
             if (continueFromExecState)
-                i = execState.CatalogPageNumber;
+                i = execState.CatalogPageNumber>0?execState.CatalogPageNumber:1;
 
             for (; i <= numberOfPages; i++)
             {

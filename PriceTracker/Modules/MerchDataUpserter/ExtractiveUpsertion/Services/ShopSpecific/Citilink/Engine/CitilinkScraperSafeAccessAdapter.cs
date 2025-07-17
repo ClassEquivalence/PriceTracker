@@ -30,14 +30,14 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             return _baseScraper.HtmlToNode(html);
         }
 
-        public async Task<HtmlNode> ScrapProductPortionFromUrl(string url)
+        public async Task<HtmlNode> ScrapProductPortionFromUrl(string url, int attemptCounts = 10)
         {
             if (!TryPassRequestPerTimeLimit())
             {
                 await Task.Delay(lastTimeRequestHappened + _maxPageRequestPerTime.period
                     - DateTime.Now);
             }
-            return await _baseScraper.ScrapProductPortionFromUrl(url);
+            return await _baseScraper.ScrapProductPortionFromUrl(url, attemptCounts);
         }
 
         public async Task<HtmlNode> UrlToNode(string url)
