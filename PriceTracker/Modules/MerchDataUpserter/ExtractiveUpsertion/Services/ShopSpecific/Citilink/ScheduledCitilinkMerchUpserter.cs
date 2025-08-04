@@ -1,21 +1,20 @@
 ﻿using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services;
-using PriceTracker.Modules.Repository.Facade;
 using PriceTracker.Modules.Repository.Facade.Citilink;
-using PriceTracker.Modules.Repository.Repositories.Base;
-using System;
-using static PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.ScheduledCitilinkMerchUpserter;
+using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink
 {
     public class ScheduledCitilinkMerchUpserter :
-        ScheduledMerchUpserter<CitilinkMerchParsingDto, CitilinkParsingExecutionState>
+        ScheduledMerchUpserter<CitilinkMerchParsingDto, CitilinkExtractionStateDto>
     {
         private readonly ICitilinkMiscellaneousRepositoryFacade _miscRepository;
         private readonly ExtractionStateSavePolicy _extractionStateSavePolicy;
         private readonly StorageStateSavePolicy _storageStateSavePolicy;
+
+        private CitilinkExtractionStateDto _parsingExecutionState;
+
 
         [Flags]
         public enum ExtractionStateSavePolicy
@@ -33,28 +32,48 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         }
 
 
-        public ScheduledCitilinkMerchUpserter(IMerchDataConsumer<CitilinkMerchParsingDto>
+        public ScheduledCitilinkMerchUpserter(CitilinkMerchDataUpserter
             dataConsumer, GUICitilinkExtractor dataExtractor, TimeSpan upsertionCyclePeriod,
-            DateTime upsertionStartTime, CitilinkParsingExecutionState executionState,
-            ICitilinkMiscellaneousRepositoryFacade repository, ExtractionStateSavePolicy
+            DateTime upsertionStartTime, CitilinkExtractionStateDto executionState,
+            ICitilinkMiscellaneousRepositoryFacade repository, ILogger? logger, ExtractionStateSavePolicy
             extractionStateSavePolicy = ExtractionStateSavePolicy.OnServerShutdown,
             StorageStateSavePolicy storageStateSavePolicy = StorageStateSavePolicy.OnServerShutdown) :
             base(dataConsumer, dataExtractor, upsertionCyclePeriod, upsertionStartTime,
-                executionState)
+                executionState, logger)
         {
             _miscRepository = repository;
             _extractionStateSavePolicy = extractionStateSavePolicy;
             _storageStateSavePolicy = storageStateSavePolicy;
-            
-            if((extractionStateSavePolicy & ExtractionStateSavePolicy.OnChange) != 0)
+
+            _parsingExecutionState = _miscRepository.Provide() with { };
+
+            if ((extractionStateSavePolicy & ExtractionStateSavePolicy.OnChange) != 0)
             {
-                dataExtractor.OnExecutionStateUpdate += DataExtractor_OnExecutionStateUpdate;
+                dataConsumer.MerchPortionUpserted += () =>
+                {
+                    UpdateExtractionProgress();
+                    DataConsumer_OnMerchPortionUpserted();
+                };
             }
-            
-            
+            else
+            {
+                dataConsumer.MerchPortionUpserted += UpdateExtractionProgress;
+            }
+
+
         }
 
-        private void DataExtractor_OnExecutionStateUpdate(CitilinkParsingExecutionState obj)
+        private void UpdateExtractionProgress()
+        {
+            _parsingExecutionState = _miscRepository.Provide() with { };
+        }
+
+        private void DataConsumer_OnMerchPortionUpserted()
+        {
+            SaveExtractionProgress();
+        }
+
+        private void DataExtractor_OnExecutionStateUpdate(CitilinkExtractionStateDto obj)
         {
             SaveExtractionProgress(obj);
         }
@@ -88,17 +107,16 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         public void SaveExtractionProgress()
         {
-            var progress = _dataExtractor.GetProgress();
-            SaveExtractionProgress(progress);
+            SaveExtractionProgress(_parsingExecutionState);
         }
-        private void SaveExtractionProgress(CitilinkParsingExecutionState progress)
+        private void SaveExtractionProgress(CitilinkExtractionStateDto progress)
         {
             var progressDto = new CitilinkExtractionStateDto(progress.IsCompleted,
                 progress.CurrentCatalogUrl, progress.CatalogPageNumber);
 
             ((IExtractionExecutionStateProvider<CitilinkExtractionStateDto>)_miscRepository).
                 Save(progressDto);
-            
+
         }
     }
 }

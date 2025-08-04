@@ -1,11 +1,10 @@
-﻿using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
-using PriceTracker.Modules.Repository.Facade.Citilink;
+﻿using PriceTracker.Modules.Repository.Facade.Citilink;
 
-namespace PriceTracker.Modules.Repository.Facade
+namespace PriceTracker.Modules.Repository.Facade.FacadeInterfaces
 {
     public interface IRepositoryFacade : ICitilinkMerchRepositoryFacade,
-        IShopSelectorFacade, IMerchRepositoryFacade, IShopRepositoryFacade, 
-        IPriceHistoryRepositoryFacade, ITimestampedPriceRepositoryFacade, 
+        IShopSelectorFacade, IMerchRepositoryFacade, IShopRepositoryFacade,
+        IPriceHistoryRepositoryFacade, ITimestampedPriceRepositoryFacade,
         ICitilinkMiscellaneousRepositoryFacade
     {
 

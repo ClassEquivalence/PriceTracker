@@ -19,28 +19,28 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
         where SpecificDbContext : DbContext
     {
 
-        private readonly ICoreToEntityMapper<TCoreDto, TEntity> _mapper;
-        protected readonly IEntityRepository<TEntity> _entityRepository;
+        protected readonly ICoreToEntityMapper<TCoreDto, TEntity> Mapper;
+        protected readonly IEntityRepository<TEntity> EntityRepository;
 
         private readonly ILogger? _logger;
 
         public EFGenericRepository(IEntityRepository<TEntity> entityRepository,
             ICoreToEntityMapper<TCoreDto, TEntity> mapper, ILogger? logger = null)
         {
-            _entityRepository = entityRepository;
-            _mapper = mapper;
+            EntityRepository = entityRepository;
+            Mapper = mapper;
 
             _logger = logger;
         }
         public List<TCoreDto> Where(Func<TCoreDto, bool> predicate)
         {
-            return _entityRepository.Where(e => predicate(_mapper.Map(e))).
-                Select(_mapper.Map).ToList();
+            return EntityRepository.Where(e => predicate(Mapper.Map(e))).
+                Select(Mapper.Map).ToList();
         }
 
         public List<TCoreDto> GetAll()
         {
-            return _entityRepository.Where().Select(_mapper.Map).ToList();
+            return EntityRepository.Where().Select(Mapper.Map).ToList();
         }
 
         public TCoreDto? SingleOrDefault(Func<TCoreDto, bool> predicate)
@@ -58,26 +58,26 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
 
         public bool Any(Func<TCoreDto, bool> predicate)
         {
-            return _entityRepository.Any(e => predicate(_mapper.Map(e)));
+            return EntityRepository.Any(e => predicate(Mapper.Map(e)));
         }
 
         public void Create(TCoreDto model)
         {
-            _logger?.LogTrace($"{this.GetType().Name}, {_mapper.GetType().Name}:" +
+            _logger?.LogTrace($"{this.GetType().Name}, {Mapper.GetType().Name}:" +
                 $" попытка отмаппить и сохранить данные в entityRepository.");
             var entity = ModelToEntity(model);
-            _logger?.LogTrace($"{this.GetType().Name}, {_mapper.GetType().Name}:" +
+            _logger?.LogTrace($"{this.GetType().Name}, {Mapper.GetType().Name}:" +
                 $" отмапплена {entity.GetType().Name}, её содержимое:\n" +
                 $"{entity}");
-            _entityRepository.Create(entity);
+            EntityRepository.Create(entity);
         }
         public virtual bool Update(TCoreDto model)
         {
-            return _entityRepository.Update(ModelToEntity(model));
+            return EntityRepository.Update(ModelToEntity(model));
         }
         public bool Delete(int id)
         {
-            return _entityRepository.Delete(id);
+            return EntityRepository.Delete(id);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
         /// <returns></returns>
         protected TCoreDto EntityToModel(TEntity entity)
         {
-            return _mapper.Map(entity);
+            return Mapper.Map(entity);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
         /// <returns></returns>
         protected TEntity ModelToEntity(TCoreDto model)
         {
-            return _mapper.Map(model);
+            return Mapper.Map(model);
         }
 
 

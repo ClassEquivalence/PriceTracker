@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PriceTracker.Modules.Repository.DataAccess.EFCore;
-using PriceTracker.Modules.Repository.Facade;
-using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
+﻿using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
 
 namespace PriceTracker.Modules.Repository
 {

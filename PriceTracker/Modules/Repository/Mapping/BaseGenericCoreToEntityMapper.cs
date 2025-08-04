@@ -28,7 +28,7 @@ namespace PriceTracker.Modules.Repository.Mapping
         public TEntity Map(TCoreModel model)
         {
             var entity = _getEntityIfExists(model);
-            if(entity!=null)
+            if (entity != null)
                 MapModelFieldsToEntity(model, entity);
 
             return entity ?? CreateEntityFromModel(model);

@@ -4,6 +4,7 @@ using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Facade;
 using PriceTracker.Modules.Repository.Facade.Citilink;
+using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 using PriceTrackerTest.Utils.Logging.LoggerProviders;
 using Xunit.Abstractions;
 

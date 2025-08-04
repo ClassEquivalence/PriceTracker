@@ -1,5 +1,5 @@
 ﻿using PriceTracker.Core.Models.Domain;
-using PriceTracker.Modules.Repository.Facade;
+using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 using PriceTracker.Modules.WebInterface.API.DTOModels.Shop;
 using PriceTracker.Modules.WebInterface.API.Mapping.MapperProvider;
 using PriceTracker.Modules.WebInterface.API.Mapping.Shop;

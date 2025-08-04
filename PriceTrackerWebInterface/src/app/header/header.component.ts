@@ -10,4 +10,5 @@ import { AppRoutes } from '../routes';
 export class HeaderComponent {
 
   mainPageUrl: string = AppRoutes.mainPage;
+  aboutPageUrl: string = AppRoutes.aboutPage;
 }

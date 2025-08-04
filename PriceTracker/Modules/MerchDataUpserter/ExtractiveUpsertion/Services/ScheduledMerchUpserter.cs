@@ -1,6 +1,6 @@
-﻿using PriceTracker.Modules.MerchDataUpserter.Core;
+﻿using PriceTracker.Core.Models.Process;
+using PriceTracker.Modules.MerchDataUpserter.Core;
 using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models;
 
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
 {
@@ -13,9 +13,12 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
 
     public class ScheduledMerchUpserter<MerchParsedDto, ExecutionState> :
         ScheduledMerchUpserter
-        where ExecutionState : ExtractionState
+        where ExecutionState : ExtractionStateDto
         where MerchParsedDto : MerchParsingDto
     {
+
+        private readonly ILogger? _logger;
+
         private readonly IMerchDataConsumer<MerchParsedDto> _dataConsumer;
         protected readonly IMerchDataExtractor<MerchParsedDto, ExecutionState>
             _dataExtractor;
@@ -27,13 +30,15 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
         public ScheduledMerchUpserter(IMerchDataConsumer<MerchParsedDto> dataConsumer,
             IMerchDataExtractor<MerchParsedDto, ExecutionState> dataExtractor,
             TimeSpan upsertionCyclePeriod,
-            DateTime upsertionStartTime, ExecutionState executionState)
+            DateTime upsertionStartTime, ExecutionState executionState, ILogger? logger)
         {
             _dataConsumer = dataConsumer;
             _dataExtractor = dataExtractor;
             _upsertionCyclePeriod = upsertionCyclePeriod;
             _upsertionStartTime = upsertionStartTime;
             _executionState = executionState;
+
+            _logger = logger;
         }
 
         public override async Task ProcessUpsertion()
@@ -50,7 +55,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
                 Task task;
                 if (_executionState.IsCompleted)
                 {
-                    
+
                     task = _dataConsumer.Upsert(_dataExtractor.
                         RunExtractionProcess());
 
@@ -62,7 +67,16 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
                 }
 
                 _upsertionStartTime = DateTime.Now + _upsertionCyclePeriod;
+
+                //try
+                //{
                 await task;
+                //}
+                //catch (Exception ex)
+                //{
+                //_logger?.LogError($"{nameof(ScheduledMerchUpserter)}: {ex.Message}");
+                //_logger?.LogError($"{nameof(ScheduledMerchUpserter)}(innerEx): {ex?.InnerException?.Message}");
+                //}
 
 
             }

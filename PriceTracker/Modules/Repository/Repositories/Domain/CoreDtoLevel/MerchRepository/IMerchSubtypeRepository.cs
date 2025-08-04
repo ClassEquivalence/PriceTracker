@@ -6,6 +6,6 @@ namespace PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel.Merch
     public interface IMerchSubtypeRepository<TDomain> : IDomainRepository<TDomain>
     where TDomain : MerchDto
     {
-
+        public Task CreateManyAsync(List<TDomain> citilinkMerches);
     }
 }

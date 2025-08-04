@@ -10,6 +10,11 @@ namespace PriceTracker.Modules.Repository.DataAccess.EFCore
 {
     public class PriceTrackerContext : DbContext
     {
+
+        private readonly string? _conectionString;
+        private readonly string? _connectionPassword;
+        private readonly ILogger? _logger;
+
         public DbSet<ShopEntity> Shops { get; set; }
         public DbSet<MerchEntity> Merches { get; set; }
         public DbSet<CitilinkMerchEntity> CitilinkMerches { get; set; }
@@ -53,11 +58,21 @@ namespace PriceTracker.Modules.Repository.DataAccess.EFCore
             //optionsBuilder.EnableSensitiveDataLogging();
 
             // TODO: Вынести строку подключения в сервис а в сервисе получать из конфига.
+            /*
+                _logger?.LogTrace("Подключаемся к удаленной БД:" +
+                    $"{_conectionString}");
+            */
             optionsBuilder.UseNpgsql
-                ("Server=localhost; Database=PriceTracker; User ID=postgres; Password=123; Port=5432;");
+                (_conectionString + _connectionPassword);
+
+            optionsBuilder.EnableSensitiveDataLogging(true);
+
         }
-        public PriceTrackerContext(ILogger<Program>? logger = null)
+        public PriceTrackerContext(IConfiguration appConfig, ILogger<Program>? logger = null)
         {
+            _conectionString = appConfig.GetConnectionString("ProductionDatabase");
+            _connectionPassword = appConfig.GetConnectionString("ProductionDatabasePassword");
+            _logger = logger;
             //var isCreated = Database.EnsureCreated();
             //logger?.LogDebug($"БД была создана?: {isCreated}");
         }

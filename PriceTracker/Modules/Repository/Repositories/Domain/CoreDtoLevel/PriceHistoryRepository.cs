@@ -13,6 +13,6 @@ namespace PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel
             ICoreToEntityMapper<MerchPriceHistoryDto, MerchPriceHistoryEntity> mapper) : base(entityRepository, mapper)
         {
         }
-        
+
     }
 }

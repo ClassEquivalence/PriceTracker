@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PriceTracker.Core.Utils;
 using PriceTracker.Modules.MerchDataProvider;
-using PriceTracker.Modules.Repository.Facade;
-using System.Threading.Tasks;
+using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 
 namespace PriceTracker
 {
@@ -47,6 +46,7 @@ namespace PriceTracker
 
             var app = builder.Build();
 
+            builder.Configuration.AddJsonFile("Secrets/SecretSettings.json");
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -65,6 +65,8 @@ namespace PriceTracker
                 app.UseCors("AllowAngularDev");
             }
 
+
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -77,12 +79,12 @@ namespace PriceTracker
 
             app.Services.GetService<IRepositoryFacade>()?.EnsureRepositoryInitialized();
 
-            //var upsertionTask = app.Services.GetService<IMerchDataProviderFacade>()?.
-            //    ProcessMerchUpsertion();
+            var upsertionTask = app.Services.GetService<IMerchDataProviderFacade>()?.
+                ProcessMerchUpsertion();
 
             var appTask = app.RunAsync();
 
-            //await upsertionTask;
+            await upsertionTask;
             await appTask;
 
         }

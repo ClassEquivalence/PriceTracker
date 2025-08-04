@@ -1,5 +1,5 @@
-﻿using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models;
+﻿using PriceTracker.Core.Models.Process;
+using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
 
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
 {
@@ -10,7 +10,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
     public interface IMerchDataExtractor { }
 
     public interface IMerchDataExtractor<Dto, ExecutionState> : IMerchDataExtractor
-        where Dto : MerchParsingDto where ExecutionState : ExtractionState
+        where Dto : MerchParsingDto where ExecutionState : ExtractionStateDto
     {
 
         IAsyncEnumerable<Dto> RunExtractionProcess();

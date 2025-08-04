@@ -35,7 +35,7 @@ namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific
             entity.PriceHistory = _priceHistoryMapper.Map(model.PriceTrack);
             entity.ShopId = model.ShopId;
             entity.CitilinkId = model.CitilinkId;
-            
+
         }
     }
 }

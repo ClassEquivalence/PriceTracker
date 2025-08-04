@@ -17,10 +17,32 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
 
         protected override IQueryable<CitilinkMerchEntity> GetWithIncludedEntities(DbSet<CitilinkMerchEntity> entities)
         {
-            return entities.Include(m => m.Shop).Include(m => m.PriceHistory).
+            return entities.Include(m => m.PriceHistory).
             ThenInclude(ph => ph.TimestampedPrices)
             .Include(m => m.PriceHistory).
-            ThenInclude(ph => ph.CurrentPricePointer).ThenInclude(cpp=>cpp.CurrentPrice);
+            ThenInclude(ph => ph.CurrentPricePointer).ThenInclude(cpp => cpp.CurrentPrice);
+        }
+
+        public List<CitilinkMerchEntity> GetManyByCitilinkId(int[] citilinkIds)
+        {
+            using var context = _dbContextFactory.CreateDbContext();
+            return GetWithIncludedEntities(context).Where(e => citilinkIds.Contains(e.Id)).ToList();
+        }
+
+        public async Task CreateManyAsync(List<CitilinkMerchEntity> citilinkMerches)
+        {
+            using var context = _dbContextFactory.CreateDbContext();
+            var set = context.Set<CitilinkMerchEntity>();
+            await set.AddRangeAsync(citilinkMerches);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task UpdateManyAsync(List<CitilinkMerchEntity> citilinkMerches)
+        {
+            using var context = _dbContextFactory.CreateDbContext();
+            var set = context.Set<CitilinkMerchEntity>();
+            set.UpdateRange(citilinkMerches);
+            await context.SaveChangesAsync();
         }
     }
 }

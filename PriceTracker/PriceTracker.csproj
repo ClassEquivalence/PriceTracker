@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Modules\MerchDataUpserter\ExtractiveUpsertion\Models\ShopSpecific\Citilink\" />
     <Folder Include="Modules\Repository\Mapping\Process\" />
   </ItemGroup>
 

@@ -1,6 +1,6 @@
 ﻿using PriceTracker.Core.Models.Domain;
 
-namespace PriceTracker.Modules.Repository.Facade
+namespace PriceTracker.Modules.Repository.Facade.FacadeInterfaces
 {
     public interface IMerchRepositoryFacade : IDomainRepositoryFacade<MerchDto>
     {

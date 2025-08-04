@@ -1,7 +1,7 @@
 ﻿using HtmlAgilityPack;
+using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
 using PriceTracker.Core.Utils;
 using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
 
 
 
@@ -33,7 +33,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             _logger = logger;
         }
 
-        public async IAsyncEnumerable<CitilinkMerchParsingDto> RetreiveAll(CitilinkParsingExecutionState
+        public async IAsyncEnumerable<CitilinkMerchParsingDto> RetreiveAll(CitilinkExtractionStateDto
             executionState)
         {
             await foreach (var dto in ParseAll(executionState, false))
@@ -42,7 +42,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             }
         }
 
-        public async IAsyncEnumerable<CitilinkMerchParsingDto> ContinueRetrieval(CitilinkParsingExecutionState executionState)
+        public async IAsyncEnumerable<CitilinkMerchParsingDto> ContinueRetrieval(CitilinkExtractionStateDto executionState)
         {
             await foreach (var dto in ParseAll(executionState, true))
             {
@@ -50,7 +50,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             }
         }
 
-        protected async IAsyncEnumerable<CitilinkMerchParsingDto> ParseAll(CitilinkParsingExecutionState execState,
+        protected async IAsyncEnumerable<CitilinkMerchParsingDto> ParseAll(CitilinkExtractionStateDto execState,
             bool continueFromExecState = false)
         {
             _logger?.LogTrace($"{nameof(CitilinkMerchParser)}, {nameof(ParseAll)}: " +
@@ -80,7 +80,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
 
 
-                execState.CurrentCatalogUrl = url;
+                execState = execState with { CurrentCatalogUrl = url };
 
                 // Если процесс продолжается с прошлой остановки, продолжить со страницы остановки.
                 // Иначе - действовать сначала.
@@ -99,12 +99,12 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             }
 
 
-            execState.IsCompleted = true;
+            execState = execState with { IsCompleted = true };
 
         }
 
         public async IAsyncEnumerable<CitilinkMerchParsingDto> RetrieveMerchesFromCatalog(string catalogUrl,
-            CitilinkParsingExecutionState execState, bool continueFromExecState = false)
+            CitilinkExtractionStateDto execState, bool continueFromExecState = false)
         {
             _logger?.LogDebug($"{nameof(RetrieveMerchesFromCatalog)}: начато извлечение товаров из каталога {catalogUrl}");
 
@@ -115,7 +115,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
             int i = 1;
             if (continueFromExecState)
-                i = execState.CatalogPageNumber>0?execState.CatalogPageNumber:1;
+                i = execState.CatalogPageNumber > 0 ? execState.CatalogPageNumber : 1;
 
             for (; i <= numberOfPages; i++)
             {
@@ -124,7 +124,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                     yield return dto;
                 }
 
-                execState.CatalogPageNumber = i;
+                execState = execState with { CatalogPageNumber = i };
             }
         }
 
@@ -316,8 +316,10 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                 }
                 catch (InvalidOperationException)
                 {
-                    // TODO: Решает проблему того что товары которых нет в наличии не парсятся. Зарефакторить!
+                    // TODO: Решает проблему того что товары которых нет в наличии не парсятся.
+                    // Можно и переделать!
                     price = decimal.MinValue;
+                    continue;
                 }
                 var citilinkId = ParseCitilinkId(node);
                 var name = ParseName(node);

@@ -18,5 +18,7 @@ namespace PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel.Merch
             base(entityRepository, mapper, logger)
         {
         }
+
+        public abstract Task CreateManyAsync(List<TDomain> citilinkMerches);
     }
 }

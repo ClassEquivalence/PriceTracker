@@ -1,6 +1,6 @@
 ﻿using PriceTracker.Core.Models.Process;
 
-namespace PriceTracker.Modules.Repository.Facade
+namespace PriceTracker.Modules.Repository.Facade.FacadeInterfaces
 {
     public interface IExtractionExecutionStateProvider
         <ExtractionStateInfo> where ExtractionStateInfo : ExtractionStateDto

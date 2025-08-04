@@ -5,6 +5,7 @@ using PriceTracker.Core.Models.Infrastructure;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Facade.Citilink;
+using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 using PriceTracker.Modules.Repository.Mapping.Domain;
 using PriceTracker.Modules.Repository.Mapping.ShopSpecific;
 using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
@@ -311,6 +312,21 @@ namespace PriceTracker.Modules.Repository.Facade
         {
             RepositoryInitializer initializer = new();
             initializer.EnsureInitialized(_shopRepository);
+        }
+
+        async Task ICitilinkMerchRepositoryFacade.CreateManyAsync(List<CitilinkMerchDto> citilinkMerches)
+        {
+            await _citilinkMerchRepository.CreateManyAsync(citilinkMerches);
+        }
+
+        List<CitilinkMerchDto> ICitilinkMerchRepositoryFacade.GetMultiple(string[] citilinkIds)
+        {
+            return _citilinkMerchRepository.Where(cm => citilinkIds.Contains(cm.CitilinkId)).ToList();
+        }
+
+        async Task ICitilinkMerchRepositoryFacade.UpdateManyAsync(List<CitilinkMerchDto> citilinkMerches)
+        {
+            await _citilinkMerchRepository.UpdateManyAsync(citilinkMerches);
         }
     }
 }

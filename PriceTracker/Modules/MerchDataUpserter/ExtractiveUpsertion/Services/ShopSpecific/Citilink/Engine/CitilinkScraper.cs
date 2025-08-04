@@ -33,7 +33,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         public async Task<HtmlNode> ScrapProductPortionFromUrl(string url, int attemptCounts = 10)
         {
-            
+
             _logger?.LogDebug($"{nameof(ScrapProductPortionFromUrl)}: попытка взять порцию из {url}.");
             string html;
             for (int i = 1; i <= attemptCounts; i++)

@@ -1,5 +1,5 @@
-﻿using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
+﻿using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
+using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.Engine;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
@@ -7,16 +7,16 @@ using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingS
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink
 {
     public class GUICitilinkExtractor : IMerchDataExtractor<CitilinkMerchParsingDto,
-        CitilinkParsingExecutionState>
+        CitilinkExtractionStateDto>
     {
         // TODO [Arch]: Зарефакторить бы логику на этом и более нижнем уровне.
         private readonly CitilinkMerchParser _parser;
-        private CitilinkParsingExecutionState? _extractionData;
+        private CitilinkExtractionStateDto? _extractionData;
         private readonly ILogger? _logger;
         private readonly CitilinkScraper _baseScraper;
         private string? _storageState;
 
-        public event Action<CitilinkParsingExecutionState>? OnExecutionStateUpdate;
+        public event Action<CitilinkExtractionStateDto>? OnExecutionStateUpdate;
         public event Action? ExtractionProcessFinished;
 
 
@@ -37,7 +37,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             RunExtractionProcess()
         {
             await _baseScraper.PerformInitialRunup(_storageState);
-            _extractionData = new("", 0, false);
+            _extractionData = new(false, "", 0);
 
             _logger?.LogTrace($"{nameof(GUICitilinkExtractor)}: начался новый процесс извлечения" +
                 $"товаров.");
@@ -52,7 +52,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         }
 
         public async IAsyncEnumerable<CitilinkMerchParsingDto>
-            ContinueExtractionProcess(CitilinkParsingExecutionState extractionData)
+            ContinueExtractionProcess(CitilinkExtractionStateDto extractionData)
         {
             await _baseScraper.PerformInitialRunup(_storageState);
             _extractionData = extractionData;
@@ -95,7 +95,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
 
 
-        public CitilinkParsingExecutionState? GetProgress()
+        public CitilinkExtractionStateDto? GetProgress()
         {
             return _extractionData;
         }
