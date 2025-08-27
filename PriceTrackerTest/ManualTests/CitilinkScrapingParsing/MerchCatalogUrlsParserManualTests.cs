@@ -1,6 +1,9 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.Engine;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
 using PriceTrackerTest.Utils.CustomAttributes;
@@ -14,19 +17,19 @@ using Xunit.Abstractions;
 
 namespace PriceTrackerTest.ManualTests.CitilinkScrapingParsing
 {
-    public class MerchCatalogUrlsExtractorManualTests
+    public class MerchCatalogUrlsParserManualTests
     {
 
+        CitilinkMerchCatalogUrlsParser urlsParser;
 
-        CitilinkMerchParser parser;
-        MerchCatalogUrlsExtractor urlsExtractor;
+
         private readonly ITestOutputHelper _output;
         private readonly CitilinkScraper _scraper;
         private readonly ILogger _testLogger;
 
         const string _loggingFilePath = "Logging\\Logs.txt";
 
-        public MerchCatalogUrlsExtractorManualTests(ITestOutputHelper output)
+        public MerchCatalogUrlsParserManualTests(ITestOutputHelper output)
         {
             _output = output;
             var factory = new LoggerFactory();
@@ -43,35 +46,38 @@ namespace PriceTrackerTest.ManualTests.CitilinkScrapingParsing
             var browserAdapter = new BrowserAdapter(browser, (15, 30));
             var scraper = new CitilinkScraper(browserAdapter, logger);
             _scraper = scraper;
-            parser = new(scraper, logger);
 
-            urlsExtractor = new(scraper, logger);
+            BranchWithHtml root = new(default, Configs.CitilinkMainCatalogUrl, []);
 
-        }
+            CitilinkCatalogUrlsTree tree = new(root);
 
+            urlsParser = new(_scraper, tree, _testLogger);
 
-        [ManualFact]
-        public async void RetrieveAllMerchCatalogsUrls_ManualCheck()
-        {
-
-            var result = urlsExtractor.RetrieveAllMerchCatalogsUrls();
-
-            await foreach (var item in result)
-            {
-                _output.WriteLine(item);
-            }
+            
         }
 
         [ManualFact]
-        public async void ParseSubCatalogsUrlsFromMain_ManualCheck()
+        public async void GetMerchCatalogUrlsPortion_ManualCheck()
         {
-            var mainCatalogSectionsNode = await _scraper.UrlToNode("https://www.citilink.ru/catalog/");
-            var result = urlsExtractor.ParseSubCatalogsUrlsFromMain(mainCatalogSectionsNode);
 
-            foreach (var item in result)
+            await _scraper.PerformInitialRunupAsync();
+
+            var branches = await urlsParser.GetMerchCatalogUrlsPortion();
+
+            StringBuilder logOutput = new("Url-адреса каталогов товаров:");
+
+            if (branches == null || !branches.Any())
+                throw new Exception("Ветки не должны отсутствовать.");
+
+
+
+            foreach(var branch in branches)
             {
-                _output.WriteLine(item);
+                logOutput = logOutput.AppendLine($"Url-адрес ветви: {branch.Url}");
             }
+
+            _testLogger.LogDebug(logOutput.ToString());
+
         }
 
 

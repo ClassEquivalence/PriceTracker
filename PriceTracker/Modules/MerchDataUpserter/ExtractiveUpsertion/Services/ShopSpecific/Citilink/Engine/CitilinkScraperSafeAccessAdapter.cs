@@ -2,6 +2,7 @@
 
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.Engine
 {
+    /*
     public class CitilinkScraperSafeAccessAdapter : ICitilinkScraper
     {
 
@@ -30,24 +31,24 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             return _baseScraper.HtmlToNode(html);
         }
 
-        public async Task<HtmlNode> ScrapProductPortionFromUrl(string url, int attemptCounts = 10)
+        public async Task<HtmlNode> ScrapProductPortionAsHtmlAsync(string url, int attemptCounts = 10)
         {
             if (!TryPassRequestPerTimeLimit())
             {
                 await Task.Delay(lastTimeRequestHappened + _maxPageRequestPerTime.period
                     - DateTime.Now);
             }
-            return await _baseScraper.ScrapProductPortionFromUrl(url, attemptCounts);
+            return await _baseScraper.ScrapProductPortionAsHtmlAsync(url, attemptCounts);
         }
 
-        public async Task<HtmlNode> UrlToNode(string url)
+        public async Task<HtmlNode> UrlToNodeAsync(string url)
         {
             if (!TryPassRequestPerTimeLimit())
             {
                 await Task.Delay(lastTimeRequestHappened + _maxPageRequestPerTime.period
                     - DateTime.Now);
             }
-            return await _baseScraper.UrlToNode(url);
+            return await _baseScraper.UrlToNodeAsync(url);
         }
 
 
@@ -78,4 +79,5 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         }
 
     }
+    */
 }

@@ -17,7 +17,7 @@ namespace PriceTracker.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("ProductVersion", "8.0.19")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -154,6 +154,49 @@ namespace PriceTracker.Migrations
                     b.ToTable("CitilinkExtractionStorageStates");
                 });
 
+            modelBuilder.Entity("PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree.CitilinkCatalogBranchEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CitilinkCatalogBranchEntityId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CurrentCatalogUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsBranchProcessed")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CitilinkCatalogBranchEntityId");
+
+                    b.ToTable("CitilinkCatalogBranchEntity");
+                });
+
+            modelBuilder.Entity("PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree.CitilinkCatalogUrlsTreeEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("RootId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RootId");
+
+                    b.ToTable("CitilinkCatalogUrlsTreeEntity");
+                });
+
             modelBuilder.Entity("PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CitilinkParsingExecutionStateEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -162,17 +205,15 @@ namespace PriceTracker.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CatalogPageNumber")
+                    b.Property<int?>("CatalogUrlsId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("CurrentCatalogUrl")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("boolean");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CatalogUrlsId");
 
                     b.ToTable("CitilinkParsingExecutionStateEntity");
                 });
@@ -259,6 +300,33 @@ namespace PriceTracker.Migrations
                     b.Navigation("MerchPriceHistory");
                 });
 
+            modelBuilder.Entity("PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree.CitilinkCatalogBranchEntity", b =>
+                {
+                    b.HasOne("PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree.CitilinkCatalogBranchEntity", null)
+                        .WithMany("Branches")
+                        .HasForeignKey("CitilinkCatalogBranchEntityId");
+                });
+
+            modelBuilder.Entity("PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree.CitilinkCatalogUrlsTreeEntity", b =>
+                {
+                    b.HasOne("PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree.CitilinkCatalogBranchEntity", "Root")
+                        .WithMany()
+                        .HasForeignKey("RootId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Root");
+                });
+
+            modelBuilder.Entity("PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CitilinkParsingExecutionStateEntity", b =>
+                {
+                    b.HasOne("PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree.CitilinkCatalogUrlsTreeEntity", "CatalogUrls")
+                        .WithMany()
+                        .HasForeignKey("CatalogUrlsId");
+
+                    b.Navigation("CatalogUrls");
+                });
+
             modelBuilder.Entity("PriceTracker.Modules.Repository.Entities.Domain.MerchEntity", b =>
                 {
                     b.Navigation("PriceHistory")
@@ -275,6 +343,11 @@ namespace PriceTracker.Migrations
             modelBuilder.Entity("PriceTracker.Modules.Repository.Entities.Domain.ShopEntity", b =>
                 {
                     b.Navigation("Merches");
+                });
+
+            modelBuilder.Entity("PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree.CitilinkCatalogBranchEntity", b =>
+                {
+                    b.Navigation("Branches");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,5 +1,5 @@
 ﻿using PriceTracker.Core.Models.Infrastructure;
-using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
+using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 
 namespace PriceTracker.Modules.Repository.Facade.Citilink

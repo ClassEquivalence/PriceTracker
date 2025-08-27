@@ -1,40 +1,93 @@
 ﻿using HtmlAgilityPack;
+using PriceTracker.Core.Utils;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
+using System.Text.Json;
+using static PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper.ICitilinkScraper;
 
-namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.Engine
+namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper
 {
-    public class CitilinkScraper : ICitilinkScraper
+    public class CitilinkScraper: ICitilinkScraper
     {
+        private readonly HttpClient _baseClient;
+
+        private readonly MerchFetchRequestBuilder _merchFetchRequestBuilder;
+
+
         private readonly BrowserAdapter _browser;
         private readonly ILogger? _logger;
         private readonly string _citilinkCatalogPageUrl = "https://www.citilink.ru/catalog/";
 
+        private int requestCount;
 
-        public CitilinkScraper(BrowserAdapter browserAdapter, ILogger? logger = null)
+        private readonly int _maxRequestsPerTime;
+
+        public event Action? RequestLimitReached;
+
+        public CitilinkScraper(BrowserAdapter browserAdapter, int maxRequestsPerTime,
+            ILogger? logger = null)
         {
+            _merchFetchRequestBuilder = new();
+
+            _baseClient = new HttpClient();
+            //_baseClient.DefaultRequestHeaders.UserAgent
+
 
             _browser = browserAdapter;
             _logger = logger;
+            requestCount = 0;
+            _maxRequestsPerTime = maxRequestsPerTime;
+
         }
 
-        public async Task<HtmlNode> UrlToNode(string url)
+
+        public async Task<HttpResponseMessage> ScrapProductPortionAsJsonAsync(string categorySlug, int page, int perPage = 1000,
+            string? cookie = default)
         {
-            _logger?.LogDebug($"{nameof(UrlToNode)}: превращаем {url} в узел.");
+            var request = _merchFetchRequestBuilder.Build(categorySlug, page, perPage, cookie);
+
+            var response = await _baseClient.SendAsync(request);
+            requestCount++;
+            if (requestCount >= _maxRequestsPerTime)
+            {
+                RequestLimitReached?.Invoke();
+            }
+            return response;
+        }
+
+
+        public async Task<FunctionResult<HtmlNode, HtmlNodeRequestInfo>> UrlToNodeAsync(string url)
+        {
+            _logger?.LogDebug($"{nameof(UrlToNodeAsync)}: превращаем {url} в узел.");
             string html = await _browser.UrlToHtmlAsync(url);
+            requestCount++;
+            if (requestCount >= _maxRequestsPerTime)
+            {
+                RequestLimitReached?.Invoke();
+            }
             return HtmlToNode(html);
         }
 
-        public HtmlNode HtmlToNode(string html)
+        public FunctionResult<HtmlNode, HtmlNodeRequestInfo> HtmlToNode(string html)
         {
             HtmlDocument doc = new();
             doc.LoadHtml(html);
-            return doc.DocumentNode;
+            var root = doc.DocumentNode;
+
+            var statusNode = root.SelectSingleNode("//div[@class=\"container__status\"]");
+            if (statusNode!=null && statusNode.InnerText.Contains("429"))
+            {
+                return new(root, HtmlNodeRequestInfo.TooManyRequests);
+            }
+
+            return new(root, HtmlNodeRequestInfo.SeeminglyOk);
         }
 
-        public async Task<HtmlNode> ScrapProductPortionFromUrl(string url, int attemptCounts = 10)
+
+        /*
+        public async Task<HtmlNode> ScrapProductPortionAsHtmlAsync(string url, int attemptCounts = 10)
         {
 
-            _logger?.LogDebug($"{nameof(ScrapProductPortionFromUrl)}: попытка взять порцию из {url}.");
+            _logger?.LogDebug($"{nameof(ScrapProductPortionAsHtmlAsync)}: попытка взять порцию из {url}.");
             string html;
             for (int i = 1; i <= attemptCounts; i++)
             {
@@ -48,7 +101,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                 }
                 catch (TimeoutException ex)
                 {
-                    _logger?.LogTrace($"{ScrapProductPortionFromUrl}: Не вышло извлечь данные с {i}-го раза.");
+                    _logger?.LogTrace($"{ScrapProductPortionAsHtmlAsync}: Не вышло извлечь данные с {i}-го раза.");
 
                     //html = await GetHtmlContentAsync();
                     //_logger?.LogTrace($"{ScrapProductPortionFromUrl}: извлеченный html:\n {html}");
@@ -63,6 +116,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             //_logger?.LogTrace($"{ScrapProductPortionFromUrl}: извлеченный html:\n {html}");
             return HtmlToNode(html);
         }
+        */
+
 
         private async Task<string> GetHtmlContentAsync()
         {
@@ -91,7 +146,12 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                 }");
         }
 
-        public async Task PerformInitialRunup(string? storageState = null)
+        public void RefreshRequestsCount()
+        {
+            requestCount = 0;
+        }
+
+        public async Task PerformInitialRunupAsync(string? storageState = null)
         {
             _logger?.LogDebug("Начальная инициализация скрапера ситилинка началась.");
             if (!string.IsNullOrWhiteSpace(storageState))
@@ -105,6 +165,12 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                 var gotoTask = _browser.GotoAsync(_citilinkCatalogPageUrl);
                 var minimumWaitTask = Task.Delay(10000);
                 await Task.WhenAll([gotoTask, minimumWaitTask]);
+                await _browser.ReloadAsync();
+                requestCount += 2;
+                if (requestCount >= _maxRequestsPerTime)
+                {
+                    RequestLimitReached?.Invoke();
+                }
                 _logger?.LogDebug("Созданы новые файлы куки для скрапера ситилинка." +
                     "\nИнициализация скрапера ситилинка завершилась.");
             }
@@ -113,5 +179,6 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         {
             return await _browser.GetStorageStateAsync();
         }
+
     }
 }

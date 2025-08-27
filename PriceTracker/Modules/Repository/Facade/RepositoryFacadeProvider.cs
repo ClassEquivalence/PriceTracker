@@ -3,7 +3,7 @@ using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 using PriceTracker.Modules.Repository.Mapping.Domain;
-using PriceTracker.Modules.Repository.Mapping.ShopSpecific;
+using PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
 using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel.MerchRepository;
 using PriceTracker.Modules.Repository.Repositories.Domain.EntityLevel;
@@ -12,6 +12,7 @@ using PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink;
 
 namespace PriceTracker.Modules.Repository.Facade
 {
+    /*
     public class RepositoryFacadeProvider : IRepositoryFacadeProvider
     {
         private readonly LastTimeExtractionHappenedRepository _timeExtractionHappenedRepository;
@@ -106,4 +107,5 @@ namespace PriceTracker.Modules.Repository.Facade
             throw new NotImplementedException();
         }
     }
+    */
 }

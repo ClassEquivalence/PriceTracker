@@ -41,7 +41,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.Scrap
                 {
                     _logger?.LogTrace($"{nameof(GotoAsync)}: переход к странице {url}");
                     var delay = Task.Delay(generateDelay());
-                    await _page.GotoAsync(url, new() { WaitUntil = WaitUntilState.DOMContentLoaded });
+                    var response = await _page.GotoAsync(url, new() { WaitUntil = WaitUntilState.DOMContentLoaded });
+                    
                     await delay;
                     break;
                 }
@@ -113,6 +114,11 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.Scrap
             var taskNewPage = _browserContext.NewPageAsync();
             _page = await taskNewPage;
             await taskDisposePreviousContext;
+        }
+
+        public async Task ReloadAsync()
+        {
+            await _page.ReloadAsync();
         }
     }
 }

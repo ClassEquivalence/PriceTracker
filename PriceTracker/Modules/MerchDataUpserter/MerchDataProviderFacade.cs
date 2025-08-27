@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Playwright;
-using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
+using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
@@ -42,14 +42,12 @@ namespace PriceTracker.Modules.MerchDataProvider
             var CitilinkStorageState = ((ICitilinkMiscellaneousRepositoryFacade)_repository).
                 GetExtractorStorageState();
             GUICitilinkExtractor extractor =
-                new(browserAdapter, Configs.MaxPageRequestsPerTime, _logger, storageState:
+                new(browserAdapter, Configs.MaxPageRequestsPerTime, new(), _logger, storageState:
                 CitilinkStorageState?.StorageState);
-
-            var citilinkExtractionState = executionStateProvider.Provide();
 
             ScheduledCitilinkMerchUpserter
                 scheduledCitilinkMerchUpserter = new(consumer, extractor, Configs.PriceUpdatePeriod,
-                DateTime.Now, citilinkExtractionState, repository, _logger);
+                DateTime.Now, repository, _logger, Configs.MaxPageRequestsPerTime.period);
 
             _scheduledUpserter = new([scheduledCitilinkMerchUpserter]);
 

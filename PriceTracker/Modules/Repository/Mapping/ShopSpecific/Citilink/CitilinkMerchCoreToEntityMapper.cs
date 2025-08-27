@@ -2,7 +2,7 @@
 using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;
 using PriceTracker.Modules.Repository.Mapping.Domain;
 
-namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific
+namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink
 {
     public class CitilinkMerchCoreToEntityMapper : BaseGenericCoreToEntityMapper<CitilinkMerchDto, CitilinkMerchEntity>,
         IMerchCoreToEntityMapper<CitilinkMerchDto, CitilinkMerchEntity>

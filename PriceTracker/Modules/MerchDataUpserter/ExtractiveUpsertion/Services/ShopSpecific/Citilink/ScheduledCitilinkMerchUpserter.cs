@@ -1,5 +1,5 @@
-﻿using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
-using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
+﻿using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services;
 using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
@@ -13,7 +13,6 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         private readonly ExtractionStateSavePolicy _extractionStateSavePolicy;
         private readonly StorageStateSavePolicy _storageStateSavePolicy;
 
-        private CitilinkExtractionStateDto _parsingExecutionState;
 
 
         [Flags]
@@ -34,18 +33,17 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         public ScheduledCitilinkMerchUpserter(CitilinkMerchDataUpserter
             dataConsumer, GUICitilinkExtractor dataExtractor, TimeSpan upsertionCyclePeriod,
-            DateTime upsertionStartTime, CitilinkExtractionStateDto executionState,
-            ICitilinkMiscellaneousRepositoryFacade repository, ILogger? logger, ExtractionStateSavePolicy
+            DateTime upsertionStartTime, 
+            ICitilinkMiscellaneousRepositoryFacade repository, ILogger? logger, TimeSpan
+            upsertionRestPeriod, ExtractionStateSavePolicy
             extractionStateSavePolicy = ExtractionStateSavePolicy.OnServerShutdown,
             StorageStateSavePolicy storageStateSavePolicy = StorageStateSavePolicy.OnServerShutdown) :
-            base(dataConsumer, dataExtractor, upsertionCyclePeriod, upsertionStartTime,
-                executionState, logger)
+            base(dataConsumer, dataExtractor, upsertionCyclePeriod, upsertionRestPeriod, upsertionStartTime,
+                logger)
         {
             _miscRepository = repository;
             _extractionStateSavePolicy = extractionStateSavePolicy;
             _storageStateSavePolicy = storageStateSavePolicy;
-
-            _parsingExecutionState = _miscRepository.Provide() with { };
 
             if ((extractionStateSavePolicy & ExtractionStateSavePolicy.OnChange) != 0)
             {
@@ -63,9 +61,27 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         }
 
+        public override async Task ProcessUpsertion()
+        {
+            try
+            {
+                await base.ProcessUpsertion();
+            }
+            catch(Exception ex)
+            {
+                _logger?.LogError($"Апсершн ситилинка прекращен из-за исключения: {ex.Message}");
+            }
+
+            var saveStorageTask = SaveStorageState();
+            
+            UpdateExtractionProgress();
+            SaveExtractionProgress();
+            await saveStorageTask;
+        }
+
         private void UpdateExtractionProgress()
         {
-            _parsingExecutionState = _miscRepository.Provide() with { };
+            _executionState = _dataExtractor.GetProgress() with { };
         }
 
         private void DataConsumer_OnMerchPortionUpserted()
@@ -78,12 +94,15 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             SaveExtractionProgress(obj);
         }
 
-        public override async Task OnShutDown()
+        public override async Task OnShutDownAsync()
         {
             //var baseShutDownTask = base.OnShutDown();
 
             if ((_extractionStateSavePolicy & ExtractionStateSavePolicy.OnServerShutdown) != 0)
             {
+                _logger?.LogDebug($"{nameof(ScheduledCitilinkMerchUpserter)}, {nameof(OnShutDownAsync)}:\n" +
+                    $"Состояние извлечения сохраняется из за приостановки работы приложения.");
+                UpdateExtractionProgress();
                 SaveExtractionProgress();
             }
             if ((_storageStateSavePolicy & StorageStateSavePolicy.OnServerShutdown) != 0)
@@ -107,16 +126,27 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         public void SaveExtractionProgress()
         {
-            SaveExtractionProgress(_parsingExecutionState);
+            if (_executionState == null)
+                throw new InvalidOperationException($"{nameof(ScheduledCitilinkMerchUpserter)}, {nameof(SaveExtractionProgress)}:\n" +
+                    $"{nameof(_executionState)} == null");
+            SaveExtractionProgress(_executionState);
         }
         private void SaveExtractionProgress(CitilinkExtractionStateDto progress)
         {
-            var progressDto = new CitilinkExtractionStateDto(progress.IsCompleted,
-                progress.CurrentCatalogUrl, progress.CatalogPageNumber);
 
             ((IExtractionExecutionStateProvider<CitilinkExtractionStateDto>)_miscRepository).
-                Save(progressDto);
+                Save(progress);
 
+        }
+
+        public override CitilinkExtractionStateDto? TryLoadExecutionState()
+        {
+            return _miscRepository.Provide();
+        }
+
+        public override CitilinkExtractionStateDto CreateNewExecutionState()
+        {
+            return new(null, true);
         }
     }
 }

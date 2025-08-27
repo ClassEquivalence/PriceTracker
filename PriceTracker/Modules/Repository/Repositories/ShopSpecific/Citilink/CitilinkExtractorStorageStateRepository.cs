@@ -1,49 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PriceTracker.Core.Models.Infrastructure;
+using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Infrastructure;
+using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
+using PriceTracker.Modules.Repository.Mapping;
+using PriceTracker.Modules.Repository.Repositories.Base.SingletonRepository;
 
 namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
 {
-    public class CitilinkExtractorStorageStateRepository
+    public class CitilinkExtractorStorageStateRepository: 
+        EFGenericSingletonRepository<CitilinkExtractorStorageStateDto,
+            CitilinkExtractorStorageStateEntity>
     {
 
-        private readonly PriceTrackerContext _dbContext;
-        private readonly DbSet<CitilinkExtractorStorageStateEntity>
-            _citilinkExtractorStorageState;
-
-        public CitilinkExtractorStorageStateRepository(PriceTrackerContext dbContext)
+        public CitilinkExtractorStorageStateRepository(IDbContextFactory<PriceTrackerContext>
+            factory, ICoreToEntityMapper<CitilinkExtractorStorageStateDto,
+                CitilinkExtractorStorageStateEntity> mapper):
+            base(factory, mapper)
         {
-
-            _dbContext = dbContext;
-            _citilinkExtractorStorageState = dbContext.CitilinkExtractionStorageStates;
-            if (!_citilinkExtractorStorageState.Any())
-            {
-                _citilinkExtractorStorageState.Add(new(default, ""));
-                _dbContext.SaveChanges();
-            }
-            else if (_citilinkExtractorStorageState.Count() > 1)
-                throw new InvalidOperationException("Строк CitilinkExtractorStorageState" +
-                    "в БД должно быть ровно 1.");
 
         }
 
-        public void SetExtractorStorageState(CitilinkExtractorStorageStateDto storageStateDto)
+        protected override IQueryable<CitilinkExtractorStorageStateEntity> 
+            GetWithIncludedEntities(DbSet<CitilinkExtractorStorageStateEntity> entities)
         {
-            var entity = _citilinkExtractorStorageState.Single();
-            entity.StorageState = storageStateDto.StorageState;
-            _dbContext.SaveChanges();
+            return entities;
         }
-        public CitilinkExtractorStorageStateDto? GetExtractorStorageState()
-        {
-            var entity = _citilinkExtractorStorageState.Single();
-            CitilinkExtractorStorageStateDto stateDto = new(entity.StorageState);
-            if (string.IsNullOrEmpty(entity.StorageState))
-                return null;
-            return stateDto;
-        }
-
-
-
     }
 }

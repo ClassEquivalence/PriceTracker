@@ -29,7 +29,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion
             int i = 0;
             foreach (var upserter in _merchUpserters)
             {
-                tasks[i] = upserter.OnShutDown();
+                tasks[i] = upserter.OnShutDownAsync();
                 i++;
             }
             await Task.WhenAll(tasks);

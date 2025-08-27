@@ -12,6 +12,9 @@ namespace PriceTrackerTest.ManualTests
 {
     public class RepositoryFacadeTests
     {
+
+        /*
+
         private readonly IRepositoryFacade _repository;
 
         const string _loggingFilePath = "Logging\\Logs.txt";
@@ -48,5 +51,7 @@ namespace PriceTrackerTest.ManualTests
                 citilink.Id, default);
             citilinkMerchRepository.TryInsert(merch);
         }
+
+        */
     }
 }

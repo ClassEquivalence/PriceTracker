@@ -1,4 +1,4 @@
-﻿using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
+﻿using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ForParsing;
 
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
 {

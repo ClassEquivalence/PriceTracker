@@ -1,8 +1,7 @@
 ﻿using HtmlAgilityPack;
-using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
+using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Core.Utils;
-using PriceTracker.Modules.MerchDataUpserter.Core.Models.ForParsing;
-
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
 
 
 
@@ -108,7 +107,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         {
             _logger?.LogDebug($"{nameof(RetrieveMerchesFromCatalog)}: начато извлечение товаров из каталога {catalogUrl}");
 
-            int numberOfPages = ParsePageCount(await _scraper.UrlToNode(catalogUrl));
+            int numberOfPages = ParsePageCount(await _scraper.UrlToNodeAsync(catalogUrl));
             var urlWithoutQuery = catalogUrl.SubstringBeforeFirstEntryOrEmpty("?");
 
             string urlWithQueryWithoutPage = urlWithoutQuery + merchCatalogPaginationQueryString; // + int page;
@@ -134,7 +133,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             _logger?.LogTrace($"{nameof(CitilinkMerchParser)} {nameof(RetrieveAllMerchCatalogsUrls)}:" +
                 $"Вытягивание информации о всех каталогах товаров начато.");
 
-            var mainCatalogSectionsNode = await _scraper.UrlToNode("https://www.citilink.ru/catalog/");
+            var mainCatalogSectionsNode = await _scraper.UrlToNodeAsync("https://www.citilink.ru/catalog/");
 
 
 
@@ -145,7 +144,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                 _logger?.LogTrace($"{nameof(RecursiveMerchCatalogRetreive)}: " +
                     $"Сформирован URL: {subCatalogUrl}");
 
-                var subCatalogNode = await _scraper.UrlToNode(subCatalogUrl);
+                var subCatalogNode = await _scraper.UrlToNodeAsync(subCatalogUrl);
                 if (IsCatalogForMerches(subCatalogNode))
                     yield return subCatalogUrl;
                 else
@@ -292,7 +291,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         public async Task<List<CitilinkMerchParsingDto>> ParsePortionFromUrl(string url)
         {
-            var scrapTask = _scraper.ScrapProductPortionFromUrl(url);
+            var scrapTask = _scraper.ScrapProductPortionAsHtmlAsync(url);
             return ParsePortionFromHtml(await scrapTask);
         }
         protected List<CitilinkMerchParsingDto> ParsePortionFromHtml(HtmlNode htmlDocument)

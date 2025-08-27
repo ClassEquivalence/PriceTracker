@@ -1,7 +1,8 @@
 ﻿using HtmlAgilityPack;
 using PriceTracker.Core.Utils;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper;
 
-namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.Engine
+namespace PriceTracker.DisabledFiles
 {
     public class MerchCatalogUrlsExtractor
     {
@@ -26,7 +27,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             _logger?.LogTrace($"{nameof(MerchCatalogUrlsExtractor)} {nameof(RetrieveAllMerchCatalogsUrls)}:" +
                 $"Вытягивание информации о всех каталогах товаров начато.");
 
-            var mainCatalogSectionsNode = await _scraper.UrlToNode("https://www.citilink.ru/catalog/");
+            var mainCatalogSectionsNode = await _scraper.UrlToNodeAsync("https://www.citilink.ru/catalog/");
 
 
 
@@ -37,7 +38,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                 _logger?.LogTrace($"{nameof(RecursiveMerchCatalogRetreive)}: " +
                     $"Сформирован URL: {subCatalogUrl}");
 
-                var subCatalogNode = await _scraper.UrlToNode(subCatalogUrl);
+                var subCatalogNode = await _scraper.UrlToNodeAsync(subCatalogUrl);
                 if (IsCatalogForMerches(subCatalogNode))
                     yield return subCatalogUrl;
                 else
@@ -70,7 +71,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                     yield return subUrl;
                 }
             }
-            _logger?.LogTrace($"{nameof(CitilinkMerchParser)} {nameof(RetrieveAllMerchCatalogsUrls)}:" +
+            _logger?.LogTrace($"{nameof(RetrieveAllMerchCatalogsUrls)}:" +
                 $"Вытягивание информации о всех каталогах товаров завершено.");
         }
 

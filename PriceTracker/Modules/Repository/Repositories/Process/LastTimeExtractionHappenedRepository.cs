@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Process;
+using PriceTracker.Modules.Repository.Repositories.Base.SingletonRepository;
 
 namespace PriceTracker.Modules.Repository.Repositories.Process
 {
@@ -28,7 +29,7 @@ namespace PriceTracker.Modules.Repository.Repositories.Process
 
         public (DateTime lastTimeStart, DateTime lastTimeFinish) GetLastTimeExtractionProcessHappened()
         {
-            var timeExtracted = _timeProcessHappened.SingleOrDefault();
+            var timeExtracted = _timeProcessHappened.Single();
             var finished = timeExtracted.LastTimeFinished;
             var started = timeExtracted.LastTimeStarted;
 
@@ -37,14 +38,14 @@ namespace PriceTracker.Modules.Repository.Repositories.Process
 
         public void SetFinishTimeExtractionProcessHappened(DateTime time)
         {
-            var timeExtracted = _timeProcessHappened.SingleOrDefault();
+            var timeExtracted = _timeProcessHappened.Single();
             timeExtracted.LastTimeFinished = time;
             _dbContext.SaveChanges();
         }
 
         public void SetStartTimeExtractionProcessHappened(DateTime time)
         {
-            var timeExtracted = _timeProcessHappened.SingleOrDefault();
+            var timeExtracted = _timeProcessHappened.Single();
             timeExtracted.LastTimeStarted = time;
             _dbContext.SaveChanges();
         }

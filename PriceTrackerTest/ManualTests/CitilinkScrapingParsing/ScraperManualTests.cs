@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.Engine;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
 using PriceTrackerTest.Utils.CustomAttributes;
@@ -49,7 +50,7 @@ namespace PriceTrackerTest.ManualTests.CitilinkScrapingParsing
         [ManualFact]
         public async void UrlToNode_ManualCheck()
         {
-            var node = await _scraper.UrlToNode("https://www.citilink.ru/catalog/");
+            var node = await _scraper.UrlToNodeAsync("https://www.citilink.ru/catalog/");
             _testLogger.LogDebug($"{node.GetDirectInnerText()}");
         }
 

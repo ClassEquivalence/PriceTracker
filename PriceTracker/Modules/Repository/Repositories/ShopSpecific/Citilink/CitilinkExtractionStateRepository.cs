@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PriceTracker.Core.Models.Process.ShopSpecific.Citilink;
+using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
+using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree;
+using PriceTracker.Modules.Repository.Mapping;
+using PriceTracker.Modules.Repository.Repositories.Base.SingletonRepository;
 
 namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
 {
@@ -12,51 +15,25 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
     // Ещё в отличие от других репозиториев уровня сущности, этот использует 
     // DbContext один на весь репозиторий, из-за чего при расширении его использования
     // до многопоточного к нему доступа могут возникнуть проблемы. Уязвимое место!
-    public class CitilinkExtractionStateRepository
+    public class CitilinkExtractionStateRepository: EFGenericSingletonRepository<
+        CitilinkExtractionStateDto, CitilinkParsingExecutionStateEntity>
     {
-        private readonly PriceTrackerContext _dbContext;
-        private readonly DbSet<CitilinkParsingExecutionStateEntity> _execState;
-        public CitilinkExtractionStateRepository(PriceTrackerContext dbContext)
+
+        public CitilinkExtractionStateRepository(IDbContextFactory<PriceTrackerContext>
+            factory, ICoreToEntityMapper<CitilinkExtractionStateDto, 
+                CitilinkParsingExecutionStateEntity> mapper):
+            base(factory, mapper)
         {
-            _dbContext = dbContext;
-            _execState = dbContext.CitilinkParsingExecutionStateEntity;
-            if (!_execState.Any())
-            {
-                _execState.Add(new("", 0, false));
-                _dbContext.SaveChanges();
-            }
-            else if (_execState.Count() > 1)
-                throw new InvalidOperationException("Строк CitilinkParsingExecutionStateEntity" +
-                    "в БД должно быть ровно 1.");
 
         }
 
-        public CitilinkExtractionStateDto Provide()
+
+
+        protected override IQueryable<CitilinkParsingExecutionStateEntity> 
+            GetWithIncludedEntities(DbSet<CitilinkParsingExecutionStateEntity> entities)
         {
-            var entity = _execState.Single();
-
-            bool isCompleted = entity.IsCompleted;
-            if (string.IsNullOrEmpty(entity.CurrentCatalogUrl))
-                isCompleted = true;
-
-            var currentCatalogUrl = entity.CurrentCatalogUrl;
-
-            CitilinkExtractionStateDto stateDto = new(isCompleted,
-                entity.CurrentCatalogUrl, entity.CatalogPageNumber);
-            return stateDto;
+            return entities.Include(e => e.CatalogUrls).ThenInclude(cu => cu.Root)
+                .ThenInclude(r => r.Branches).ThenInclude(b => b.Branches);
         }
-
-        public void Save(CitilinkExtractionStateDto info)
-        {
-            var entity = _execState.Single();
-
-            var currentCatalogUrl = info.CurrentCatalogUrl;
-
-            entity.CurrentCatalogUrl = currentCatalogUrl;
-            entity.CatalogPageNumber = info.CatalogPageNumber;
-            entity.IsCompleted = info.IsCompleted;
-            _dbContext.SaveChanges();
-        }
-
     }
 }
