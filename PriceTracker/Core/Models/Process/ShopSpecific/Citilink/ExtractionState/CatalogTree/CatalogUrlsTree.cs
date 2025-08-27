@@ -9,5 +9,11 @@
             Id = id;
             Root = root;
         }
+
+        public CatalogUrlsTree DeepClone()
+        {
+            return new CatalogUrlsTree(Root.DeepClone(), Id);
+        }
+
     }
 }

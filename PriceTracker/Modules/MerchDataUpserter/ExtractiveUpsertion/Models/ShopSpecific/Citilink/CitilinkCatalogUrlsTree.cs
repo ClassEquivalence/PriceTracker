@@ -23,7 +23,9 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
             {
                 parent.RemoveFilter();
 
-                foreach (BranchWithHtml branch in parent.Children)
+                var children = new List<BranchWithHtml>(parent.Children);
+
+                foreach (BranchWithHtml branch in children)
                 {
                     if (all.Count(b => b.Url == branch.Url) > 1)
                     {

@@ -18,5 +18,12 @@
             Children = children;
             IsProcessed = isProcessed;
         }
+
+        public Branch DeepClone()
+        {
+            return new Branch(Id, Url, Children.Select(c=>c.DeepClone()).ToList(),
+                IsProcessed);
+        }
+
     }
 }

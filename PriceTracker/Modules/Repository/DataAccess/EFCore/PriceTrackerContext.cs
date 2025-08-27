@@ -33,6 +33,10 @@ namespace PriceTracker.Modules.Repository.DataAccess.EFCore
 
             base.OnModelCreating(modelBuilder);
 
+
+            modelBuilder.Entity<CitilinkMerchEntity>()
+                .HasIndex(m => m.CitilinkId).IsUnique();
+
             /*
             modelBuilder.Entity<MerchPriceHistoryEntity>()
                 .HasMany(h => h.TimestampedPrices)

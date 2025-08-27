@@ -43,7 +43,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         public async Task<FunctionResult<IAsyncEnumerable<CitilinkMerchParsingDto>,
             RetreiveAllFromMerchCatalog_ExecState>> RetreiveAllFromMerchCatalog(BranchWithHtml catalog)
         {
-            _logger?.LogTrace($"{nameof(CitilinkMerchParser)}, {RetreiveAllFromMerchCatalog}: \n" +
+            _logger?.LogTrace($"{nameof(CitilinkMerchParser)}, {nameof(RetreiveAllFromMerchCatalog)}: \n" +
                 $"Метод был вызван.");
 
             if (ignoredCategorySlugs.Contains(catalog.GetCategorySlug()))
@@ -72,6 +72,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
             int pageCount = GetPageCount(responseDeserialized);
             var dtos = ExtractDtos(responseDeserialized);
 
+            // Присваивание чтобы среда не ругалась. В методе Iterator, далее, идёт
+            // полноценное функциональное присваивание.
             SendRequest_ExecInfo request_ExecInfo = SendRequest_ExecInfo.Success;
 
             var merchDtos = Iterator();
@@ -187,6 +189,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
             }
             else if(response.StatusCode != System.Net.HttpStatusCode.OK)
             {
+                _logger?.LogWarning($"{nameof(CitilinkMerchParser)}, {nameof(SendRequest)}: \n" +
+                    $"На Fetch-запрос получен StatusCode = {response.StatusCode}");
                 return new(null, SendRequest_ExecInfo.UnknownServerError);
             }
             
@@ -194,7 +198,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
             var responseDeserialized = await StreamToDeserializedResponseAsync(responseStream);
             if (responseDeserialized == null)
                 throw new InvalidOperationException($"{nameof(CitilinkMerchParser)}, {nameof(SendRequest)}:" +
-                    $" ");
+                    $" Не вышло десериализовать ответ.");
             await responseStream.DisposeAsync();
             return new(responseDeserialized, SendRequest_ExecInfo.Success);
         }

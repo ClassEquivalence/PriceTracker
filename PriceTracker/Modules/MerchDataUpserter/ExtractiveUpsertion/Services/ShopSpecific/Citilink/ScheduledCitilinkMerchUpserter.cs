@@ -49,13 +49,13 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             {
                 dataConsumer.MerchPortionUpserted += () =>
                 {
-                    UpdateExtractionProgress();
+                    UpdateUpsertionProgress();
                     DataConsumer_OnMerchPortionUpserted();
                 };
             }
             else
             {
-                dataConsumer.MerchPortionUpserted += UpdateExtractionProgress;
+                dataConsumer.MerchPortionUpserted += UpdateUpsertionProgress;
             }
 
 
@@ -63,6 +63,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         public override async Task ProcessUpsertion()
         {
+            await base.ProcessUpsertion();
+            /*
             try
             {
                 await base.ProcessUpsertion();
@@ -71,17 +73,25 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             {
                 _logger?.LogError($"Апсершн ситилинка прекращен из-за исключения: {ex.Message}");
             }
+            */
 
             var saveStorageTask = SaveStorageState();
             
-            UpdateExtractionProgress();
+            //UpdateExtractionProgress();
             SaveExtractionProgress();
             await saveStorageTask;
         }
 
-        private void UpdateExtractionProgress()
+
+
+        /// <summary>
+        /// Апдейт и сейв прогресса апсершна разделены, потому что
+        /// апсершн происходит отдельно от извлечения, и апдейт можно вызывать
+        /// только удостоверившись что нужные данные достигли апсершна.
+        /// </summary>
+        private void UpdateUpsertionProgress()
         {
-            _executionState = _dataExtractor.GetProgress() with { };
+            _executionState = _dataExtractor.GetProgress().DeepClone();
         }
 
         private void DataConsumer_OnMerchPortionUpserted()
@@ -102,7 +112,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             {
                 _logger?.LogDebug($"{nameof(ScheduledCitilinkMerchUpserter)}, {nameof(OnShutDownAsync)}:\n" +
                     $"Состояние извлечения сохраняется из за приостановки работы приложения.");
-                UpdateExtractionProgress();
+                //UpdateExtractionProgress();
                 SaveExtractionProgress();
             }
             if ((_storageStateSavePolicy & StorageStateSavePolicy.OnServerShutdown) != 0)

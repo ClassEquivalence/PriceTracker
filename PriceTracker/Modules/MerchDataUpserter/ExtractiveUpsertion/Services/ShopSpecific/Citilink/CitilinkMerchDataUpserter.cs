@@ -73,6 +73,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             }
             await UpsertBundle(queuedData);
             queuedData.Clear();
+            MerchPortionUpserted?.Invoke();
 
             _logger?.LogTrace($"{nameof(CitilinkMerchDataUpserter)}: Upsertion завершился.");
 
@@ -93,7 +94,12 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                 (dto => citilinkIdsOfMerchesInDb.Contains(dto.CitilinkId)).ToList();
 
             List<CitilinkMerchParsingDto> toInsert = citilinkMerchesBundle.Where
-                (dto => !citilinkIdsOfMerchesInDb.Contains(dto.CitilinkId)).ToList();
+                (dto => !citilinkIdsOfMerchesInDb.Contains(dto.CitilinkId)
+                && !toUpdate.Contains(dto)).ToList();
+
+            toInsert = toInsert.DistinctBy(dto => dto.CitilinkId).ToList();
+            toUpdate = toUpdate.DistinctBy(dto => dto.CitilinkId).ToList();
+
 
             List<CitilinkMerchDto> coreDtosToUpdate = [];
             //_merchRepository.GetMultiple

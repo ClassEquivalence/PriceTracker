@@ -52,6 +52,9 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
 
         public void RemoveFilter()
         {
+            var categoryString = GetCategoryString();
+            if (string.IsNullOrEmpty(categoryString))
+                return;
             Url = Url.Replace(GetCategoryString(), GetCategorySlug());
         }
 

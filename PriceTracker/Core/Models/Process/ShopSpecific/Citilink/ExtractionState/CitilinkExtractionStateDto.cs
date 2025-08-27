@@ -13,5 +13,10 @@ namespace PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState
         {
             CachedUrls = cachedUrls;
         }
+
+        public CitilinkExtractionStateDto DeepClone()
+        {
+            return new(CachedUrls?.DeepClone() ?? null, IsCompleted);
+        }
     }
 }
