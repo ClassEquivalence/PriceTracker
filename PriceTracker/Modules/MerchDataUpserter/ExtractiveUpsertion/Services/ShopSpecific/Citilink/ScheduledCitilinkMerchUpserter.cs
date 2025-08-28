@@ -64,7 +64,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         public override async Task ProcessUpsertion()
         {
             await base.ProcessUpsertion();
-            /*
+           
             try
             {
                 await base.ProcessUpsertion();
@@ -72,12 +72,17 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             catch(Exception ex)
             {
                 _logger?.LogError($"Апсершн ситилинка прекращен из-за исключения: {ex.Message}");
+
+                
+                SaveExtractionProgress();
+                await SaveStorageState();
+
+                throw new InvalidOperationException($"Апсершн ситилинка прекращен из-за исключения: {ex.Message}",
+                    ex);
             }
-            */
 
             var saveStorageTask = SaveStorageState();
             
-            //UpdateExtractionProgress();
             SaveExtractionProgress();
             await saveStorageTask;
         }

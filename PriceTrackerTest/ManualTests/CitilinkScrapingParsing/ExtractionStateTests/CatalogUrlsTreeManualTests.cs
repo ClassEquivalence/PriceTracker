@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.MerchParser;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper;
@@ -14,15 +13,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit.Abstractions;
 
-namespace PriceTrackerTest.ManualTests.CitilinkScrapingParsing
+namespace PriceTrackerTest.ManualTests.CitilinkScrapingParsing.ExtractionStateTests
 {
-    /*
-    public class MerchParserManualTests
+    public class CatalogUrlsTreeManualTests
     {
-        private readonly CitilinkMerchParser _merchParser;
 
         private readonly ITestOutputHelper _output;
-        private readonly CitilinkScraper _scraper;
         private readonly ILogger _testLogger;
 
         const string _loggingFilePath = "Logging\\Logs.txt";
@@ -30,7 +26,7 @@ namespace PriceTrackerTest.ManualTests.CitilinkScrapingParsing
 
 
 
-        public MerchParserManualTests(ITestOutputHelper output)
+        public CatalogUrlsTreeManualTests(ITestOutputHelper output)
         {
 
             _output = output;
@@ -42,35 +38,29 @@ namespace PriceTrackerTest.ManualTests.CitilinkScrapingParsing
             var logger = factory.CreateLogger("ManualTestsLogger");
             _testLogger = logger;
 
-            var playwrightTask = Playwright.CreateAsync();
-            var browser = playwrightTask.Result.Chromium.LaunchAsync().Result;
-
-            var browserAdapter = new BrowserAdapter(browser, (15, 30));
-            var scraper = new CitilinkScraper(browserAdapter, logger);
-            _scraper = scraper;
 
 
-
-            _merchParser = new(_scraper, _testLogger);
         }
 
-        [ManualTheory]
-        [InlineData(@"https://www.citilink.ru/catalog/noutbuki/")]
-        public async void RetreiveAllFromMerchCatalog_ManualCheck(string merchCatalogUrl)
+        [ManualFact]
+        public void RemoveFiltersAndDuplicates_ManualCheck()
         {
-            await _scraper.PerformInitialRunupAsync();
+            BranchWithHtml ch1 = new(default, "https://www.citilink.ru/catalog/platformy-dlya-sborki-pk" +
+                "--platformy-dlya-sborki-pk-mainmenu/?ref=mainmenu_left", []);
 
-            BranchWithHtml merchCatalogBranch = new(default, merchCatalogUrl, []);
-            var merches = _merchParser.RetreiveAllFromMerchCatalog(merchCatalogBranch).
-                ToBlockingEnumerable();
-            var list = merches.ToList();
+            BranchWithHtml ch2 = new(default, "https://www.citilink.ru/catalog/platformy-dlya-sborki-pk" +
+                "/?ref=mainmenu_left", []);
 
-            _testLogger.LogDebug($"merches count: {list.Count()}\n" +
-                $"first: {list[0]}\n" +
-                $"last: {list[^1]}");
+            BranchWithHtml root = new(default, "https://www.citilink.ru/catalog/", [ch1, ch2]);
 
+            CitilinkCatalogUrlsTree tree = new(root);
+
+            tree.RemoveBranchFiltersAndDuplicates();
+
+            foreach(var branch in tree.GetAllBranches())
+            {
+                _testLogger.LogInformation($"{branch}");
+            }
         }
-
     }
-    */
 }

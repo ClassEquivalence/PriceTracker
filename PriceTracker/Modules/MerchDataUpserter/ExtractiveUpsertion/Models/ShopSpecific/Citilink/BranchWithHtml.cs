@@ -58,6 +58,11 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
             Url = Url.Replace(GetCategoryString(), GetCategorySlug());
         }
 
+        public override string ToString()
+        {
+            return $"Branch({Id}): {Url}";
+        }
+
     }
 
     public enum PageFunctionality

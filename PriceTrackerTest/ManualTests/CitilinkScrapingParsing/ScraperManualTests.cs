@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink.Engine;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
 using PriceTrackerTest.Utils.CustomAttributes;
 using PriceTrackerTest.Utils.Logging.LoggerProviders;
@@ -15,6 +14,7 @@ using Xunit.Abstractions;
 
 namespace PriceTrackerTest.ManualTests.CitilinkScrapingParsing
 {
+    /*
     public class ScraperManualTests
     {
         private readonly ITestOutputHelper _output;
@@ -99,4 +99,5 @@ namespace PriceTrackerTest.ManualTests.CitilinkScrapingParsing
         }
 
     }
+    */
 }

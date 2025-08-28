@@ -16,12 +16,15 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
         {
             List<BranchWithHtml> all = GetAllBranches();
 
-            RecursiveRemoveDuplicateBranchesAndFilters(Root);
-
-            
-            void RecursiveRemoveDuplicateBranchesAndFilters(BranchWithHtml parent)
+            foreach(var branch in all)
             {
-                parent.RemoveFilter();
+                branch.RemoveFilter();
+            }
+
+            RecursiveRemoveDuplicateBranches(Root);
+
+            void RecursiveRemoveDuplicateBranches(BranchWithHtml parent)
+            {
 
                 var children = new List<BranchWithHtml>(parent.Children);
 
@@ -34,12 +37,10 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
                         continue;
                     }
 
-                    RecursiveRemoveDuplicateBranchesAndFilters(branch);
+                    RecursiveRemoveDuplicateBranches(branch);
                 }
             }
 
-
-            
         }
 
         

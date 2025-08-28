@@ -296,6 +296,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         /// <summary>
         /// true: наследники либо уже загружены, либо загрузились
         /// при исполнении метода.
+        /// <br/>
         /// false: наследники не могут быть загружены (по причине, например,
         /// 429-ответов сервера).
         /// </summary>
