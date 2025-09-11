@@ -63,7 +63,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         public override async Task ProcessUpsertion()
         {
-            await base.ProcessUpsertion();
+            //await base.ProcessUpsertion();
            
             try
             {

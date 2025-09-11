@@ -6,6 +6,9 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
     {
         public int Id;
         public BranchWithHtml Root;
+
+        public event Action? FiltersAndDuplicatesRemoved;
+
         public CitilinkCatalogUrlsTree(BranchWithHtml root, int id=default)
         {
             Id = id;
@@ -23,6 +26,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
 
             RecursiveRemoveDuplicateBranches(Root);
 
+            FiltersAndDuplicatesRemoved?.Invoke();
+
             void RecursiveRemoveDuplicateBranches(BranchWithHtml parent)
             {
 
@@ -32,8 +37,11 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
                 {
                     if (all.Count(b => b.Url == branch.Url) > 1)
                     {
-                        parent.Children.Remove(branch);
-                        all.Remove(branch);
+                        var isRemoved = parent.Children.Remove(branch);
+                        var isRemovedFromAll = all.Remove(branch);
+                        if (!(isRemoved && isRemovedFromAll))
+                            throw new InvalidOperationException($"{nameof(CitilinkCatalogUrlsTree)}, " +
+                                $"{nameof(RecursiveRemoveDuplicateBranches)}: Во время очистки древа от дублей произошел сбой.");
                         continue;
                     }
 

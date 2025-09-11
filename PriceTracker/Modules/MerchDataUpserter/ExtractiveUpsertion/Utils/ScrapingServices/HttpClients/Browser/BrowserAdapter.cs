@@ -48,9 +48,17 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.Scrap
                 }
                 catch (TimeoutException ex)
                 {
-                    _logger?.LogTrace($"Не вышло загрузить страницу {url} с {i}-го раза");
+                    _logger?.LogTrace($"Не вышло загрузить страницу {url} с {i}-го раза (timeout).");
                     if (i == attemptCount)
                         throw new TimeoutException($"Не вышло загрузить страницу {url} с {i}-го раза",
+                            ex);
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogTrace($"Не вышло загрузить страницу {url} с {i}-го раза ({ex.Message}).");
+                    await Task.Delay(generateDelay());
+                    if (i == attemptCount)
+                        throw new Exception($"Не вышло загрузить страницу {url} с {i}-го раза",
                             ex);
                 }
             }

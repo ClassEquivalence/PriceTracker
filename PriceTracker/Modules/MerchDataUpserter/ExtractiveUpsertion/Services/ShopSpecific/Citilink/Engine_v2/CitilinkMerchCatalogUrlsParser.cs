@@ -29,6 +29,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
                 root = value.Root;
                 currentBranchRoute = [];
                 currentBranchRoute.Push(root);
+                value.FiltersAndDuplicatesRemoved += OnCatalogUrlsTree_FiltersAndDuplicatesRemoved;
             }
         }
 
@@ -179,6 +180,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
             }
 
             List<BranchWithHtml> unprocessedChildren = [];
+
+            CatalogUrlsTree.RemoveBranchFiltersAndDuplicates();
 
             foreach(var child in parent.Children)
             {
@@ -484,6 +487,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
 
         /// <summary>
         /// true: Вставлен нужный узел
+        /// <br/>
         /// false: Не вышло вставить узел (например, из-за ошибки 429)
         /// </summary>
         /// <param name="branch"></param>
@@ -509,6 +513,15 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
             return true;
         }
 
+
+        private void OnCatalogUrlsTree_FiltersAndDuplicatesRemoved()
+        {
+            var all = CatalogUrlsTree.GetAllBranches();
+            while (!all.Contains(currentBranch))
+            {
+                currentBranchRoute.Pop();
+            }
+        }
 
     }
 }

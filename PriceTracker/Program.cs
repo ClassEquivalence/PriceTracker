@@ -27,9 +27,8 @@ namespace PriceTracker
             DependencyInjector.InjectWebInterfaceDependencies(builder.Services);
             DependencyInjector.InjectMerchDataProviderDependencies(builder.Services);
 
-            string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
-
             // TODO: Сделать потом нормальный конфиг подключения.
+            //string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
             //builder.Services.AddDbContext<PriceTrackerContext>(options => options.UseNpgsql(connection));
 
 

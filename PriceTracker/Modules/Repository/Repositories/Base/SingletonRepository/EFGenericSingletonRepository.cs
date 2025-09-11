@@ -9,8 +9,8 @@ namespace PriceTracker.Modules.Repository.Repositories.Base.SingletonRepository
     public abstract class EFGenericSingletonRepository<Dto, TEntity> : ISingletonRepository<Dto>
         where Dto : BaseDto where TEntity: BaseEntity
     {
-        private readonly IDbContextFactory<PriceTrackerContext> _dbContextFactory;
-        private readonly ICoreToEntityMapper<Dto, TEntity> _mapper;
+        protected readonly IDbContextFactory<PriceTrackerContext> _dbContextFactory;
+        protected readonly ICoreToEntityMapper<Dto, TEntity> _mapper;
 
         public EFGenericSingletonRepository(IDbContextFactory<PriceTrackerContext>
             contextFactory, ICoreToEntityMapper<Dto, TEntity> mapper)
@@ -40,7 +40,7 @@ namespace PriceTracker.Modules.Repository.Repositories.Base.SingletonRepository
                 return _mapper.Map(entities.SingleOrDefault());
         }
 
-        public void Set(Dto dto)
+        public virtual void Set(Dto dto)
         {
             using var context = _dbContextFactory.CreateDbContext();
             var set = context.Set<TEntity>();
