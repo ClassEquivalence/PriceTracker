@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using PriceTracker.Core.Configuration.ProvidedWithDI;
 using PriceTracker.Core.Models.Process;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
@@ -40,6 +41,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         private readonly ILogger? _logger;
         private readonly CitilinkScraper _baseScraper;
         private string? _storageState;
+        private readonly CitilinkUpsertionOptions _upsertionOptions;
 
         private CitilinkCatalogUrlsTreeMapper catalogUrlsTreeMapper;
 
@@ -51,10 +53,11 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         public GUICitilinkExtractor(BrowserAdapter browser, (int requests, TimeSpan period)
             maxPageRequestsPerTime, CitilinkCatalogUrlsTreeMapper catalogTreeMapper,
+            CitilinkUpsertionOptions upsertionOptions,
             ILogger? logger = null, string? storageState = null)
         {
             CitilinkScraper baseScraper = _baseScraper = new(browser, 
-                maxPageRequestsPerTime.requests, logger);
+                maxPageRequestsPerTime.requests, upsertionOptions, logger);
 
             baseScraper.RequestLimitReached += BaseScraper_OnRequestLimitReached;
 
@@ -65,6 +68,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
             _logger = logger;
             _storageState = storageState;
+            _upsertionOptions = upsertionOptions;
 
             catalogUrlsTreeMapper = catalogTreeMapper;
 
@@ -80,7 +84,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
             _catalogUrlsTree = CreateInitialTree();
 
-            _merchCatalogsParser = new(_baseScraper, _catalogUrlsTree, _logger);
+            _merchCatalogsParser = new(_baseScraper, _catalogUrlsTree, _upsertionOptions, _logger);
 
             _logger?.LogTrace($"{nameof(GUICitilinkExtractor)}: начался новый процесс извлечения" +
                 $" товаров.");
@@ -103,7 +107,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
             _catalogUrlsTree = catalogUrlsTreeMapper.Map(extractionData.CachedUrls);
 
-            _merchCatalogsParser = new(_baseScraper, _catalogUrlsTree, _logger);
+            _merchCatalogsParser = new(_baseScraper, _catalogUrlsTree, _upsertionOptions, _logger);
 
             _logger?.LogTrace($"{nameof(GUICitilinkExtractor)}: инициировано продолжение процесса " +
                 $"извлечения товаров.");
@@ -258,7 +262,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         private CitilinkCatalogUrlsTree CreateInitialTree()
         {
-            BranchWithHtml root = new(default, Configs.CitilinkMainCatalogUrl, []);
+            BranchWithHtml root = new(default, _upsertionOptions.CitilinkMainCatalogUrl, []);
 
             return new CitilinkCatalogUrlsTree(root);
         }

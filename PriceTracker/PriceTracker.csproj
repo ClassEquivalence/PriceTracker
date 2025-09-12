@@ -9,12 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="DisabledFiles\CitilinkMerchParser.cs" />
-    <Compile Remove="DisabledFiles\MerchCatalogUrlsExtractor.cs" />
-    <Compile Remove="Modules\MerchDataUpserter\ExtractiveUpsertion\Services\ShopSpecific\Citilink\Engine\CitilinkMerchParser.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.19" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.19">
@@ -31,13 +25,7 @@
   <ItemGroup>
     <Folder Include="Modules\MerchDataUpserter\Core\Models\" />
     <Folder Include="Modules\MerchDataUpserter\ExtractiveUpsertion\Models\ShopSpecific\Citilink\Process\" />
-    <Folder Include="Modules\MerchDataUpserter\ExtractiveUpsertion\Services\ShopSpecific\Citilink\Engine_v2\MerchParser\MerchFetchResponse\" />
     <Folder Include="Modules\Repository\Mapping\Process\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="DisabledFiles\CitilinkMerchParser.cs" />
-    <None Include="DisabledFiles\MerchCatalogUrlsExtractor.cs" />
   </ItemGroup>
 
 </Project>

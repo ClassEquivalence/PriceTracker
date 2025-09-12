@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using PriceTracker.Core.Configuration.ProvidedWithDI;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
 using PriceTracker.Core.Utils;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
@@ -19,6 +20,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         private readonly ICitilinkScraper _scraper;
 
         private CitilinkCatalogUrlsTree catalogUrlsTree;
+
+        private readonly CitilinkUpsertionOptions _options;
 
         public CitilinkCatalogUrlsTree CatalogUrlsTree
         {
@@ -41,8 +44,10 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
 
 
         public CitilinkMerchCatalogUrlsParser(ICitilinkScraper scraper,
-            CitilinkCatalogUrlsTree catalogUrls, ILogger? logger = null)
+            CitilinkCatalogUrlsTree catalogUrls, CitilinkUpsertionOptions options,
+            ILogger? logger = null)
         {
+            _options = options;
             CatalogUrlsTree = catalogUrls;
             _scraper = scraper;
             _logger = logger;
@@ -243,7 +248,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
             _logger?.LogTrace($"{nameof(CitilinkMerchCatalogUrlsParser)}, " +
                 $"{nameof(GetPageFunctionality)}: обрабатывается {catalog.Url} ");
 
-            if (catalog.Url == Configs.CitilinkMainCatalogUrl)
+            if (catalog.Url == _options.CitilinkMainCatalogUrl)
             {
                 catalog.functionality = PageFunctionality.MainCatalog;
                 return PageFunctionality.MainCatalog;
@@ -474,11 +479,11 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
             return urls.Select(
                 u =>
                 {
-                    if (u.StartsWith(Configs.CitilinkUrl))
+                    if (u.StartsWith(_options.CitilinkUrl))
                         return u;
                     else
                     {
-                        return Configs.CitilinkUrl.TrimEnd('/') + '/'
+                        return _options.CitilinkUrl.TrimEnd('/') + '/'
                         + u.TrimStart('/');
                     }
                 }

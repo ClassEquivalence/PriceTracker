@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.Playwright;
+using PriceTracker.Core.Configuration.ProvidedWithDI;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink;
@@ -22,9 +24,13 @@ namespace PriceTracker.Modules.MerchDataProvider
         private readonly UpsertionService _scheduledUpserter;
         private readonly IRepositoryFacade _repository;
         private readonly ILogger _logger;
+        private readonly MerchUpsertionOptions _options;
 
-        public MerchDataProviderFacade(IRepositoryFacade repository, ILogger<Program> logger)
+        public MerchDataProviderFacade(IRepositoryFacade repository, ILogger<Program> logger,
+            IOptions<MerchUpsertionOptions> options)
         {
+            _options = options.Value;
+            var citilinkOptions = _options.CitilinkUpsertionOptions;
             _logger = logger;
 
             IExtractionExecutionStateProvider<CitilinkExtractionStateDto> executionStateProvider
@@ -36,18 +42,21 @@ namespace PriceTracker.Modules.MerchDataProvider
                 logger: _logger);
 
             var browser = Playwright.CreateAsync().Result.Chromium.LaunchAsync().Result;
-            BrowserAdapter browserAdapter = new(browser, Configs.HeadlessBrowserDelayRange,
+            BrowserAdapter browserAdapter = new(browser, (citilinkOptions.HeadlessBrowserMinDelay,
+                citilinkOptions.HeadlessBrowserMaxDelay),
                 _logger);
 
             var CitilinkStorageState = ((ICitilinkMiscellaneousRepositoryFacade)_repository).
                 GetExtractorStorageState();
             GUICitilinkExtractor extractor =
-                new(browserAdapter, Configs.MaxPageRequestsPerTime, new(), _logger, storageState:
-                CitilinkStorageState?.StorageState);
+                new(browserAdapter, (citilinkOptions.MaxPageRequestsPerTime, 
+                TimeSpan.FromHours(citilinkOptions.MinCooldownForPageRequests)), new(), citilinkOptions,
+                _logger, storageState: CitilinkStorageState?.StorageState);
 
             ScheduledCitilinkMerchUpserter
-                scheduledCitilinkMerchUpserter = new(consumer, extractor, Configs.PriceUpdatePeriod,
-                DateTime.Now, repository, _logger, Configs.MaxPageRequestsPerTime.period);
+                scheduledCitilinkMerchUpserter = new(consumer, extractor, TimeSpan.
+                FromDays(citilinkOptions.CitilinkPriceUpdatePeriod),
+                DateTime.Now, repository, _logger, TimeSpan.FromHours(citilinkOptions.MinCooldownForPageRequests));
 
             _scheduledUpserter = new([scheduledCitilinkMerchUpserter]);
 
@@ -81,16 +90,29 @@ namespace PriceTracker.Modules.MerchDataProvider
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-
+            if (_options.UpsertionActive)
+            {
+                await ProcessMerchUpsertion();
+            }
+            else
+            {
+                _logger?.LogInformation($"{nameof(MerchDataProviderFacade)}: Merch upsertion" +
+                $" inactive.");
+            }
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"{nameof(MerchDataProviderFacade)}: shutdown" +
+            _logger?.LogInformation($"{nameof(MerchDataProviderFacade)}: shutdown" +
                 $"process started.");
-            await OnShutdownAsync();
-            _logger.LogInformation($"{nameof(MerchDataProviderFacade)}: shutdown" +
-               $"process completed.");
+            if (_options.UpsertionActive)
+            {
+                
+                await OnShutdownAsync();
+                _logger?.LogInformation($"{nameof(MerchDataProviderFacade)}: shutdown" +
+                   $"process completed.");
+            }
+
         }
     }
 }

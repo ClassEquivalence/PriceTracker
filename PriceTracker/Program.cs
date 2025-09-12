@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PriceTracker.Core.Configuration.ProvidedWithDI;
 using PriceTracker.Core.Utils;
 using PriceTracker.Modules.MerchDataProvider;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
@@ -22,7 +23,6 @@ namespace PriceTracker
             builder.Services.AddSwaggerGen();
 
 
-
             DependencyInjector.InjectRepositoryDependencies(builder.Services);
             DependencyInjector.InjectWebInterfaceDependencies(builder.Services);
             DependencyInjector.InjectMerchDataProviderDependencies(builder.Services);
@@ -31,21 +31,27 @@ namespace PriceTracker
             //string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
             //builder.Services.AddDbContext<PriceTrackerContext>(options => options.UseNpgsql(connection));
 
+            builder.Configuration.AddJsonFile("Secrets/SecretSettings.json");
 
-            // Добавим политику CORS
-            builder.Services.AddCors(options =>
+            builder.Services.Configure<MerchUpsertionOptions>(
+                builder.Configuration.GetSection(MerchUpsertionOptions.OptionsSectionKey));
+
+
+            if (builder.Environment.IsDevelopment())
             {
-                options.AddPolicy("AllowAngularDev", policy =>
+                // Добавим политику CORS
+                builder.Services.AddCors(options =>
                 {
-                    policy.WithOrigins("https://localhost:4200")
-                          .AllowAnyHeader()
-                          .AllowAnyMethod();
+                    options.AddPolicy("AllowAngularDev", policy =>
+                    {
+                        policy.WithOrigins("https://localhost:4200")
+                              .AllowAnyHeader()
+                              .AllowAnyMethod();
+                    });
                 });
-            });
+            }
 
             var app = builder.Build();
-
-            builder.Configuration.AddJsonFile("Secrets/SecretSettings.json");
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -78,12 +84,12 @@ namespace PriceTracker
 
             app.Services.GetService<IRepositoryFacade>()?.EnsureRepositoryInitialized();
 
-            var upsertionTask = app.Services.GetService<IMerchDataProviderFacade>()?.
-                ProcessMerchUpsertion();
+            //var upsertionTask = app.Services.GetService<IMerchDataProviderFacade>()?.
+            //    ProcessMerchUpsertion();
 
             var appTask = app.RunAsync();
 
-            await upsertionTask;
+            //await upsertionTask;
             await appTask;
 
         }

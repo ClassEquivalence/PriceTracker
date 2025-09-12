@@ -3,7 +3,7 @@
     /// <summary>
     /// Период обновления цен. Период циклов апсершна цен и товаров.
     /// </summary>
-    public static readonly TimeSpan PriceUpdatePeriod = TimeSpan.FromDays(7);
+    public static readonly TimeSpan CitilinkPriceUpdatePeriod = TimeSpan.FromDays(7);
 
     public static readonly int DefaultItemTestId = 1;
     public static readonly string DefaultNameForItems = "Undefined";

@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using PriceTracker.Core.Configuration.ProvidedWithDI;
 using PriceTracker.Core.Utils;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
 using System.Text.Json;
@@ -16,6 +17,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         private readonly BrowserAdapter _browser;
         private readonly ILogger? _logger;
         private readonly string _citilinkCatalogPageUrl = "https://www.citilink.ru/catalog/";
+        private readonly CitilinkUpsertionOptions _options;
 
         private int requestCount;
 
@@ -24,9 +26,9 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         public event Action? RequestLimitReached;
 
         public CitilinkScraper(BrowserAdapter browserAdapter, int maxRequestsPerTime,
-            ILogger? logger = null)
+            CitilinkUpsertionOptions options, ILogger? logger = null)
         {
-            _merchFetchRequestBuilder = new();
+            _merchFetchRequestBuilder = new(options.CitilinkAPIRoute);
 
             _baseClient = new HttpClient();
             //_baseClient.DefaultRequestHeaders.UserAgent
@@ -36,6 +38,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
             _logger = logger;
             requestCount = 0;
             _maxRequestsPerTime = maxRequestsPerTime;
+            _options = options;
 
         }
 
