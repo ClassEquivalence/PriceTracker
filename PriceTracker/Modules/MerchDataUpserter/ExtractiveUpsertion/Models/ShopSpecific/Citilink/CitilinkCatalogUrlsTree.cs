@@ -5,11 +5,11 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
     public record CitilinkCatalogUrlsTree
     {
         public int Id;
-        public BranchWithHtml Root;
+        public BranchWithFunctionality Root;
 
         public event Action? FiltersAndDuplicatesRemoved;
 
-        public CitilinkCatalogUrlsTree(BranchWithHtml root, int id=default)
+        public CitilinkCatalogUrlsTree(BranchWithFunctionality root, int id=default)
         {
             Id = id;
             Root = root;
@@ -17,7 +17,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
 
         public void RemoveBranchFiltersAndDuplicates()
         {
-            List<BranchWithHtml> all = GetAllBranches();
+            List<BranchWithFunctionality> all = GetAllBranches();
 
             foreach(var branch in all)
             {
@@ -28,12 +28,12 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
 
             FiltersAndDuplicatesRemoved?.Invoke();
 
-            void RecursiveRemoveDuplicateBranches(BranchWithHtml parent)
+            void RecursiveRemoveDuplicateBranches(BranchWithFunctionality parent)
             {
 
-                var children = new List<BranchWithHtml>(parent.Children);
+                var children = new List<BranchWithFunctionality>(parent.Children);
 
-                foreach (BranchWithHtml branch in children)
+                foreach (BranchWithFunctionality branch in children)
                 {
                     if (all.Count(b => b.Url == branch.Url) > 1)
                     {
@@ -58,7 +58,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
             return (GetAllBranches().Count(b => b.Url == url));
         }
 
-        public List<BranchWithHtml> GetAllBranches()
+        public List<BranchWithFunctionality> GetAllBranches()
         {
             var all = SelectAllBranchDescendants(Root);
             all.Add(Root);
@@ -66,13 +66,13 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
             return all;
         }
 
-        private List<BranchWithHtml> SelectAllBranchDescendants(BranchWithHtml parent)
+        private List<BranchWithFunctionality> SelectAllBranchDescendants(BranchWithFunctionality parent)
         {
-            List<BranchWithHtml> branches = [];
+            List<BranchWithFunctionality> branches = [];
 
             branches.AddRange(parent.Children);
 
-            foreach(BranchWithHtml branch in parent.Children)
+            foreach(BranchWithFunctionality branch in parent.Children)
             {
                 branches.AddRange(branch.Children);
             }

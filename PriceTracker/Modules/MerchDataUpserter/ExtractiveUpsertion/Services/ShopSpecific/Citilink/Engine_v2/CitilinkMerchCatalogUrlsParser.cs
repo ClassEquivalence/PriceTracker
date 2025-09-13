@@ -36,11 +36,11 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
             }
         }
 
-        private BranchWithHtml root;
+        private BranchWithFunctionality root;
 
-        private Stack<BranchWithHtml> currentBranchRoute;
+        private Stack<BranchWithFunctionality> currentBranchRoute;
 
-        private BranchWithHtml currentBranch => currentBranchRoute.Peek();
+        private BranchWithFunctionality currentBranch => currentBranchRoute.Peek();
 
 
         public CitilinkMerchCatalogUrlsParser(ICitilinkScraper scraper,
@@ -57,7 +57,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         }
 
 
-        public async Task<FunctionResult<List<BranchWithHtml>?, GetUrlsPortion_Info>> 
+        public async Task<FunctionResult<List<BranchWithFunctionality>?, GetUrlsPortion_Info>> 
             GetMerchCatalogUrlsPortion()
         {
 
@@ -76,11 +76,14 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
                 }
             }
 
-            while((await GetPageFunctionality(currentBranch)) 
+            PageFunctionality? functionality;
+
+            while((functionality = await TryGetPageFunctionality(currentBranch)) 
                 != PageFunctionality.MerchCatalog)
             {
 
-                if(await GetPageFunctionality(currentBranch) == PageFunctionality.ServerTired)
+                if(functionality == PageFunctionality.ServerTired ||
+                    functionality == null)
                 {
                     return new(null, GetUrlsPortion_Info.ServerTired);
                 }
@@ -127,45 +130,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
 
             }
 
-            return new([currentBranch], GetUrlsPortion_Info.Success);
-            /*
-
-            if (await GetPageFunctionality(currentBranch) == PageFunctionality.MerchCatalog)
-            {
-                if (!(currentBranchRoute.Count > 1))
-                {
-                    throw new InvalidOperationException($"{nameof(CitilinkMerchCatalogUrlsParser)}, " +
-                        $"{nameof(GetMerchCatalogUrlsPortion)}: В стеке {nameof(currentBranchRoute)}" +
-                        $" либо 1 либо 0 элементов. Но так быть не должно, когда текущая ветка " +
-                        $"({currentBranch.Url}) отвечает за каталог товаров. То есть, не " +
-                        $"может ветка каталога товаров быть корневой.");
-                }
-
-                currentBranchRoute.Pop();
-                var unprocessedMerchCatalogChildren =
-                    await FindUnprocessedMerchCatalogChildren(currentBranch);
-
-                if (!unprocessedMerchCatalogChildren.Any())
-                    throw new InvalidOperationException($"{nameof(CitilinkMerchCatalogUrlsParser)}, " +
-                        $"{nameof(GetMerchCatalogUrlsPortion)}: Противоречие: сперва у родительской ветви " +
-                        $"({currentBranch.Url}) был" +
-                        $" найден наследник, являющийся каталогом товаров. При этом же, у неё не найдено" +
-                        $" ни одного наследника-каталога товаров.");
-
-                return unprocessedMerchCatalogChildren;
-            }
-            else
-            {
-                throw new InvalidOperationException($"{nameof(CitilinkMerchCatalogUrlsParser)}, " +
-                        $"{nameof(GetMerchCatalogUrlsPortion)}: Ветвь ({currentBranch.Url})" +
-                        $" при выходе из цикла должна была оказаться веткой товаров." +
-                        $" При проверке через If, она ею не оказалась.");
-            }
-
-            */
-
-
-
+            return new([currentBranch], GetUrlsPortion_Info.Success); 
         }
 
 
@@ -175,16 +140,17 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         /// </summary>
         /// <param name="parent"></param>
         /// <returns></returns>
-        private async Task<List<BranchWithHtml>?> FindUnprocessedChildrenBranches(BranchWithHtml parent)
+        private async Task<List<BranchWithFunctionality>?> FindUnprocessedChildrenBranches(BranchWithFunctionality parent)
         {
-            bool areLoaded = await LoadBranchDescendants(parent);
 
-            if (!areLoaded)
+            var isDataLoaded = await EnsureDataLoadedToBranch(parent);
+
+            if (!isDataLoaded)
             {
                 return null;
             }
 
-            List<BranchWithHtml> unprocessedChildren = [];
+            List<BranchWithFunctionality> unprocessedChildren = [];
 
             CatalogUrlsTree.RemoveBranchFiltersAndDuplicates();
 
@@ -201,52 +167,16 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
 
 
         /// <summary>
-        /// 
+        /// null возвращается, если установить функциональное назначение не удалось
         /// </summary>
-        /// <param name="parent"></param>
+        /// <param name="catalog"></param>
         /// <returns></returns>
-        private async Task<List<BranchWithHtml>> FindUnprocessedMerchCatalogChildren(BranchWithHtml parent)
-        {
-            List<BranchWithHtml> allUnprocessedChildren = 
-                await FindUnprocessedChildrenBranches(parent);
-
-            List<BranchWithHtml> merchCatalogUnprocessedChildren = [];
-
-            foreach(var child in allUnprocessedChildren)
-            {
-                if (await GetPageFunctionality(child) == PageFunctionality.MerchCatalog)
-                    merchCatalogUnprocessedChildren.Add(child);
-            }
-            return merchCatalogUnprocessedChildren;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <returns></returns>
-        private async Task<List<BranchWithHtml>> FindUnprocessedSubcatalogChildren(BranchWithHtml parent)
-        {
-            List<BranchWithHtml> allUnprocessedChildren =
-                await FindUnprocessedChildrenBranches(parent);
-
-            List<BranchWithHtml> subCatalogUnprocessedChildren = [];
-
-            foreach (var child in allUnprocessedChildren)
-            {
-                var res = await GetPageFunctionality(child);
-                if (res == PageFunctionality.MainCatalog
-                || res == PageFunctionality.SubCatalog)
-                    subCatalogUnprocessedChildren.Add(child);
-            }
-            return subCatalogUnprocessedChildren;
-        }
-
-        protected async Task<PageFunctionality> GetPageFunctionality(BranchWithHtml catalog)
+        /// <exception cref="InvalidOperationException"></exception>
+        protected async Task<PageFunctionality?> TryGetPageFunctionality(BranchWithFunctionality catalog)
         {
             
             _logger?.LogTrace($"{nameof(CitilinkMerchCatalogUrlsParser)}, " +
-                $"{nameof(GetPageFunctionality)}: обрабатывается {catalog.Url} ");
+                $"{nameof(TryGetPageFunctionality)}: обрабатывается {catalog.Url} ");
 
             if (catalog.Url == _options.CitilinkMainCatalogUrl)
             {
@@ -259,16 +189,27 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
             }
             else
             {
-                await EnsureNodeInsertedToBranch(catalog);
-                var functionality = GetPageFunctionality(catalog.Node!);
-                catalog.functionality = functionality;
+                var isLoaded = await EnsureDataLoadedToBranch(catalog);
+
+                if (!isLoaded)
+                {
+
+                }
+
+                var nullableFunctionality = catalog.functionality;
+                if (nullableFunctionality == null)
+                    throw new InvalidOperationException($"{nameof(CitilinkMerchCatalogUrlsParser)}, " +
+                        $"{nameof(TryGetPageFunctionality)}:\n Функциональное назначение страницы должно было" +
+                        $" быть установлено ненулевым после {nameof(EnsureDataLoadedToBranch)}. Но оно - null.");
+                PageFunctionality functionality = nullableFunctionality ?? PageFunctionality.Unknown;
+
                 return functionality;
             }
         }
 
 
 
-        protected PageFunctionality GetPageFunctionality(HtmlNode catalogNode)
+        protected PageFunctionality ParsePageFunctionality(HtmlNode catalogNode)
         {
 
             //data-meta-name="CategoryCardsLayout" - для каталога с каталогами
@@ -280,7 +221,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
                 ("//*[@data-meta-name=\"ProductListLayout\"]");
 
             _logger?.LogTrace($"{nameof(CitilinkMerchCatalogUrlsParser)}, " +
-                $"{nameof(GetPageFunctionality)}: \n" +
+                $"{nameof(ParsePageFunctionality)}: \n" +
                 $"possibleNodeInPageOfCatalogs = {possibleNodeInPageOfCatalogs},\n" +
                 $"possibleNodeInPageOfMerches = {possibleNodeInPageOfMerches}");
 
@@ -301,117 +242,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
                 
         }
 
-        /// <summary>
-        /// true: наследники либо уже загружены, либо загрузились
-        /// при исполнении метода.
-        /// <br/>
-        /// false: наследники не могут быть загружены (по причине, например,
-        /// 429-ответов сервера).
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <returns></returns>
-        private async Task<bool> LoadBranchDescendants(BranchWithHtml parent)
-        {
-            if (parent.Children != null && parent.Children.Any())
-            {
-                _logger?.LogTrace($"children==null? {parent.Children == null}\n" +
-                    $"children.Any()? {parent.Children.Any()}");
-                return true;
-            }
 
-            var functionality = await GetPageFunctionality(parent);
-            _logger?.LogTrace($"{nameof(CitilinkMerchCatalogUrlsParser)}," +
-                $" {nameof(LoadBranchDescendants)}: Функциональное назначение {parent.Url} - " +
-                $"{functionality}");
-
-            if(functionality == PageFunctionality.MainCatalog ||
-                functionality == PageFunctionality.SubCatalog)
-            {
-                CatalogUrlsTree.RemoveBranchFiltersAndDuplicates();
-                return await LoadCatalogBranchDescendants(parent);
-            }
-            else if(functionality == PageFunctionality.ServerTired)
-            {
-                return false;
-            }
-            else
-            {
-
-                parent.Children = [];
-            }
-
-            CatalogUrlsTree.RemoveBranchFiltersAndDuplicates();
-
-            return true;
-
-        }
-
-        /// <summary>
-        /// Иными словами, Find this catalog's subcatalogs.
-        /// Метод ищет наследников данной ветки, если она:
-        /// не имеет найденных наследников и является каталогом каталогов.
-        /// В иных случаях - выбрасывает исключение.
-        /// <br/>
-        /// true: если удалось загрузить наследников
-        /// false: если сервер "устал" и высылает ответы 429.
-        /// </summary>
-        /// <param name="parent"></param>
-        private async Task<bool> LoadCatalogBranchDescendants(BranchWithHtml parent)
-        {
-            var functionality = await GetPageFunctionality(parent);
-
-            _logger?.LogTrace($"{nameof(CitilinkMerchCatalogUrlsParser)}," +
-                    $" {nameof(LoadCatalogBranchDescendants)}: Функциональное назначение" +
-                    $" каталога {parent.Url} - {functionality}");
-
-            if (parent.Children != null && parent.Children.Any())
-            {
-                throw new InvalidOperationException($"{nameof(LoadCatalogBranchDescendants)}:" + 
-                    $" Ошибка: у ветви уже определены и найдены наследники.");
-            }
-            else if(functionality == PageFunctionality.MainCatalog)
-            {
-                _logger?.LogTrace($"{nameof(CitilinkMerchCatalogUrlsParser)}," +
-                    $" {nameof(LoadCatalogBranchDescendants)}: сработала MainCatalog ветка.");
-                await EnsureNodeInsertedToBranch(parent);
-
-                List<string> urls = ParseSubCatalogsUrlsFromMain(parent.Node!);
-                List<BranchWithHtml> subCatalogs = urls.Select(url => 
-                new BranchWithHtml(default, url, [], false)).ToList();
-                parent.Children = subCatalogs;
-
-                _logger?.LogTrace($"{nameof(CitilinkMerchCatalogUrlsParser)}," +
-                    $" {nameof(LoadCatalogBranchDescendants)}: subCatalogs count = " +
-                    $"{subCatalogs.Count}");
-            }
-            else if(functionality == PageFunctionality.SubCatalog)
-            {
-                await EnsureNodeInsertedToBranch(parent);
-
-                List<string> urls = ParseSubCatalogsUrlsFromSub(parent.Node!);
-                List<BranchWithHtml> subCatalogs = urls.Select(url =>
-                new BranchWithHtml(default, url, [], false)).ToList();
-
-                parent.Children = subCatalogs;
-
-            }
-            else if(functionality == PageFunctionality.MerchCatalog)
-            {
-                throw new InvalidOperationException($"{nameof(LoadCatalogBranchDescendants)}:" +
-                    $" Ошибка: у каталога товаров нет ветвей-наследников.");
-            }
-            else if(functionality == PageFunctionality.ServerTired)
-            {
-                return false;
-            }
-            else
-            {
-                throw new InvalidOperationException($"{nameof(LoadCatalogBranchDescendants)}:" +
-                    $" Ошибка: не удается установить тип каталога.");
-            }
-
-            return true;
-        }
 
 
 
@@ -490,33 +321,6 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
                 ).ToList();
         }
 
-        /// <summary>
-        /// true: Вставлен нужный узел
-        /// <br/>
-        /// false: Не вышло вставить узел (например, из-за ошибки 429)
-        /// </summary>
-        /// <param name="branch"></param>
-        /// <returns></returns>
-        private async Task<bool> EnsureNodeInsertedToBranch(BranchWithHtml branch)
-        {
-            if(branch.Node == null)
-            {
-                var urlToNodeResult = await _scraper.UrlToNodeAsync(branch.Url);
-                if (urlToNodeResult.Info == ICitilinkScraper.HtmlNodeRequestInfo.SeeminglyOk)
-                {
-                    branch.Node = urlToNodeResult.Result;
-                    return true;
-                }
-                else if (urlToNodeResult.Info == ICitilinkScraper.HtmlNodeRequestInfo.TooManyRequests)
-                {
-                    return false;
-                }
-                else
-                    return false;
-            }
-
-            return true;
-        }
 
 
         private void OnCatalogUrlsTree_FiltersAndDuplicatesRemoved()
@@ -527,6 +331,82 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
                 currentBranchRoute.Pop();
             }
         }
+
+        private async Task<bool> EnsureDataLoadedToBranch(BranchWithFunctionality branch)
+        {
+
+            if (branch.Children.Any())
+            {
+                if (branch.functionality != null)
+                    return true;
+                else
+                    branch.functionality = PageFunctionality.UnknownCatalogOfCatalogs;
+                return true;
+            }
+            else
+            {
+                // Загружаем html-документ ветви.
+                var urlToNodeResult = await _scraper.UrlToNodeAsync(branch.Url);
+
+                // Если нет ошибок при загрузке страницы - загружаем данные.
+                if (urlToNodeResult.Info == ICitilinkScraper.HtmlNodeRequestInfo.SeeminglyOk)
+                {
+                    // Шаг 1: установка функционального назначения ветви.
+                    var node = urlToNodeResult.Result;
+
+                    PageFunctionality functionality;
+                    branch.functionality = functionality = ParsePageFunctionality(node);
+
+                    // Шаг 2: установка дочерних ветвей
+                    if(functionality == PageFunctionality.SubCatalog ||
+                        functionality == PageFunctionality.MainCatalog)
+                    {
+                        branch.Children = ParseCatalogBranchDescendants(node, functionality);
+                    }
+
+                    return true;
+                }
+                else if (urlToNodeResult.Info == ICitilinkScraper.HtmlNodeRequestInfo.TooManyRequests)
+                {
+                    _logger?.LogError($"{nameof(CitilinkMerchCatalogUrlsParser)}, {nameof(EnsureDataLoadedToBranch)}:\n" +
+                        $" Сервер устал: не вышло загрузить данные в ветвь.");
+                    return false;
+                }
+                else
+                {
+                    _logger?.LogError($"{nameof(CitilinkMerchCatalogUrlsParser)}, {nameof(EnsureDataLoadedToBranch)}:\n" +
+                        $" Не вышло загрузить данные в ветвь по причине {urlToNodeResult.Info}");
+                    return false;
+                }
+            }
+        }
+
+
+
+        private List<BranchWithFunctionality> ParseCatalogBranchDescendants(HtmlNode catalogNode,
+            PageFunctionality functionality)
+        {
+
+            switch (functionality)
+            {
+                
+                case PageFunctionality.MainCatalog:
+                    List<string> urls = ParseSubCatalogsUrlsFromMain(catalogNode);
+                    List<BranchWithFunctionality> subCatalogs = urls.Select(url =>
+                    new BranchWithFunctionality(default, url, [], false)).ToList();
+                    return subCatalogs;
+                case PageFunctionality.SubCatalog:
+                    urls = ParseSubCatalogsUrlsFromSub(catalogNode);
+                    subCatalogs = urls.Select(url =>
+                    new BranchWithFunctionality(default, url, [], false)).ToList();
+                    return subCatalogs;
+                default:
+                    throw new InvalidOperationException($"{nameof(ParseCatalogBranchDescendants)}:" +
+                    $" Ошибка: нельзя парсить страницу с функциональностью {functionality}.");
+            }
+
+        }
+
 
     }
 }

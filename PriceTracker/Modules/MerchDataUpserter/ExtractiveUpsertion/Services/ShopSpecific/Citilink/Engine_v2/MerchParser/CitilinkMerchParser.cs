@@ -41,7 +41,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
 
         //IAsyncEnumerable<CitilinkMerchParsingDto>
         public async Task<FunctionResult<IAsyncEnumerable<CitilinkMerchParsingDto>,
-            RetreiveAllFromMerchCatalog_ExecState>> RetreiveAllFromMerchCatalog(BranchWithHtml catalog)
+            RetreiveAllFromMerchCatalog_ExecState>> RetreiveAllFromMerchCatalog(BranchWithFunctionality catalog)
         {
             _logger?.LogTrace($"{nameof(CitilinkMerchParser)}, {nameof(RetreiveAllFromMerchCatalog)}: \n" +
                 $"Метод был вызван.");

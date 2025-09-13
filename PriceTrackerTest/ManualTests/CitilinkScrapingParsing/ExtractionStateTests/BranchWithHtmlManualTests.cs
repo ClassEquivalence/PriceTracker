@@ -26,7 +26,7 @@ namespace PriceTrackerTest.ManualTests.CitilinkScrapingParsing.ExtractionStateTe
         public void RemoveFiltersAndDuplicates_ManualCheck()
         {
             var url = $"https://www.citilink.ru/catalog/printery-lazernye--lazernye-mfu-mainmenu/?ref=mainmenu_left";
-            BranchWithHtml branch = new(default, url, []);
+            BranchWithFunctionality branch = new(default, url, []);
             _output.WriteLine(branch.GetCategoryString());
             _output.WriteLine(branch.GetCategorySlug());
             branch.RemoveFilter();

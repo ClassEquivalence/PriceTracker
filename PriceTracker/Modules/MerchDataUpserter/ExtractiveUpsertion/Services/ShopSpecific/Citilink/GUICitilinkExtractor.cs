@@ -150,9 +150,9 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             _logger?.LogTrace($"{nameof(GUICitilinkExtractor)}, {nameof(ProcessExtraction)}: \n" +
                 $"Извлечение товаров экстрактором Ситилинка началось.");
 
-            List<BranchWithHtml>? branches;
+            List<BranchWithFunctionality>? branches;
 
-            FunctionResult<List<BranchWithHtml>?, GetUrlsPortion_Info> getMerchCatalogUrlsResult;
+            FunctionResult<List<BranchWithFunctionality>?, GetUrlsPortion_Info> getMerchCatalogUrlsResult;
 
             while (!extractionProcessHaltIssued && (branches = (getMerchCatalogUrlsResult = await _merchCatalogsParser.
                 GetMerchCatalogUrlsPortion()).Result) != null && branches.Any())
@@ -263,7 +263,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         private CitilinkCatalogUrlsTree CreateInitialTree()
         {
-            BranchWithHtml root = new(default, _upsertionOptions.CitilinkMainCatalogUrl, []);
+            BranchWithFunctionality root = new(default, _upsertionOptions.CitilinkMainCatalogUrl, []);
 
             return new CitilinkCatalogUrlsTree(root);
         }

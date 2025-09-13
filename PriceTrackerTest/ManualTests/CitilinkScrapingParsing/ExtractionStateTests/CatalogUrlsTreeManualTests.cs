@@ -45,13 +45,13 @@ namespace PriceTrackerTest.ManualTests.CitilinkScrapingParsing.ExtractionStateTe
         [ManualFact]
         public void RemoveFiltersAndDuplicates_ManualCheck()
         {
-            BranchWithHtml ch1 = new(default, "https://www.citilink.ru/catalog/platformy-dlya-sborki-pk" +
+            BranchWithFunctionality ch1 = new(default, "https://www.citilink.ru/catalog/platformy-dlya-sborki-pk" +
                 "--platformy-dlya-sborki-pk-mainmenu/?ref=mainmenu_left", []);
 
-            BranchWithHtml ch2 = new(default, "https://www.citilink.ru/catalog/platformy-dlya-sborki-pk" +
+            BranchWithFunctionality ch2 = new(default, "https://www.citilink.ru/catalog/platformy-dlya-sborki-pk" +
                 "/?ref=mainmenu_left", []);
 
-            BranchWithHtml root = new(default, "https://www.citilink.ru/catalog/", [ch1, ch2]);
+            BranchWithFunctionality root = new(default, "https://www.citilink.ru/catalog/", [ch1, ch2]);
 
             CitilinkCatalogUrlsTree tree = new(root);
 

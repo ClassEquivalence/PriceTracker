@@ -6,14 +6,14 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
 
 
 
-    public record BranchWithHtml
+    public record BranchWithFunctionality
     {
 
         
 
         public int Id;
         public string Url;
-        public List<BranchWithHtml> Children;
+        public List<BranchWithFunctionality> Children;
 
         /// <summary>
         /// Ветвь обработана = из неё и её возможных наследников выкачаны все
@@ -21,17 +21,15 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
         /// </summary>
         public bool IsProcessed;
 
-        public HtmlNode? Node;
         public PageFunctionality? functionality;
 
-        public BranchWithHtml(int id, string url, List<BranchWithHtml> children, 
-            bool isProcessed = false, HtmlNode? node = null)
+        public BranchWithFunctionality(int id, string url, List<BranchWithFunctionality> children, 
+            bool isProcessed = false)
         {
             Id = id;
             Url = url;
             Children = children;
             IsProcessed = isProcessed;
-            Node = node;
         }
 
         public string GetCategoryString()

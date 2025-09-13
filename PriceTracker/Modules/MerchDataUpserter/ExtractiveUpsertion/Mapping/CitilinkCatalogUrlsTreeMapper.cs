@@ -17,16 +17,16 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Mapping
             return newInstanceTree;
         }
 
-        private Branch MapBranch(BranchWithHtml branch)
+        private Branch MapBranch(BranchWithFunctionality branch)
         {
             Branch newInstanceBranch = new(branch.Id, branch.Url,
                 branch.Children.Select(MapBranch).ToList(), branch.IsProcessed);
             return newInstanceBranch;
         }
 
-        private BranchWithHtml MapBranch(Branch branch)
+        private BranchWithFunctionality MapBranch(Branch branch)
         {
-            BranchWithHtml newInstanceBranch = new(branch.Id, branch.Url,
+            BranchWithFunctionality newInstanceBranch = new(branch.Id, branch.Url,
                 branch.Children.Select(MapBranch).ToList(), branch.IsProcessed);
             return newInstanceBranch;
         }

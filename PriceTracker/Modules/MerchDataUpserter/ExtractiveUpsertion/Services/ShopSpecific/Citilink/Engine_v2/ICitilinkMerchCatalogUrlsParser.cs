@@ -18,7 +18,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         /// <returns>
         /// Ненулевой список, только если Result.Info = Success
         /// </returns>
-        public Task<FunctionResult<List<BranchWithHtml>?, GetUrlsPortion_Info>> GetMerchCatalogUrlsPortion();
+        public Task<FunctionResult<List<BranchWithFunctionality>?, GetUrlsPortion_Info>> GetMerchCatalogUrlsPortion();
 
     }
 }

@@ -7,6 +7,6 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
     public interface ICitilinkMerchParser
     {
         Task<FunctionResult<IAsyncEnumerable<CitilinkMerchParsingDto>,
-            RetreiveAllFromMerchCatalog_ExecState>> RetreiveAllFromMerchCatalog(BranchWithHtml catalog);
+            RetreiveAllFromMerchCatalog_ExecState>> RetreiveAllFromMerchCatalog(BranchWithFunctionality catalog);
     }
 }
