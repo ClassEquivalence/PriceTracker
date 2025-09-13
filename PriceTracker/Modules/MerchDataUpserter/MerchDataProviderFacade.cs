@@ -64,7 +64,8 @@ namespace PriceTracker.Modules.MerchDataProvider
 
         public async Task ProcessMerchUpsertion()
         {
-            _logger.LogTrace("Запущен процесс upsert'а товаров.");
+            _logger.LogTrace($"{nameof(MerchDataProviderFacade)}: " +
+                $"Запущен процесс upsert'а товаров.");
             try
             {
                 await _scheduledUpserter.ProcessUpsertion();
@@ -92,7 +93,7 @@ namespace PriceTracker.Modules.MerchDataProvider
         {
             if (_options.UpsertionActive)
             {
-                await ProcessMerchUpsertion();
+                ProcessMerchUpsertion();
             }
             else
             {

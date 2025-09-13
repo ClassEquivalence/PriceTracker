@@ -22,7 +22,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
     public class GUICitilinkExtractor : IMerchDataExtractor<CitilinkMerchParsingDto,
         CitilinkExtractionStateDto>
     {
-        // TODO [Arch]: Зарефакторить бы логику на этом и более нижнем уровне.
+        // TODO: Упорядочить завершение процесса (сейчас: процесс завершается как от
+        // вызова IssueExtractionProcessHalt, так после проверки внутреннего состояния)
         private readonly CitilinkMerchParser _parser;
         private CitilinkMerchCatalogUrlsParser? _merchCatalogsParser;
 
