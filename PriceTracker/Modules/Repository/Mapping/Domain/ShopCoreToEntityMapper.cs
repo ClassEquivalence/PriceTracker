@@ -8,7 +8,7 @@ namespace PriceTracker.Modules.Repository.Mapping.Domain
     {
         private readonly IMerchCoreToEntityMapper<MerchDto, MerchEntity> _merchMapper;
         public ShopCoreToEntityMapper(IMerchCoreToEntityMapper<MerchDto, MerchEntity>
-            merchMapper, Func<ShopDto, ShopEntity?> getEntityIfExists) : base(getEntityIfExists)
+            merchMapper) : base()
         {
             _merchMapper = merchMapper;
         }

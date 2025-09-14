@@ -6,8 +6,7 @@ namespace PriceTracker.Modules.Repository.Mapping.Domain
     public class TimestampedPriceMapper : BaseGenericCoreToEntityMapper<TimestampedPriceDto,
         TimestampedPriceEntity>, ITimestampedPriceMapper
     {
-        public TimestampedPriceMapper(Func<TimestampedPriceDto, TimestampedPriceEntity?>
-            getEntityIfExists) : base(getEntityIfExists)
+        public TimestampedPriceMapper() : base()
         {
 
         }

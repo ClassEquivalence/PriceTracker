@@ -17,12 +17,14 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
 
         public override async Task CreateManyAsync(List<CitilinkMerchDto> citilinkMerches)
         {
+            _logger?.LogTrace($"{nameof(CitilinkMerchRepository)}, {nameof(CreateManyAsync)}: метод вызван.");
             await ((CitilinkMerchEntityRepository)EntityRepository).CreateManyAsync(citilinkMerches
                 .Select(Mapper.Map).ToList());
         }
 
         public async Task UpdateManyAsync(List<CitilinkMerchDto> citilinkMerches)
         {
+            _logger?.LogTrace($"{nameof(CitilinkMerchRepository)}, {nameof(UpdateManyAsync)}: метод вызван.");
             await ((CitilinkMerchEntityRepository)EntityRepository).UpdateManyAsync(citilinkMerches
                 .Select(Mapper.Map).ToList());
         }

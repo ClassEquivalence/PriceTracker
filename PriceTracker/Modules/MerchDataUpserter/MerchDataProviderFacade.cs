@@ -66,6 +66,8 @@ namespace PriceTracker.Modules.MerchDataProvider
         {
             _logger.LogTrace($"{nameof(MerchDataProviderFacade)}: " +
                 $"Запущен процесс upsert'а товаров.");
+
+
             try
             {
                 await _scheduledUpserter.ProcessUpsertion();

@@ -22,7 +22,7 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
         protected readonly ICoreToEntityMapper<TCoreDto, TEntity> Mapper;
         protected readonly IEntityRepository<TEntity> EntityRepository;
 
-        private readonly ILogger? _logger;
+        protected readonly ILogger? _logger;
 
         public EFGenericRepository(IEntityRepository<TEntity> entityRepository,
             ICoreToEntityMapper<TCoreDto, TEntity> mapper, ILogger? logger = null)

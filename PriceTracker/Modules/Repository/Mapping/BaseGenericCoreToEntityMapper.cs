@@ -8,16 +8,8 @@ namespace PriceTracker.Modules.Repository.Mapping
         where TCoreModel : BaseDto
         where TEntity : BaseEntity
     {
-        private readonly Func<TCoreModel, TEntity?> _getEntityIfExists;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="getEntityIfExists">Должен возвращать entity из репозитория,
-        /// если эта entity существует. Если не существует - null.</param>
-        public BaseGenericCoreToEntityMapper(Func<TCoreModel, TEntity?> getEntityIfExists)
+        public BaseGenericCoreToEntityMapper()
         {
-            _getEntityIfExists = getEntityIfExists;
         }
 
         public TCoreModel Map(TEntity entity)
@@ -27,11 +19,7 @@ namespace PriceTracker.Modules.Repository.Mapping
 
         public TEntity Map(TCoreModel model)
         {
-            var entity = _getEntityIfExists(model);
-            if (entity != null)
-                MapModelFieldsToEntity(model, entity);
-
-            return entity ?? CreateEntityFromModel(model);
+            return CreateEntityFromModel(model);
         }
 
         /// <summary>

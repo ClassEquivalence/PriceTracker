@@ -31,7 +31,9 @@ namespace PriceTracker
             //string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
             //builder.Services.AddDbContext<PriceTrackerContext>(options => options.UseNpgsql(connection));
 
-            builder.Configuration.AddJsonFile("Secrets/SecretSettings.json");
+
+            builder.Services.Configure<ProductionDbOptions>(
+                builder.Configuration.GetSection(ProductionDbOptions.OptionsSectionKey));
 
             builder.Services.Configure<MerchUpsertionOptions>(
                 builder.Configuration.GetSection(MerchUpsertionOptions.OptionsSectionKey));

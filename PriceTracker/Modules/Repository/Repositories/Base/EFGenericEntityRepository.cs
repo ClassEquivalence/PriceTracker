@@ -11,15 +11,18 @@ namespace PriceTracker.Modules.Repository.Repositories.Base
         where SpecificDbContext : DbContext
     {
 
+        protected ILogger? Logger;
+
         protected virtual IDbContextFactory<SpecificDbContext> _dbContextFactory
         { get; set; }
 
         //TODO: Прописать инклюды всякие.
 
-        public EFGenericEntityRepository(IDbContextFactory<SpecificDbContext> dbContextFactory)
+        public EFGenericEntityRepository(IDbContextFactory<SpecificDbContext> dbContextFactory,
+            ILogger? logger = null)
         {
             _dbContextFactory = dbContextFactory;
-
+            Logger = logger;
         }
 
 

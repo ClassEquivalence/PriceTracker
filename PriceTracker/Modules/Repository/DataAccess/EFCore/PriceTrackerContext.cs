@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using PriceTracker.Core.Configuration.ProvidedWithDI;
 using PriceTracker.Modules.Repository.Entities.Domain;
 using PriceTracker.Modules.Repository.Entities.Domain.MerchPriceHistory;
 using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;
@@ -29,7 +31,6 @@ namespace PriceTracker.Modules.Repository.DataAccess.EFCore
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // TODO: Можно вынести все эти строки в отдельные классы конфигурации.
 
             base.OnModelCreating(modelBuilder);
 
@@ -37,48 +38,31 @@ namespace PriceTracker.Modules.Repository.DataAccess.EFCore
             modelBuilder.Entity<CitilinkMerchEntity>()
                 .HasIndex(m => m.CitilinkId).IsUnique();
 
-            /*
-            modelBuilder.Entity<MerchPriceHistoryEntity>()
-                .HasMany(h => h.TimestampedPrices)
-                .WithOne(p => p.MerchPriceHistory)
-                .HasForeignKey(p => p.MerchPriceHistoryId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-
-            modelBuilder.Entity<MerchPriceHistoryEntity>()
-                .HasOne(x => x.CurrentPrice)
-                .WithMany()
-                .HasForeignKey(x => x.CurrentPriceId).IsRequired(false)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            */
-
-
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-
-            //optionsBuilder.EnableSensitiveDataLogging();
-
-            // TODO: Вынести строку подключения в сервис а в сервисе получать из конфига.
-            /*
-                _logger?.LogTrace("Подключаемся к удаленной БД:" +
-                    $"{_conectionString}");
-            */
             optionsBuilder.UseNpgsql
-                (_conectionString + _connectionPassword);
+                (_conectionString + _connectionPassword + "Include Error Detail=true;");
 
             optionsBuilder.EnableSensitiveDataLogging(true);
 
         }
-        public PriceTrackerContext(IConfiguration appConfig, ILogger<Program>? logger = null)
+        public PriceTrackerContext(IOptions<ProductionDbOptions> options, ILogger<Program>? logger = null)
         {
-            _conectionString = appConfig.GetConnectionString("ProductionDatabase");
-            _connectionPassword = appConfig.GetConnectionString("ProductionDatabasePassword");
+            _conectionString = options.Value.ConnectionStringBody;
+            _connectionPassword = options.Value.ConnectionPassword;
             _logger = logger;
-            //var isCreated = Database.EnsureCreated();
-            //logger?.LogDebug($"БД была создана?: {isCreated}");
+
+            if (string.IsNullOrEmpty(_conectionString))
+            {
+                throw new ArgumentException($"{nameof(PriceTrackerContext)}: ConnectionString is null");
+            }
+            else
+            {
+                _logger?.LogTrace($"{nameof(PriceTrackerContext)}: Попытка подключиться к БД");
+            }
+
         }
     }
 }

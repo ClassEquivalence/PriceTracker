@@ -11,7 +11,7 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
 
 
         public CitilinkMerchEntityRepository(IDbContextFactory<PriceTrackerContext>
-            dbContextFactory) : base(dbContextFactory)
+            dbContextFactory, ILogger? logger = null) : base(dbContextFactory, logger)
         {
         }
 
@@ -31,6 +31,7 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
 
         public async Task CreateManyAsync(List<CitilinkMerchEntity> citilinkMerches)
         {
+            Logger?.LogTrace($"{nameof(CitilinkMerchEntityRepository)}, {nameof(CreateManyAsync)}: Метод вызван.");
             using var context = _dbContextFactory.CreateDbContext();
             var set = context.Set<CitilinkMerchEntity>();
             await set.AddRangeAsync(citilinkMerches);
@@ -39,9 +40,14 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
 
         public async Task UpdateManyAsync(List<CitilinkMerchEntity> citilinkMerches)
         {
+            Logger?.LogTrace($"{nameof(CitilinkMerchEntityRepository)}, {nameof(UpdateManyAsync)}: Метод вызван.");
+
             using var context = _dbContextFactory.CreateDbContext();
+
             var set = context.Set<CitilinkMerchEntity>();
             set.UpdateRange(citilinkMerches);
+
+
             await context.SaveChangesAsync();
         }
     }

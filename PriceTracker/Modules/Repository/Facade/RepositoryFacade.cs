@@ -36,10 +36,14 @@ namespace PriceTracker.Modules.Repository.Facade
         private readonly PriceHistoryRepository _priceHistoryRepository;
         private readonly TimestampedPriceRepository _timestampedPriceRepository;
 
+        private readonly ILogger? _logger;
+
 
         public RepositoryFacade(PriceTrackerContext dbContext,
-            IDbContextFactory<PriceTrackerContext> dbcontextFactory, ILogger? logger = null)
+            IDbContextFactory<PriceTrackerContext> dbcontextFactory, ILogger<Program>? logger = null)
         {
+            _logger = logger;
+
             _timeExtractionHappenedRepository = new(dbContext);
 
             CitilinkCatalogUrlBranchMapper citilinkCatalogUrlBranchMapper = new(logger);
@@ -53,26 +57,21 @@ namespace PriceTracker.Modules.Repository.Facade
 
             TimestampedPriceEntityRepository timestampedPriceEntityRepository
                 = new(dbcontextFactory);
-            TimestampedPriceMapper timestampedPriceMapper = new(dto => timestampedPriceEntityRepository.
-            GetEntity(dto.Id));
+            TimestampedPriceMapper timestampedPriceMapper = new();
 
             PriceHistoryEntityRepository priceHistoryEntityRepository = new(dbcontextFactory);
-            PriceHistoryMapper priceHistoryMapper = new(timestampedPriceMapper,
-                dto => priceHistoryEntityRepository.GetEntity(dto.Id));
+            PriceHistoryMapper priceHistoryMapper = new(timestampedPriceMapper, logger);
 
 
-            CitilinkMerchEntityRepository citilinkMerchEntityRepository = new(dbcontextFactory);
-            CitilinkMerchCoreToEntityMapper citilinkMerchMapper = new(priceHistoryMapper,
-                dto => citilinkMerchEntityRepository.GetEntity(dto.Id));
+            CitilinkMerchEntityRepository citilinkMerchEntityRepository = new(dbcontextFactory, logger);
+            CitilinkMerchCoreToEntityMapper citilinkMerchMapper = new(priceHistoryMapper);
 
             // TODO: При добавлении новых типов товаров (наследников Merch), пересмотреть инициализацию маппера,
             // да и сам маппер.
-            MerchMapper merchMapper = new(dto => citilinkMerchEntityRepository.GetEntity(dto.Id),
-                priceHistoryMapper);
+            MerchMapper merchMapper = new(priceHistoryMapper);
 
             ShopEntityRepository shopEntityRepository = new(dbcontextFactory);
-            ShopCoreToEntityMapper shopMapper = new(merchMapper, dto => shopEntityRepository.
-            GetEntity(dto.Id));
+            ShopCoreToEntityMapper shopMapper = new(merchMapper);
 
             _citilinkMerchRepository = new CitilinkMerchRepository(citilinkMerchEntityRepository,
                 citilinkMerchMapper, logger);
@@ -324,6 +323,7 @@ namespace PriceTracker.Modules.Repository.Facade
 
         async Task ICitilinkMerchRepositoryFacade.CreateManyAsync(List<CitilinkMerchDto> citilinkMerches)
         {
+            _logger?.LogTrace($"{nameof(RepositoryFacade)}, {nameof(ICitilinkMerchRepositoryFacade.CreateManyAsync)}: метод вызван.");
             await _citilinkMerchRepository.CreateManyAsync(citilinkMerches);
         }
 
@@ -334,6 +334,7 @@ namespace PriceTracker.Modules.Repository.Facade
 
         async Task ICitilinkMerchRepositoryFacade.UpdateManyAsync(List<CitilinkMerchDto> citilinkMerches)
         {
+            _logger?.LogTrace($"{nameof(RepositoryFacade)}, {nameof(ICitilinkMerchRepositoryFacade.UpdateManyAsync)}: метод вызван.");
             await _citilinkMerchRepository.UpdateManyAsync(citilinkMerches);
         }
     }

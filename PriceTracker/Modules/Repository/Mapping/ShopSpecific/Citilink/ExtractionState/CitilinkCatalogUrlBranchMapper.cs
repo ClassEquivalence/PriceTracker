@@ -23,7 +23,7 @@ namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink.Extracti
 
         public CitilinkCatalogBranchEntity Map(Branch model)
         {
-            _logger?.LogTrace($"{nameof(CitilinkCatalogUrlBranchMapper)}: url ветви: {model.Url}");
+            //_logger?.LogTrace($"{nameof(CitilinkCatalogUrlBranchMapper)}: url ветви: {model.Url}");
             return new CitilinkCatalogBranchEntity(model.Url,
                 model.Children .Select(Map).ToList(), model.IsProcessed, model.Id);
         }

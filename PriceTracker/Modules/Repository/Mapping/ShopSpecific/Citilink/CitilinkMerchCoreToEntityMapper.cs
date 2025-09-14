@@ -8,8 +8,7 @@ namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink
         IMerchCoreToEntityMapper<CitilinkMerchDto, CitilinkMerchEntity>
     {
         private readonly IPriceHistoryMapper _priceHistoryMapper;
-        public CitilinkMerchCoreToEntityMapper(IPriceHistoryMapper priceHistoryMapper,
-            Func<CitilinkMerchDto, CitilinkMerchEntity?> getEntityIfExists) : base(getEntityIfExists)
+        public CitilinkMerchCoreToEntityMapper(IPriceHistoryMapper priceHistoryMapper) : base()
         {
             _priceHistoryMapper = priceHistoryMapper;
         }

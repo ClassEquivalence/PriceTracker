@@ -9,9 +9,12 @@ namespace PriceTracker.Modules.Repository.Mapping.Domain
     {
         private readonly ITimestampedPriceMapper _timestampedPriceMapper;
 
+        private readonly ILogger? _logger;
+
         public PriceHistoryMapper(ITimestampedPriceMapper timestampedPriceMapper,
-            Func<MerchPriceHistoryDto, MerchPriceHistoryEntity?> getEntityIfExists) : base(getEntityIfExists)
+            ILogger? logger = null) : base()
         {
+            _logger = logger;
             _timestampedPriceMapper = timestampedPriceMapper;
         }
 
@@ -25,7 +28,9 @@ namespace PriceTracker.Modules.Repository.Mapping.Domain
             var timestampedPricesAsEntities = previousPricesAsCoreDtos.
                 Select(pe => _timestampedPriceMapper.Map(pe)).Append(currentPriceAsEntity).ToList();
 
-            var currentPricePointerAsEntity = new CurrentPricePointerEntity(default, default, default);
+            var currentPricePointerAsEntity = new CurrentPricePointerEntity(entity.Id, 
+                currentPriceAsEntity.Id, model.CurrentPricePointerId);
+
             currentPricePointerAsEntity.MerchPriceHistory = entity;
             currentPricePointerAsEntity.CurrentPrice = currentPriceAsEntity;
 
@@ -45,7 +50,7 @@ namespace PriceTracker.Modules.Repository.Mapping.Domain
                 (ppae => _timestampedPriceMapper.Map(ppae)).ToList();
             var currentPriceAsCoreDto = _timestampedPriceMapper.Map(currentPriceAsEntity);
             return new MerchPriceHistoryDto(entity.Id, previousPricesAsCoreDtos, currentPriceAsCoreDto,
-                entity.MerchId);
+                entity.MerchId, entity.CurrentPricePointer.Id);
         }
 
         protected override void MapModelFieldsToEntity(MerchPriceHistoryDto model, MerchPriceHistoryEntity entity)

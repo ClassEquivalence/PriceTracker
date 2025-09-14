@@ -121,11 +121,13 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                     priceHistory, insertable.CitilinkId, _citilinkShop.Id, default);
                 coreDtosToInsert.Add(inserted);
             }
+
+            _logger?.LogDebug($"{nameof(CitilinkMerchDataUpserter)}, {nameof(UpsertBundle)}: Началось сохранение набора товаров в БД.");
             var insertTask = _merchRepository.CreateManyAsync(coreDtosToInsert);
             var updateTask = _merchRepository.UpdateManyAsync(coreDtosToUpdate);
             await insertTask;
             await updateTask;
-
+            _logger?.LogDebug($"{nameof(CitilinkMerchDataUpserter)}, {nameof(UpsertBundle)}: Завершилось сохранение набора товаров в БД.");
 
             StringBuilder insertedMerchesSb = new();
             insertedMerchesSb.Append($"{nameof(CitilinkMerchDataUpserter)}: товаров с" +
@@ -163,7 +165,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
             MerchPriceHistoryDto priceHistory = new(oldPriceHistory.Id,
                 oldPriceHistory.PreviousTimestampedPricesList.Append(oldPriceHistory.CurrentPrice)
-                .ToList(), currentPriceDto, oldPriceHistory.MerchId);
+                .ToList(), currentPriceDto, oldPriceHistory.MerchId, oldPriceHistory.CurrentPricePointerId);
 
             var updatedCoreDto = new CitilinkMerchDto(dto.Id, dto.Name, priceHistory,
                 dto.CitilinkId, dto.ShopId, dto.PriceHistoryId);
