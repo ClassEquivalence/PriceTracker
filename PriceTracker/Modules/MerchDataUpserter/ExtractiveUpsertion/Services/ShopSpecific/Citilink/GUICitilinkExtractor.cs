@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using PriceTracker.Core.Configuration.ProvidedWithDI;
+using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
 using PriceTracker.Core.Models.Process;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
@@ -10,7 +10,6 @@ using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.MerchParser;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
 using static PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.ICitilinkMerchCatalogUrlsParser;
 
 
@@ -41,7 +40,6 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         private readonly ILogger? _logger;
         private readonly CitilinkScraper _baseScraper;
-        private string? _storageState;
         private readonly CitilinkUpsertionOptions _upsertionOptions;
 
         private CitilinkCatalogUrlsTreeMapper catalogUrlsTreeMapper;
@@ -52,13 +50,11 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         private ExtractionPartialCycleResult extractionResultInfo;
 
 
-        public GUICitilinkExtractor(BrowserAdapter browser, (int requests, TimeSpan period)
-            maxPageRequestsPerTime, CitilinkCatalogUrlsTreeMapper catalogTreeMapper,
+        public GUICitilinkExtractor(CitilinkCatalogUrlsTreeMapper catalogTreeMapper,
             CitilinkUpsertionOptions upsertionOptions, string userAgent,
-            ILogger? logger = null, string? storageState = null)
+            ILogger? logger = null)
         {
-            CitilinkScraper baseScraper = _baseScraper = new(browser, 
-                maxPageRequestsPerTime.requests, upsertionOptions, userAgent, logger);
+            CitilinkScraper baseScraper = _baseScraper = new(upsertionOptions, userAgent, logger);
 
             baseScraper.RequestLimitReached += BaseScraper_OnRequestLimitReached;
 
@@ -68,7 +64,6 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
 
             _logger = logger;
-            _storageState = storageState;
             _upsertionOptions = upsertionOptions;
 
             catalogUrlsTreeMapper = catalogTreeMapper;
@@ -81,7 +76,6 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             RunExtractionProcess()
         {
             isCompleted = false;
-            await _baseScraper.PerformInitialRunupAsync(_storageState);
 
             _catalogUrlsTree = CreateInitialTree();
 
@@ -104,7 +98,6 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             ContinueExtractionProcess(CitilinkExtractionStateDto extractionData)
         {
             isCompleted = false;
-            await _baseScraper.PerformInitialRunupAsync(_storageState);
 
             _catalogUrlsTree = catalogUrlsTreeMapper.Map(extractionData.CachedUrls);
 
@@ -245,11 +238,6 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         public CitilinkExtractionStateDto? GetProgress()
         {
             return CitilinkExtractionState;
-        }
-
-        public async Task<string> GetScraperStorageStateAsync()
-        {
-            return await _baseScraper.GetStorageStateAsync();
         }
 
         protected void Stop_ServerTired(string nameOfCaller)

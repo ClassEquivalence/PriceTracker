@@ -1,4 +1,4 @@
-﻿namespace PriceTracker.Core.Configuration.ProvidedWithDI
+﻿namespace PriceTracker.Core.Configuration.ProvidedWithDI.Options
 {
     public class CitilinkUpsertionOptions
     {
@@ -21,6 +21,7 @@
 
         public string CitilinkAPIRoute { get; set; } = string.Empty;
 
+        public string CitilinkHttpClientCookie { get; set; } = string.Empty;
 
     }
 }

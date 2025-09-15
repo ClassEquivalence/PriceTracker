@@ -1,7 +1,6 @@
 ﻿using HtmlAgilityPack;
-using PriceTracker.Core.Configuration.ProvidedWithDI;
+using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
 using PriceTracker.Core.Utils;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
 using System.Net.Http;
 using System.Text.Json;
 using static PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper.ICitilinkScraper;
@@ -14,10 +13,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
 
         private readonly MerchFetchRequestBuilder _merchFetchRequestBuilder;
 
-
-        private readonly BrowserAdapter _browser;
         private readonly ILogger? _logger;
-        private readonly string _citilinkCatalogPageUrl = "https://www.citilink.ru/catalog/";
+        private readonly string _citilinkCatalogPageUrl;
         private readonly CitilinkUpsertionOptions _options;
 
         private int requestCount;
@@ -26,21 +23,21 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
 
         public event Action? RequestLimitReached;
 
-        public CitilinkScraper(BrowserAdapter browserAdapter, int maxRequestsPerTime,
-            CitilinkUpsertionOptions options, string userAgent, ILogger? logger = null)
+        public CitilinkScraper(CitilinkUpsertionOptions options, string userAgent, ILogger? logger = null)
         {
             _merchFetchRequestBuilder = new(options.CitilinkAPIRoute);
 
+
             _baseClient = new HttpClient();
-
             _baseClient.DefaultRequestHeaders.Add("User-Agent", userAgent);
+            _baseClient.DefaultRequestHeaders.Add("Cookie", options.CitilinkHttpClientCookie);
 
-            _browser = browserAdapter;
+
             _logger = logger;
             requestCount = 0;
-            _maxRequestsPerTime = maxRequestsPerTime;
+            _maxRequestsPerTime = options.MaxPageRequestsPerTime;
             _options = options;
-
+            _citilinkCatalogPageUrl = _options.CitilinkMainCatalogUrl;
         }
 
 
@@ -62,7 +59,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         public async Task<FunctionResult<HtmlNode, HtmlNodeRequestInfo>> UrlToNodeAsync(string url)
         {
             _logger?.LogDebug($"{nameof(UrlToNodeAsync)}: превращаем {url} в узел.");
-            string html = await _browser.UrlToHtmlAsync(url);
+            string html = await _baseClient.GetStringAsync(url);
             requestCount++;
             if (requestCount >= _maxRequestsPerTime)
             {
@@ -86,103 +83,11 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
             return new(root, HtmlNodeRequestInfo.SeeminglyOk);
         }
 
-
-        /*
-        public async Task<HtmlNode> ScrapProductPortionAsHtmlAsync(string url, int attemptCounts = 10)
-        {
-
-            _logger?.LogDebug($"{nameof(ScrapProductPortionAsHtmlAsync)}: попытка взять порцию из {url}.");
-            string html;
-            for (int i = 1; i <= attemptCounts; i++)
-            {
-                try
-                {
-                    await GotoAsync(url);
-
-                    await WaitForProductPortionLoadedAsync();
-
-                    break;
-                }
-                catch (TimeoutException ex)
-                {
-                    _logger?.LogTrace($"{ScrapProductPortionAsHtmlAsync}: Не вышло извлечь данные с {i}-го раза.");
-
-                    //html = await GetHtmlContentAsync();
-                    //_logger?.LogTrace($"{ScrapProductPortionFromUrl}: извлеченный html:\n {html}");
-
-                    if (i == attemptCounts)
-                    {
-                        throw new TimeoutException($"Не вышло извлечь данные с {i}-х раз.", ex);
-                    }
-                }
-            }
-            html = await GetHtmlContentAsync();
-            //_logger?.LogTrace($"{ScrapProductPortionFromUrl}: извлеченный html:\n {html}");
-            return HtmlToNode(html);
-        }
-        */
-
-
-        private async Task<string> GetHtmlContentAsync()
-        {
-            string html;
-            html = await _browser.GetHtmlContentAsync();
-            return html;
-        }
-
-        private async Task GotoAsync(string url)
-        {
-            url = url.TrimEnd('/');
-            await _browser.GotoAsync(url);
-        }
-        private async Task WaitForProductPortionLoadedAsync()
-        {
-            await _browser.WaitForFunctionAsync(
-                @"() => {
-                //if (document.readyState !== 'complete') return false;
-
-                const items = document.querySelectorAll('[data-meta-product-id]');
-                if (items.length === 0) return false;
-
-                return Array.from(items).every(el =>
-                    el.getAttribute('data-meta-product-id')?.trim().length > 0
-                    );
-                }");
-        }
-
         public void RefreshRequestsCount()
         {
             requestCount = 0;
         }
 
-        public async Task PerformInitialRunupAsync(string? storageState = null)
-        {
-            _logger?.LogDebug("Начальная инициализация скрапера ситилинка началась.");
-            if (!string.IsNullOrWhiteSpace(storageState))
-            {
-                await _browser.LoadStorageStateAsync(storageState);
-                _logger?.LogDebug("Загружен storagestate браузера для ситилинка." +
-                    "\nИнициализация скрапера ситилинка завершилась.");
-            }
-            else
-            {
-                var gotoTask = _browser.GotoAsync(_citilinkCatalogPageUrl);
-                var minimumWaitTask = Task.Delay(10000);
-                await Task.WhenAll([gotoTask, minimumWaitTask]);
-                await _browser.ReloadAsync();
-                requestCount += 2;
-                if (requestCount >= _maxRequestsPerTime)
-                {
-                    RequestLimitReached?.Invoke();
-                }
-                _logger?.LogDebug("Созданы новые файлы куки для скрапера ситилинка." +
-                    "\nИнициализация скрапера ситилинка завершилась.");
-            }
-        }
-        public async Task<string> GetStorageStateAsync()
-        {
-            return await _browser.GetStorageStateAsync();
-        }
 
     }
 }

@@ -32,9 +32,6 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         public Task<HttpResponseMessage> ScrapProductPortionAsJsonAsync(string categorySlug, int page, int perPage = 1000,
             string? cookie = default);
 
-        public Task PerformInitialRunupAsync(string? storageState = null);
-        public Task<string> GetStorageStateAsync();
-
 
     }
 }

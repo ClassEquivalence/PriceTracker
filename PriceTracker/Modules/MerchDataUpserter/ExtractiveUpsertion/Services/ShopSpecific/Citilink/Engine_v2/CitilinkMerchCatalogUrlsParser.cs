@@ -1,5 +1,5 @@
 ﻿using HtmlAgilityPack;
-using PriceTracker.Core.Configuration.ProvidedWithDI;
+using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
 using PriceTracker.Core.Utils;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;

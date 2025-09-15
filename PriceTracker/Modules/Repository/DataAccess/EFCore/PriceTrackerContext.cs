@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using PriceTracker.Core.Configuration.ProvidedWithDI;
+using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
 using PriceTracker.Modules.Repository.Entities.Domain;
 using PriceTracker.Modules.Repository.Entities.Domain.MerchPriceHistory;
 using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;

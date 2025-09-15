@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PriceTracker.Core.Configuration.ProvidedWithDI;
+using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
 using PriceTracker.Core.Utils;
 using PriceTracker.Modules.MerchDataProvider;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
@@ -38,6 +39,7 @@ namespace PriceTracker
             builder.Services.Configure<MerchUpsertionOptions>(
                 builder.Configuration.GetSection(MerchUpsertionOptions.OptionsSectionKey));
 
+            builder.Services.AddSingleton<IAppEnvironment, HostEnvironmentAdapter>();
 
             if (builder.Environment.IsDevelopment())
             {
