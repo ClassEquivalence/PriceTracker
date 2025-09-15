@@ -66,6 +66,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
             try
             {
+                _logger?.LogInformation($"Запущен апсершн Ситилинка.");
                 await base.ProcessUpsertion();
             }
             catch(Exception ex)

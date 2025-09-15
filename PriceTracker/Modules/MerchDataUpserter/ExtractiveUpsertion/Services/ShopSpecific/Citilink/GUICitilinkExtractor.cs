@@ -54,11 +54,11 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         public GUICitilinkExtractor(BrowserAdapter browser, (int requests, TimeSpan period)
             maxPageRequestsPerTime, CitilinkCatalogUrlsTreeMapper catalogTreeMapper,
-            CitilinkUpsertionOptions upsertionOptions,
+            CitilinkUpsertionOptions upsertionOptions, string userAgent,
             ILogger? logger = null, string? storageState = null)
         {
             CitilinkScraper baseScraper = _baseScraper = new(browser, 
-                maxPageRequestsPerTime.requests, upsertionOptions, logger);
+                maxPageRequestsPerTime.requests, upsertionOptions, userAgent, logger);
 
             baseScraper.RequestLimitReached += BaseScraper_OnRequestLimitReached;
 

@@ -7,5 +7,8 @@
         public CitilinkUpsertionOptions CitilinkUpsertionOptions { get; set; }
 
         public bool UpsertionActive { get; set; }
+
+
+        public string UserAgent { get; set; } = string.Empty;
     }
 }

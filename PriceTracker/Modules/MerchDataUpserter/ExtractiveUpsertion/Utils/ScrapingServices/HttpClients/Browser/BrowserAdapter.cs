@@ -11,12 +11,24 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.Scrap
         private readonly (float minDelay, float maxDelay) _delayRange;
         private readonly ILogger? _logger;
         private readonly Random _randomGenerator;
+
+
+        /// <summary>
+        /// Генератор чисел numberGenerator должен генерировать случайную задержку действий 
+        /// браузера в заданном delayRange диапазоне.
+        /// </summary>
+        /// <param name="browser"></param>
+        /// <param name="delayRange"></param>
+        /// <param name="userAgent"></param>
+        /// <param name="logger"></param>
+        /// <param name="numberGenerator"></param>
         public BrowserAdapter(IBrowser browser, (float minDelay, float maxDelay) delayRange,
-            ILogger? logger = null, Random? numberGenerator = null)
+            string userAgent, ILogger? logger = null, Random? numberGenerator = null)
         {
             _browser = browser;
-            _browserContext = _browser.NewContextAsync().Result;
+            _browserContext = _browser.NewContextAsync(new() { UserAgent = userAgent }).Result;
 
+            
 
             _page = _browserContext.NewPageAsync().Result;
             _delayRange = delayRange;

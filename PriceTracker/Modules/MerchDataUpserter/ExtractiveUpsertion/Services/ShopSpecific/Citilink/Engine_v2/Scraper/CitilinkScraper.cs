@@ -2,6 +2,7 @@
 using PriceTracker.Core.Configuration.ProvidedWithDI;
 using PriceTracker.Core.Utils;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
+using System.Net.Http;
 using System.Text.Json;
 using static PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper.ICitilinkScraper;
 
@@ -26,13 +27,13 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         public event Action? RequestLimitReached;
 
         public CitilinkScraper(BrowserAdapter browserAdapter, int maxRequestsPerTime,
-            CitilinkUpsertionOptions options, ILogger? logger = null)
+            CitilinkUpsertionOptions options, string userAgent, ILogger? logger = null)
         {
             _merchFetchRequestBuilder = new(options.CitilinkAPIRoute);
 
             _baseClient = new HttpClient();
-            //_baseClient.DefaultRequestHeaders.UserAgent
 
+            _baseClient.DefaultRequestHeaders.Add("User-Agent", userAgent);
 
             _browser = browserAdapter;
             _logger = logger;

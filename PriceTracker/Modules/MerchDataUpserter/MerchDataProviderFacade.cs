@@ -43,7 +43,7 @@ namespace PriceTracker.Modules.MerchDataProvider
 
             var browser = Playwright.CreateAsync().Result.Chromium.LaunchAsync().Result;
             BrowserAdapter browserAdapter = new(browser, (citilinkOptions.HeadlessBrowserMinDelay,
-                citilinkOptions.HeadlessBrowserMaxDelay),
+                citilinkOptions.HeadlessBrowserMaxDelay), _options.UserAgent,
                 _logger);
 
             var CitilinkStorageState = ((ICitilinkMiscellaneousRepositoryFacade)_repository).
@@ -51,7 +51,7 @@ namespace PriceTracker.Modules.MerchDataProvider
             GUICitilinkExtractor extractor =
                 new(browserAdapter, (citilinkOptions.MaxPageRequestsPerTime, 
                 TimeSpan.FromHours(citilinkOptions.MinCooldownForPageRequests)), new(), citilinkOptions,
-                _logger, storageState: CitilinkStorageState?.StorageState);
+                _options.UserAgent, _logger, storageState: CitilinkStorageState?.StorageState);
 
             ScheduledCitilinkMerchUpserter
                 scheduledCitilinkMerchUpserter = new(consumer, extractor, TimeSpan.
@@ -64,7 +64,7 @@ namespace PriceTracker.Modules.MerchDataProvider
 
         public async Task ProcessMerchUpsertion()
         {
-            _logger.LogTrace($"{nameof(MerchDataProviderFacade)}: " +
+            _logger.LogInformation($"{nameof(MerchDataProviderFacade)}: " +
                 $"Запущен процесс upsert'а товаров.");
 
 

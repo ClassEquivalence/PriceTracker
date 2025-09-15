@@ -84,10 +84,16 @@ namespace PriceTracker
             app.MapRazorPages();
             app.MapControllers();
 
+
+            app.MapFallbackToFile("index.html");
+
             app.Services.GetService<IRepositoryFacade>()?.EnsureRepositoryInitialized();
 
             //var upsertionTask = app.Services.GetService<IMerchDataProviderFacade>()?.
             //    ProcessMerchUpsertion();
+
+
+
 
             var appTask = app.RunAsync();
 
