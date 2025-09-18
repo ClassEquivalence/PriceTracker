@@ -58,9 +58,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
             baseScraper.RequestLimitReached += BaseScraper_OnRequestLimitReached;
 
-            //CitilinkScraperSafeAccessAdapter scraper = new(baseScraper,
-            //    maxPageRequestsPerTime);
-            _parser = new CitilinkMerchParser(baseScraper, logger);
+            _parser = new CitilinkMerchParser(baseScraper, logger,
+                upsertionOptions.IgnoredCategorySlugs.ToList());
 
 
             _logger = logger;
@@ -135,6 +134,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         /// - Достигнут лимит запросов, установленный в скрапере;
         /// <br/>
         /// - Полный цикл извлечения товаров завершен.
+        /// <br/>
+        /// - После вызова IssueExtractionProcessHalt
         /// </summary>
         /// <returns></returns>
         protected async IAsyncEnumerable<CitilinkMerchParsingDto> ProcessExtraction()
@@ -147,56 +148,58 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
             FunctionResult<List<BranchWithFunctionality>?, GetUrlsPortion_Info> getMerchCatalogUrlsResult;
 
-            while (!extractionProcessHaltIssued && (branches = (getMerchCatalogUrlsResult = await _merchCatalogsParser.
-                GetMerchCatalogUrlsPortion()).Result) != null && branches.Any())
+            while (!extractionProcessHaltIssued)
             {
-                _logger?.LogTrace($"{nameof(GUICitilinkExtractor)}, {nameof(ProcessExtraction)}: \n" +
-                    $"Главный цикл while ведёт работу.");
-
-                if(getMerchCatalogUrlsResult.Info == GetUrlsPortion_Info.ServerTired)
-                {
-                    Stop_ServerTired(nameof(ProcessExtraction));
-                    extractionResultInfo = ExtractionPartialCycleResult.HaltedAsTired;
+                // Этап 1: получение нужного URL-адреса каталога товаров.
+                getMerchCatalogUrlsResult = await _merchCatalogsParser.GetMerchCatalogUrlsPortion();
+                branches = getMerchCatalogUrlsResult.Result;
+                if (!HandleUrlPortionResult(getMerchCatalogUrlsResult.Info))
                     yield break;
+
+                // Проверка наличия ветвей в возвращаемом результате.
+                if (branches == null || !branches.Any())
+                {
+                    throw new InvalidOperationException($"{nameof(GUICitilinkExtractor)}, {nameof(ProcessExtraction)}: " +
+                        $" Неожиданное поведение: ветвей из {nameof(_merchCatalogsParser.GetMerchCatalogUrlsPortion)} " +
+                        $"при успешном результате должно быть больше 0.");
                 }
+
+                // Этап 2: Извлечение товаров по URL-адресу каталога товаров.
                 foreach (var branch in branches)
                 {
-                    _logger?.LogTrace($"{nameof(GUICitilinkExtractor)}, {nameof(ProcessExtraction)}: \n" +
-                    $"Цикл for в цикле while начал работу. for branch in branches (count={branches.Count}).");
                     if (extractionProcessHaltIssued)
                     {
                         break;
                     }
-                    var retreiveResult = await _parser.RetreiveAllFromMerchCatalog(branch);
-                    
-                    var merches = retreiveResult.Result;
+                    var merchResult = await _parser.RetreiveAllFromMerchCatalog(branch);
 
-                    if (merches != null)
+                    switch (merchResult.Info)
                     {
-                        await foreach (var merch in merches)
-                        {
-                            yield return merch;
-                        }
-                        branch.IsProcessed = true;
-                    }
+                        case CitilinkMerchParser.RetreiveAllFromMerchCatalog_ExecState.Success:
+                            var merches = merchResult.Result;
+                            if (merches != null)
+                            {
+                                await foreach (var merch in merches)
+                                {
+                                    yield return merch;
+                                }
+                                branch.IsProcessed = true;
+                            }
+                            break;
 
-                    if(retreiveResult.Info == CitilinkMerchParser.RetreiveAllFromMerchCatalog_ExecState.ServerGrownTired)
-                    {
-                        Stop_ServerTired(nameof(ProcessExtraction));
-                        extractionResultInfo = ExtractionPartialCycleResult.HaltedAsTired;
-                        yield break;
-                    }
-                    else if (retreiveResult.Info != CitilinkMerchParser.RetreiveAllFromMerchCatalog_ExecState
-                        .Success)
-                    {
-                        OnExecutionStateUpdate?.Invoke(CitilinkExtractionState);
-                        ExtractionProcessFinished?.Invoke();
-                        _logger?.LogError($"{nameof(GUICitilinkExtractor)}, {nameof(ProcessExtraction)}: " +
-                            $"Извлечение товаров остановлено: экстрактор более не способен" +
-                            $" вытягивать товары по причине {retreiveResult.Info}");
-                        extractionResultInfo = ExtractionPartialCycleResult.HaltedAsTired;
-                        yield break;
-                        
+                        case CitilinkMerchParser.RetreiveAllFromMerchCatalog_ExecState.ServerGrownTired:
+                            Stop_ServerTired(nameof(ProcessExtraction));
+                            yield break;
+
+                        case CitilinkMerchParser.RetreiveAllFromMerchCatalog_ExecState.PassedIgnoredCategorySlug:
+                            branch.IsProcessed = true;
+                            break;
+
+                        default:
+                        case CitilinkMerchParser.RetreiveAllFromMerchCatalog_ExecState.UnknownServerError:
+                            Stop_UnknownError(nameof(ProcessExtraction));
+                            yield break;
+
                     }
 
                     OnExecutionStateUpdate?.Invoke(CitilinkExtractionState);
@@ -209,30 +212,37 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
             if (extractionProcessHaltIssued)
             {
-                extractionProcessHaltIssued = false;
-                _logger?.LogInformation($"{nameof(GUICitilinkExtractor)}, {nameof(RunExtractionProcess)}:" +
-                    $" процесс извлечения данных о товарах завершается(приостанавливается) по причине:\n" +
-                    $" {extractionProcessHaltReason}");
-
-                OnExecutionStateUpdate?.Invoke(CitilinkExtractionState);
-                ExtractionProcessFinished?.Invoke();
-
-                extractionResultInfo = ExtractionPartialCycleResult.HaltedAsTired;
-
+                Stop_ProcessHaltIssued(nameof(ProcessExtraction));
                 yield break;
             }
 
-            extractionResultInfo = ExtractionPartialCycleResult.HaltedAsFinished;
-            OnExecutionStateUpdate?.Invoke(CitilinkExtractionState);
-            ExtractionProcessFinished?.Invoke();
-            _logger?.LogTrace($"{nameof(GUICitilinkExtractor)}, {nameof(RunExtractionProcess)}:" +
-            $" процесс извлечения данных о товарах из ситилинка завершился.");
         }
 
 
+        private bool HandleUrlPortionResult(GetUrlsPortion_Info info)
+        {
+            switch (info)
+            {
+                case GetUrlsPortion_Info.Success:
+                    return true;
+                case GetUrlsPortion_Info.ServerTired:
+                    Stop_ServerTired(nameof(ProcessExtraction));
+                    return false;
+                case GetUrlsPortion_Info.NoUnprocessedBranchesLeft:
+                    Stop_NoUnprocessedBranchesLeft(nameof(ProcessExtraction));
+                    return false;
+                case GetUrlsPortion_Info.Error:
+                default:
+                    Stop_UnknownError(nameof(ProcessExtraction));
+                    return false;
+            }
+        }
+
+        
         private void BaseScraper_OnRequestLimitReached()
         {
             IssueExtractionProcessHalt("Достигнут лимит запросов скрапера.");
+            _baseScraper.RefreshRequestsCount();
         }
 
         public CitilinkExtractionStateDto? GetProgress()
@@ -242,11 +252,43 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         protected void Stop_ServerTired(string nameOfCaller)
         {
+            extractionResultInfo = ExtractionPartialCycleResult.HaltedAsTired;
             OnExecutionStateUpdate?.Invoke(CitilinkExtractionState);
             ExtractionProcessFinished?.Invoke();
             _logger?.LogError($"{nameof(GUICitilinkExtractor)}, {nameOfCaller}: " +
                 $"Извлечение товаров остановлено: экстрактор более не способен" +
                 $" вытягивать товары: сервер устал(429).");
+        }
+
+        protected void Stop_UnknownError(string nameOfCaller)
+        {
+            extractionResultInfo = ExtractionPartialCycleResult.UnknownError;
+            OnExecutionStateUpdate?.Invoke(CitilinkExtractionState);
+            ExtractionProcessFinished?.Invoke();
+            _logger?.LogError($"{nameof(GUICitilinkExtractor)}, {nameOfCaller}: " +
+                $"Извлечение товаров остановлено: экстрактор более не способен" +
+                $" вытягивать товары: неизвестная ошибка.");
+        }
+
+        protected void Stop_NoUnprocessedBranchesLeft(string nameOfCaller)
+        {
+            extractionResultInfo = ExtractionPartialCycleResult.HaltedAsFinished;
+            CitilinkExtractionState.IsCompleted = true;
+            OnExecutionStateUpdate?.Invoke(CitilinkExtractionState);
+            ExtractionProcessFinished?.Invoke();
+            _logger?.LogInformation($"{nameof(GUICitilinkExtractor)}, {nameOfCaller}:" +
+            $" процесс извлечения данных о товарах из ситилинка успешно завершился.");
+        }
+
+        protected void Stop_ProcessHaltIssued(string nameOfCaller)
+        {
+            extractionResultInfo = ExtractionPartialCycleResult.HaltedAsTired;
+            extractionProcessHaltIssued = false;
+            OnExecutionStateUpdate?.Invoke(CitilinkExtractionState);
+            ExtractionProcessFinished?.Invoke();
+            _logger?.LogInformation($"{nameof(GUICitilinkExtractor)}, {nameof(ProcessExtraction)}:" +
+                $" процесс извлечения данных о товарах завершается(приостанавливается) по причине:\n" +
+                $" {extractionProcessHaltReason}");
         }
 
         private CitilinkCatalogUrlsTree CreateInitialTree()

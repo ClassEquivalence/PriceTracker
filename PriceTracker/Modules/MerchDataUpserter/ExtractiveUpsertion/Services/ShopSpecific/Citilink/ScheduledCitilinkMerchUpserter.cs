@@ -73,9 +73,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                 catch (Exception ex)
                 {
                     _logger?.LogError($"Апсершн ситилинка прекращен из-за исключения: {ex.Message}");
-
                     SaveExtractionProgress();
-
                     throw new InvalidOperationException($"Апсершн ситилинка прекращен из-за исключения: {ex.Message}",
                         ex);
                 }

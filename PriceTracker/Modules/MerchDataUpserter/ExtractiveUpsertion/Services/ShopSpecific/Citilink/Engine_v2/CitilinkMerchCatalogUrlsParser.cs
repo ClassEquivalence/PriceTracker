@@ -10,6 +10,9 @@ using static PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
 
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2
 {
+    /// <summary>
+    /// TODO: убрать бы "магические константы" (особенно "notFound! !!!")
+    /// </summary>
     public class CitilinkMerchCatalogUrlsParser : ICitilinkMerchCatalogUrlsParser
     {
 
@@ -57,10 +60,17 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         }
 
 
-        public async Task<FunctionResult<List<BranchWithFunctionality>?, GetUrlsPortion_Info>> 
-            GetMerchCatalogUrlsPortion()
+        /// <summary>
+        /// Установить в качестве currentBranch наиболее молодую необработанную
+        /// ветвь (но только из прямых предков текущей ветви).
+        /// <br/>
+        /// true - необработанная ветвь найдена.
+        /// <br/>
+        /// false - необработанных ветвей не осталось.
+        /// </summary>
+        /// <returns></returns>
+        private bool TrySetCurrentBranch_YoungestUnprocessed()
         {
-
             while (currentBranch.IsProcessed)
             {
                 if (currentBranchRoute.Any())
@@ -70,63 +80,98 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
                 else
                 {
                     _logger?.LogInformation($"{nameof(CitilinkMerchCatalogUrlsParser)}, " +
-                        $"{nameof(GetMerchCatalogUrlsPortion)}: Найти необработанные ветви нельзя. " +
+                        $"{nameof(TrySetCurrentBranch_YoungestUnprocessed)}: Найти необработанные ветви нельзя. " +
                         $" Они, похоже, закончились.");
-                    return new(null, GetUrlsPortion_Info.NoUnprocessedUrlsLeft);
+                    return false;
                 }
             }
+            return true;
+        }
 
-            PageFunctionality? functionality;
 
-            while((functionality = await TryGetPageFunctionality(currentBranch)) 
-                != PageFunctionality.MerchCatalog)
+        public async Task<FunctionResult<List<BranchWithFunctionality>?, GetUrlsPortion_Info>> 
+            GetMerchCatalogUrlsPortion()
+        {
+
+            bool currentBranchUnprocessed = TrySetCurrentBranch_YoungestUnprocessed();
+            if (!currentBranchUnprocessed)
+                return new(null, GetUrlsPortion_Info.NoUnprocessedBranchesLeft);
+
+
+            BranchFunctionality? functionality;
+
+            bool merchBranchFound = false;
+
+            while (!merchBranchFound)
             {
+                var branchDataInsertionInfo = await EnsureDataLoadedToBranch(currentBranch);
 
-                if(functionality == PageFunctionality.ServerTired ||
-                    functionality == null)
+                _logger?.LogTrace($"{nameof(CitilinkMerchCatalogUrlsParser)}, {nameof(GetMerchCatalogUrlsPortion)}: " +
+                            $"{branchDataInsertionInfo}");
+
+                switch (branchDataInsertionInfo)
                 {
-                    return new(null, GetUrlsPortion_Info.ServerTired);
-                }
-
-                var unprocessedChildren = await FindUnprocessedChildrenBranches(currentBranch);
-
-                if(unprocessedChildren == null)
-                {
-                    return new(null, GetUrlsPortion_Info.ServerTired);
-                }
-
-                if (!currentBranch.Children.Any())
-                {
-                    throw new InvalidOperationException($"{nameof(CitilinkMerchCatalogUrlsParser)}, " +
-                        $"{nameof(GetMerchCatalogUrlsPortion)}: " +
-                        $"У каталога {currentBranch.Url} нет наследников, хотя они должны быть, " +
-                        $"учитывая что он не является каталогом товаров (а соответственно должен" +
-                        $" быть каталогом каталогов).");
-                }
-                else if(!unprocessedChildren.Any())
-                {
-                    currentBranch.IsProcessed = true;
-
-                    _logger?.LogDebug($"{nameof(CitilinkMerchCatalogUrlsParser)}, " +
-                        $"{nameof(GetMerchCatalogUrlsPortion)}: Ветвь {currentBranch.Url} " +
-                        $"помечена, как обработанная");
-
-                    if (!(currentBranchRoute.Count > 1))
-                    {
-                        _logger?.LogInformation($"{nameof(CitilinkMerchCatalogUrlsParser)}, " +
-                        $"{nameof(GetMerchCatalogUrlsPortion)}: Больше вернуть каталоги товаров нельзя." +
-                        $" Они, похоже, закончились.");
-                        return new(null, GetUrlsPortion_Info.NoUnprocessedUrlsLeft);
-
-                    }
-                    else
-                    {
+                    case BranchDataInsertionInfo.NotFound:
+                        currentBranch.IsProcessed = true;
                         currentBranchRoute.Pop();
                         continue;
-                    }
-                }
 
-                currentBranchRoute.Push(unprocessedChildren[0]);
+                    case BranchDataInsertionInfo.SeeminglyOk:
+                        functionality = await TryGetPageFunctionality(currentBranch);
+
+                        _logger?.LogTrace($"{nameof(CitilinkMerchCatalogUrlsParser)}, {nameof(GetMerchCatalogUrlsPortion)}: " +
+                            $"{functionality}");
+
+                        switch (functionality)
+                        {
+                            case BranchFunctionality.MerchCatalog:
+                                merchBranchFound = true;
+                                continue;
+
+                            case BranchFunctionality.UnknownCatalogOfCatalogs:
+
+                                var unprocessedChildren = await FindUnprocessedChildrenBranches(currentBranch);
+
+                                if (unprocessedChildren == null)
+                                {
+                                    return new(null, GetUrlsPortion_Info.Error);
+                                }
+
+                                if (!unprocessedChildren.Any())
+                                {
+                                    currentBranch.IsProcessed = true;
+                                    _logger?.LogDebug($"{nameof(CitilinkMerchCatalogUrlsParser)}, " +
+                                        $"{nameof(GetMerchCatalogUrlsPortion)}: Ветвь {currentBranch.Url} " +
+                                        $"помечена, как обработанная");
+
+                                    currentBranchUnprocessed = TrySetCurrentBranch_YoungestUnprocessed();
+                                    if (!currentBranchUnprocessed)
+                                        return new(null, GetUrlsPortion_Info.NoUnprocessedBranchesLeft);
+
+                                }
+                                else
+                                {
+                                    currentBranchRoute.Push(unprocessedChildren[0]);
+                                }
+
+                                continue;
+
+                            case BranchFunctionality.SubCatalog:
+                                goto case BranchFunctionality.UnknownCatalogOfCatalogs;
+
+                            case BranchFunctionality.MainCatalog:
+                                goto case BranchFunctionality.UnknownCatalogOfCatalogs;
+
+                            default:
+                                return new(null, GetUrlsPortion_Info.Error);
+                        }
+
+                    case BranchDataInsertionInfo.TooManyRequests:
+                        return new(null, GetUrlsPortion_Info.ServerTired);
+
+                    default:
+                        return new(null, GetUrlsPortion_Info.Error);
+                }
 
             }
 
@@ -143,9 +188,9 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         private async Task<List<BranchWithFunctionality>?> FindUnprocessedChildrenBranches(BranchWithFunctionality parent)
         {
 
-            var isDataLoaded = await EnsureDataLoadedToBranch(parent);
+            var branchDataInsertionInfo = await EnsureDataLoadedToBranch(parent);
 
-            if (!isDataLoaded)
+            if (branchDataInsertionInfo != BranchDataInsertionInfo.SeeminglyOk)
             {
                 return null;
             }
@@ -172,7 +217,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         /// <param name="catalog"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        protected async Task<PageFunctionality?> TryGetPageFunctionality(BranchWithFunctionality catalog)
+        protected async Task<BranchFunctionality?> TryGetPageFunctionality(BranchWithFunctionality catalog)
         {
             
             _logger?.LogTrace($"{nameof(CitilinkMerchCatalogUrlsParser)}, " +
@@ -180,20 +225,20 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
 
             if (catalog.Url == _options.CitilinkMainCatalogUrl)
             {
-                catalog.functionality = PageFunctionality.MainCatalog;
-                return PageFunctionality.MainCatalog;
+                catalog.functionality = BranchFunctionality.MainCatalog;
+                return BranchFunctionality.MainCatalog;
             }
             else if (catalog.Children.Any())
             {
-                return PageFunctionality.UnknownCatalogOfCatalogs;
+                return BranchFunctionality.UnknownCatalogOfCatalogs;
             }
             else
             {
                 var isLoaded = await EnsureDataLoadedToBranch(catalog);
 
-                if (!isLoaded)
+                if (isLoaded!= BranchDataInsertionInfo.SeeminglyOk)
                 {
-
+                    return null;
                 }
 
                 var nullableFunctionality = catalog.functionality;
@@ -201,7 +246,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
                     throw new InvalidOperationException($"{nameof(CitilinkMerchCatalogUrlsParser)}, " +
                         $"{nameof(TryGetPageFunctionality)}:\n Функциональное назначение страницы должно было" +
                         $" быть установлено ненулевым после {nameof(EnsureDataLoadedToBranch)}. Но оно - null.");
-                PageFunctionality functionality = nullableFunctionality ?? PageFunctionality.Unknown;
+                BranchFunctionality functionality = nullableFunctionality ?? BranchFunctionality.Unknown;
 
                 return functionality;
             }
@@ -209,7 +254,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
 
 
 
-        protected PageFunctionality ParsePageFunctionality(HtmlNode catalogNode)
+        protected BranchFunctionality ParsePageFunctionality(HtmlNode catalogNode)
         {
 
             //data-meta-name="CategoryCardsLayout" - для каталога с каталогами
@@ -227,17 +272,17 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
 
             if (possibleNodeInPageOfCatalogs != null && possibleNodeInPageOfMerches == null)
             {
-                return PageFunctionality.SubCatalog;
+                return BranchFunctionality.SubCatalog;
             }
                 
             else if (possibleNodeInPageOfMerches != null && possibleNodeInPageOfCatalogs == null)
             {
-                return PageFunctionality.MerchCatalog;
+                return BranchFunctionality.MerchCatalog;
             }
                 
             else
             {
-                return PageFunctionality.Unknown;
+                return BranchFunctionality.Unknown;
             }
                 
         }
@@ -332,70 +377,113 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
             }
         }
 
-        private async Task<bool> EnsureDataLoadedToBranch(BranchWithFunctionality branch)
+
+        public enum BranchDataInsertionInfo
+        {
+            SeeminglyOk,
+            TooManyRequests,
+            NotFound,
+            ResponseError,
+            ParsingError,
+            UnknownError
+        }
+
+        /// <summary>
+        /// Считать данные загруженными только в случае SeeminglyOk.
+        /// </summary>
+        /// <param name="branch"></param>
+        /// <returns></returns>
+        private async Task<BranchDataInsertionInfo> EnsureDataLoadedToBranch(BranchWithFunctionality branch)
         {
 
             if (branch.Children.Any())
             {
                 if (branch.functionality != null)
-                    return true;
+                    return BranchDataInsertionInfo.SeeminglyOk;
                 else
-                    branch.functionality = PageFunctionality.UnknownCatalogOfCatalogs;
-                return true;
+                {
+                    branch.functionality = BranchFunctionality.UnknownCatalogOfCatalogs;
+                    return BranchDataInsertionInfo.SeeminglyOk;
+                }
             }
             else
             {
                 // Загружаем html-документ ветви.
                 var urlToNodeResult = await _scraper.UrlToNodeAsync(branch.Url);
 
-                // Если нет ошибок при загрузке страницы - загружаем данные.
-                if (urlToNodeResult.Info == ICitilinkScraper.HtmlNodeRequestInfo.SeeminglyOk)
+                switch (urlToNodeResult.Info)
                 {
-                    // Шаг 1: установка функционального назначения ветви.
-                    var node = urlToNodeResult.Result;
+                    case ICitilinkScraper.HtmlNodeRequestInfo.SeeminglyOk:
 
-                    PageFunctionality functionality;
-                    branch.functionality = functionality = ParsePageFunctionality(node);
+                        // Шаг 1: установка функционального назначения ветви.
+                        var node = urlToNodeResult.Result;
 
-                    // Шаг 2: установка дочерних ветвей
-                    if(functionality == PageFunctionality.SubCatalog ||
-                        functionality == PageFunctionality.MainCatalog)
-                    {
-                        branch.Children = ParseCatalogBranchDescendants(node, functionality);
-                    }
+                        BranchFunctionality functionality;
+                        functionality = ParsePageFunctionality(node);
 
-                    return true;
-                }
-                else if (urlToNodeResult.Info == ICitilinkScraper.HtmlNodeRequestInfo.TooManyRequests)
-                {
-                    _logger?.LogError($"{nameof(CitilinkMerchCatalogUrlsParser)}, {nameof(EnsureDataLoadedToBranch)}:\n" +
-                        $" Сервер устал: не вышло загрузить данные в ветвь.");
-                    return false;
-                }
-                else
-                {
-                    _logger?.LogError($"{nameof(CitilinkMerchCatalogUrlsParser)}, {nameof(EnsureDataLoadedToBranch)}:\n" +
-                        $" Не вышло загрузить данные в ветвь по причине {urlToNodeResult.Info}");
-                    return false;
+                        // Шаг 2: установка дочерних ветвей
+                        if (functionality == BranchFunctionality.SubCatalog ||
+                            functionality == BranchFunctionality.MainCatalog)
+                        {
+                            branch.functionality = functionality;
+                            var allParsedChildren = ParseCatalogBranchDescendants(node, functionality);
+                            var childrenWithoutIgnored = RemoveBranchesWithIgnoredCategorySlugs(allParsedChildren);
+                            branch.Children = childrenWithoutIgnored;
+                            return BranchDataInsertionInfo.SeeminglyOk;
+                        }
+                        else if (functionality == BranchFunctionality.MerchCatalog)
+                        {
+                            branch.functionality = functionality;
+                            return BranchDataInsertionInfo.SeeminglyOk;
+                        }
+                        else
+                        {
+                            return BranchDataInsertionInfo.ParsingError;
+                        }
+
+
+                    case ICitilinkScraper.HtmlNodeRequestInfo.TooManyRequests:
+                        return BranchDataInsertionInfo.TooManyRequests;
+                        break;
+
+                    case ICitilinkScraper.HtmlNodeRequestInfo.NotFound:
+                        return BranchDataInsertionInfo.NotFound;
+                        break;
+
+                    case ICitilinkScraper.HtmlNodeRequestInfo.Error:
+                        return BranchDataInsertionInfo.ResponseError;
+                        break;
+
+                    default:
+                        return BranchDataInsertionInfo.UnknownError;
                 }
             }
         }
 
-
+        private List<BranchWithFunctionality> RemoveBranchesWithIgnoredCategorySlugs(List<BranchWithFunctionality> branches)
+        {
+            List<BranchWithFunctionality> branchesWithoutIgnoredCategorySlugs = [];
+            foreach(var branch in branches)
+            {
+                if (!_options.IgnoredCategorySlugs.Contains(branch.GetCategorySlug()))
+                    branchesWithoutIgnoredCategorySlugs.Add(branch);
+            }
+            return branchesWithoutIgnoredCategorySlugs;
+        }
 
         private List<BranchWithFunctionality> ParseCatalogBranchDescendants(HtmlNode catalogNode,
-            PageFunctionality functionality)
+            BranchFunctionality functionality)
         {
 
             switch (functionality)
             {
                 
-                case PageFunctionality.MainCatalog:
+                case BranchFunctionality.MainCatalog:
                     List<string> urls = ParseSubCatalogsUrlsFromMain(catalogNode);
                     List<BranchWithFunctionality> subCatalogs = urls.Select(url =>
                     new BranchWithFunctionality(default, url, [], false)).ToList();
                     return subCatalogs;
-                case PageFunctionality.SubCatalog:
+                case BranchFunctionality.SubCatalog:
                     urls = ParseSubCatalogsUrlsFromSub(catalogNode);
                     subCatalogs = urls.Select(url =>
                     new BranchWithFunctionality(default, url, [], false)).ToList();

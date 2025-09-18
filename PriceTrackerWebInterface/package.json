@@ -2,6 +2,7 @@
   "name": "price-tracker-web-interface",
   "version": "0.0.0",
   "scripts": {
+    "buildandcopy": "ng build && rmdir /s /q ..\\PriceTracker\\wwwroot && mkdir ..\\PriceTracker\\wwwroot && xcopy /s /e /i /y .\\dist\\price-tracker-web-interface\\browser ..\\PriceTracker\\wwwroot",
     "ng": "ng",
     "start": "run-script-os",
     "build": "ng build",

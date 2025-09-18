@@ -21,7 +21,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
         /// </summary>
         public bool IsProcessed;
 
-        public PageFunctionality? functionality;
+        public BranchFunctionality? functionality;
 
         public BranchWithFunctionality(int id, string url, List<BranchWithFunctionality> children, 
             bool isProcessed = false)
@@ -63,9 +63,9 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.Shop
 
     }
 
-    public enum PageFunctionality
+    public enum BranchFunctionality
     {
-        MerchCatalog, MainCatalog, SubCatalog, UnknownCatalogOfCatalogs, ServerTired, Unknown
+        MerchCatalog, MainCatalog, SubCatalog, UnknownCatalogOfCatalogs, Unknown
     }
 
 }

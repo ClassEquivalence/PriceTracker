@@ -23,5 +23,6 @@
 
         public string CitilinkHttpClientCookie { get; set; } = string.Empty;
 
+        public string[] IgnoredCategorySlugs { get; set; } = [];
     }
 }

@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
 using PriceTracker.Core.Utils;
+using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using static PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper.ICitilinkScraper;
@@ -42,12 +43,45 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
 
 
         public async Task<HttpResponseMessage> ScrapProductPortionAsJsonAsync(string categorySlug, int page, int perPage = 1000,
-            string? cookie = default)
+            string? cookie = default, int retryIntervalSeconds = 30, int maxAttemptCount = 5)
         {
-            var request = _merchFetchRequestBuilder.Build(categorySlug, page, perPage, cookie);
 
-            var response = await _baseClient.SendAsync(request);
-            requestCount++;
+            ArgumentOutOfRangeException.ThrowIfLessThan(retryIntervalSeconds, 0,
+                $"{nameof(CitilinkScraper)}, {nameof(ScrapProductPortionAsJsonAsync)}: " +
+                $"время для повторения запроса не может быть отрицательным.");
+            ArgumentOutOfRangeException.ThrowIfLessThan(maxAttemptCount, 1,
+                $"{nameof(CitilinkScraper)}, {nameof(ScrapProductPortionAsJsonAsync)}: " +
+                $"число попыток запроса не должно быть меньше 1.");
+
+            using var request = _merchFetchRequestBuilder.Build(categorySlug, page, perPage, cookie);
+
+            HttpResponseMessage? response = null;
+
+            int attempt = 1;
+            do
+            {
+
+                
+
+                if (response != null)
+                    response.Dispose();
+
+                response = await _baseClient.SendAsync(request);
+                requestCount++;
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    break;
+                }
+                else
+                {
+                    _logger?.LogTrace($"{nameof(CitilinkScraper)}, {nameof(ScrapProductPortionAsJsonAsync)}: " +
+                    $"Попытка N {attempt} взять список товаров провалилась ({response.StatusCode})");
+                }
+                await Task.Delay(TimeSpan.FromSeconds(retryIntervalSeconds));
+                attempt++;
+            } while (attempt <= maxAttemptCount);
+
+            
             if (requestCount >= _maxRequestsPerTime)
             {
                 RequestLimitReached?.Invoke();
@@ -56,24 +90,63 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         }
 
 
-        public async Task<FunctionResult<HtmlNode, HtmlNodeRequestInfo>> UrlToNodeAsync(string url)
+        public async Task<FunctionResult<HtmlNode?, HtmlNodeRequestInfo>> UrlToNodeAsync(string url,
+            int retryIntervalSeconds = 30, int maxAttemptCount = 5)
         {
-            _logger?.LogDebug($"{nameof(UrlToNodeAsync)}: превращаем {url} в узел.");
-            string html = await _baseClient.GetStringAsync(url);
-            requestCount++;
-            if (requestCount >= _maxRequestsPerTime)
+
+            ArgumentOutOfRangeException.ThrowIfLessThan(retryIntervalSeconds, 0,
+                $"{nameof(CitilinkScraper)}, {nameof(UrlToNodeAsync)}: время для повторения запроса не может" +
+                $" быть отрицательным.");
+            ArgumentOutOfRangeException.ThrowIfLessThan(maxAttemptCount, 1,
+                $"{nameof(CitilinkScraper)}, {nameof(UrlToNodeAsync)}: число попыток запроса не должно быть" +
+                $" меньше 1.");
+
+            _logger?.LogTrace($"{nameof(CitilinkScraper)}, {nameof(UrlToNodeAsync)}: превращаем {url} в узел.");
+
+
+            HttpResponseMessage? response = null;
+
+            for(int attempt = 1; attempt <= maxAttemptCount; attempt++)
             {
-                RequestLimitReached?.Invoke();
+                response?.Dispose();
+
+                response = await _baseClient.GetAsync(url);
+
+                requestCount++;
+                if (requestCount >= _maxRequestsPerTime)
+                {
+                    RequestLimitReached?.Invoke();
+                }
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK
+                    || response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    break;
+                await Task.Delay(TimeSpan.FromSeconds(retryIntervalSeconds));
             }
-            return HtmlToNode(html);
+
+            if (response is null)
+                return new(null, HtmlNodeRequestInfo.Error);
+
+            using (response)
+            {
+                return response.StatusCode switch
+                {
+                    HttpStatusCode.OK => HtmlToNode(await response.Content.ReadAsStringAsync()),
+                    HttpStatusCode.NotFound => new(null, HtmlNodeRequestInfo.NotFound),
+                    HttpStatusCode.TooManyRequests => new(null, HtmlNodeRequestInfo.TooManyRequests),
+                    _ => new(null, HtmlNodeRequestInfo.Error)
+                };
+            }
+
+            
         }
 
-        public FunctionResult<HtmlNode, HtmlNodeRequestInfo> HtmlToNode(string html)
+        private FunctionResult<HtmlNode?, HtmlNodeRequestInfo> HtmlToNode(string html)
         {
             HtmlDocument doc = new();
             doc.LoadHtml(html);
             var root = doc.DocumentNode;
-
+            
             var statusNode = root.SelectSingleNode("//div[@class=\"container__status\"]");
             if (statusNode!=null && statusNode.InnerText.Contains("429"))
             {
@@ -88,6 +161,10 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
             requestCount = 0;
         }
 
+        ~CitilinkScraper()
+        {
+            _baseClient.Dispose();
+        }
 
     }
 }

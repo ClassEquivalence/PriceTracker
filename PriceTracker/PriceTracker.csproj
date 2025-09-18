@@ -8,6 +8,13 @@
   
   </PropertyGroup>
 
+	<!--
+  <ItemGroup>
+  <Content Include="wwwroot\**\*" CopyToPublishDirectory="PreserveNewest" />
+</ItemGroup>
+
+-->
+	
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.19" />

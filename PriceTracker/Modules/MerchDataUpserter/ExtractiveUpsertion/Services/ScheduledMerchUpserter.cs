@@ -55,16 +55,20 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
 
                 while (DateTime.Now < _upsertionStartTime)
                 {
+                    var upsertionContinueTimeSpan = _upsertionStartTime - DateTime.Now;
+
+                    _logger?.LogInformation($"{nameof(ScheduledMerchUpserter)}, {nameof(ProcessUpsertion)}: " +
+                        $"Апсершн возобновится через {upsertionContinueTimeSpan.Days} дней," +
+                        $" {upsertionContinueTimeSpan.Hours} часов и {upsertionContinueTimeSpan.Minutes} минут.");
+
                     await Task.Delay(_upsertionStartTime - DateTime.Now);
                 }
 
                 Task task;
                 if (_executionState.IsCompleted)
                 {
-                    
                     task = _dataConsumer.Upsert(_dataExtractor.
                         RunExtractionProcess());
-
                 }
                 else
                 {
@@ -77,20 +81,13 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
                 {
                     _upsertionStartTime = DateTime.Now + _upsertionRestPeriod;
                     await task;
-                    return;
+                    continue;
                 }
 
                 _upsertionStartTime = DateTime.Now + _upsertionCyclePeriod;
 
-                //try
-                //{
+
                 await task;
-                //}
-                //catch (Exception ex)
-                //{
-                //_logger?.LogError($"{nameof(ScheduledMerchUpserter)}: {ex.Message}");
-                //_logger?.LogError($"{nameof(ScheduledMerchUpserter)}(innerEx): {ex?.InnerException?.Message}");
-                //}
 
 
             }

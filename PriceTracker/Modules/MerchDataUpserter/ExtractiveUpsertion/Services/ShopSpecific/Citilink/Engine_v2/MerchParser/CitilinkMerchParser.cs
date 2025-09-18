@@ -181,7 +181,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
                 $"Информация Fetch-запроса: categorySlug = {categorySlug},\n " +
                 $"page = {page}, perPage = {perPage}");
 
-            var response = await _scraper.ScrapProductPortionAsJsonAsync(categorySlug, page, 
+            using var response = await _scraper.ScrapProductPortionAsJsonAsync(categorySlug, page, 
                 perPage, cookie);
             if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
             {
