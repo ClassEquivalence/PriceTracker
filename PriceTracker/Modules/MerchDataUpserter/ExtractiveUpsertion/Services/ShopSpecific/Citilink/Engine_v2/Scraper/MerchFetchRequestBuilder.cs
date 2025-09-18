@@ -68,13 +68,11 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
 
             request.Headers.Add("Accept", "*/*");
 
-            if (cookie == default)
+            if (cookie != default)
             {
-                cookie = "_city_guessed=1; _space=chlb_cl; _tuid=afe6c93ebb00a653fa10981930de680623afd184; ab_test_segment=56 ";
+                request.Headers.Add("Cookie", cookie);
             }
             
-            request.Headers.Add("Cookie", cookie);
-
             return request;
         }
 

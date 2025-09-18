@@ -10,7 +10,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         {
             Success,
             ServerTired,
-            NoUnprocessedUrlsLeft
+            NoUnprocessedBranchesLeft,
+            Error
         }
         /// <summary>
         /// 

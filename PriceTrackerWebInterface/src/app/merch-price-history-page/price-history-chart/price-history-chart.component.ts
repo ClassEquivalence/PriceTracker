@@ -25,6 +25,10 @@ export class PriceHistoryChartComponent {
     var pairs = this.mapMultipleTimestampedPriceToNameValuePair(
       this.timestampedPricesArray);
 
+    pairs = pairs.sort((a, b) => this.substractDateStrings(a.name, b.name));
+
+    pairs = this.mapMultipleIsoPairsToLocale(pairs);
+
     console.log("Series is ", pairs);
        
     this.multi = [
@@ -62,14 +66,11 @@ export class PriceHistoryChartComponent {
     group: ScaleType.Ordinal // нужно импортировать ScaleType
   };
 
-  mapTimestampedPriceToNameValuePair(timestampedPrice: TimestampedPriceDto)
-    : { name: string, value: number }
-  {
-    var msDifference = Date.parse(timestampedPrice.dateTime);
-
-    var date = new Date(msDifference).toLocaleDateString();
-    var price = timestampedPrice.price;
-    return { name: date, value: price };
+  mapTimestampedPriceToNameValuePair(t: TimestampedPriceDto)
+    : { name: string, value: number } {
+    const ms = Date.parse(t.dateTime);
+    const iso = new Date(ms).toISOString();
+    return { name: iso, value: t.price };
   }
 
   mapMultipleTimestampedPriceToNameValuePair(
@@ -81,10 +82,33 @@ export class PriceHistoryChartComponent {
     timestampedPrices.forEach(tpd => {
       var pair = this.mapTimestampedPriceToNameValuePair(tpd);
       pairs.push(pair);
-
     });
 
     return pairs;
+  }
+
+  mapIsoPairsToLocale(pair: { name: string; value: number }):
+    { name: string; value: number } {
+    const { name, value } = pair;
+    return { name: this.formatIsoToLocaleDate(name), value };
+  }
+
+  mapMultipleIsoPairsToLocale(pairs: { name: string; value: number }[]):
+    { name: string; value: number }[] {
+    return pairs.map(pair => this.mapIsoPairsToLocale(pair));
+  }
+
+  substractDateStrings(a: string, b: string): number {
+    return Date.parse(a) - Date.parse(b);
+  }
+
+
+  formatIsoToLocaleDate(isoString: string): string {
+    const date = new Date(isoString);
+
+    const datePart = date.toLocaleDateString();
+
+    return `${datePart}`;
   }
 
 }

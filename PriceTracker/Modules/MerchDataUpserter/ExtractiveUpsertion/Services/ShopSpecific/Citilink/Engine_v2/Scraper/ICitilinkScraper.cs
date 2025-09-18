@@ -5,23 +5,23 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
 {
     public interface ICitilinkScraper
     {
-        public Task<FunctionResult<HtmlNode, HtmlNodeRequestInfo>> UrlToNodeAsync(string url);
+        public Task<FunctionResult<HtmlNode?, HtmlNodeRequestInfo>> UrlToNodeAsync(string url, 
+            int retryIntervalSeconds = 30, int maxAttemptCount = 5);
 
 
         public enum HtmlNodeRequestInfo
         {
             SeeminglyOk,
-            TooManyRequests
+            TooManyRequests,
+            NotFound,
+            Error
         }
-        public FunctionResult<HtmlNode, HtmlNodeRequestInfo> HtmlToNode(string html);
-
-        //public Task<HtmlNode> ScrapProductPortionAsHtmlAsync(string url, int attemptCounts = 10);
 
         /// <summary>
         /// page начинается с единицы.
         /// categorySlug - название категории(каталога товаров) на латинице.
         /// <br/>
-        /// Не забудь dispose stream.
+        /// Не забудь dispose response.
         /// <br/>
         /// Метод возвращает ответ.
         /// </summary>
@@ -30,10 +30,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
         /// <param name="perPage"></param>
         /// <returns></returns>
         public Task<HttpResponseMessage> ScrapProductPortionAsJsonAsync(string categorySlug, int page, int perPage = 1000,
-            string? cookie = default);
-
-        public Task PerformInitialRunupAsync(string? storageState = null);
-        public Task<string> GetStorageStateAsync();
+            string? cookie = default, int retryIntervalSeconds = 30, int maxAttemptCount = 5);
 
 
     }

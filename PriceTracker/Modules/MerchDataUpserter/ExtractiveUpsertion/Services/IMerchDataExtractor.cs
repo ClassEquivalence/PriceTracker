@@ -10,6 +10,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
         HaltedAsFinished,
         HaltedAsTired,
         CycleNotFinished,
+        UnknownError,
+        HaltIssued
     }
 
     /// <summary>

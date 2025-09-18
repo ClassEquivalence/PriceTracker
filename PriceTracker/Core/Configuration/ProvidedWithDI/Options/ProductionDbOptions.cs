@@ -1,4 +1,4 @@
-﻿namespace PriceTracker.Core.Configuration.ProvidedWithDI
+﻿namespace PriceTracker.Core.Configuration.ProvidedWithDI.Options
 {
     public class ProductionDbOptions
     {
