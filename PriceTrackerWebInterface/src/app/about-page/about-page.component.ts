@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrl: './about-page.component.css'
 })
 export class AboutPageComponent {
-  email: string = "ru.claims.pricetracker@gmail.com";
+  email: string = "pricetracker.feedback@gmail.com";
 }

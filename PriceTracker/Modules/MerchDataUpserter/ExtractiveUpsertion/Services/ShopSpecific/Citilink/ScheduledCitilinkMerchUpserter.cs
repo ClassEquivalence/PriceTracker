@@ -1,4 +1,5 @@
-﻿using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
+﻿using PriceTracker.Core.Configuration.ProvidedWithDI;
+using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services;
 using PriceTracker.Modules.Repository.Facade.Citilink;
@@ -11,8 +12,8 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
     {
         private readonly ICitilinkMiscellaneousRepositoryFacade _miscRepository;
         private readonly ExtractionStateSavePolicy _extractionStateSavePolicy;
-        private readonly StorageStateSavePolicy _storageStateSavePolicy;
 
+        private readonly IAppEnvironment _appEnvironment;
 
 
         [Flags]
@@ -23,27 +24,20 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
             OnServerShutdown = 1 << 1,
         }
 
-        [Flags]
-        public enum StorageStateSavePolicy
-        {
-            None = 0,
-            OnServerShutdown = 1 << 1,
-        }
 
 
         public ScheduledCitilinkMerchUpserter(CitilinkMerchDataUpserter
             dataConsumer, GUICitilinkExtractor dataExtractor, TimeSpan upsertionCyclePeriod,
-            DateTime upsertionStartTime, 
+            IAppEnvironment appEnvironment, DateTime upsertionStartTime, 
             ICitilinkMiscellaneousRepositoryFacade repository, ILogger? logger, TimeSpan
             upsertionRestPeriod, ExtractionStateSavePolicy
-            extractionStateSavePolicy = ExtractionStateSavePolicy.OnServerShutdown,
-            StorageStateSavePolicy storageStateSavePolicy = StorageStateSavePolicy.OnServerShutdown) :
+            extractionStateSavePolicy = ExtractionStateSavePolicy.OnServerShutdown) :
             base(dataConsumer, dataExtractor, upsertionCyclePeriod, upsertionRestPeriod, upsertionStartTime,
                 logger)
         {
+            _appEnvironment = appEnvironment;
             _miscRepository = repository;
             _extractionStateSavePolicy = extractionStateSavePolicy;
-            _storageStateSavePolicy = storageStateSavePolicy;
 
             if ((extractionStateSavePolicy & ExtractionStateSavePolicy.OnChange) != 0)
             {
@@ -63,28 +57,30 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
         public override async Task ProcessUpsertion()
         {
-
-            try
+            if (_appEnvironment.IsDevelopment)
             {
                 _logger?.LogInformation($"Запущен апсершн Ситилинка.");
                 await base.ProcessUpsertion();
-            }
-            catch(Exception ex)
-            {
-                _logger?.LogError($"Апсершн ситилинка прекращен из-за исключения: {ex.Message}");
-
-                
                 SaveExtractionProgress();
-                await SaveStorageState();
-
-                throw new InvalidOperationException($"Апсершн ситилинка прекращен из-за исключения: {ex.Message}",
-                    ex);
+            }
+            else
+            {
+                try
+                {
+                    _logger?.LogInformation($"Запущен апсершн Ситилинка.");
+                    await base.ProcessUpsertion();
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogError($"Апсершн ситилинка прекращен из-за исключения: {ex.Message}");
+                    SaveExtractionProgress();
+                    throw new InvalidOperationException($"Апсершн ситилинка прекращен из-за исключения: {ex.Message}",
+                        ex);
+                }
             }
 
-            var saveStorageTask = SaveStorageState();
-            
             SaveExtractionProgress();
-            await saveStorageTask;
+
         }
 
 
@@ -120,23 +116,6 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
                 //UpdateExtractionProgress();
                 SaveExtractionProgress();
             }
-            if ((_storageStateSavePolicy & StorageStateSavePolicy.OnServerShutdown) != 0)
-            {
-                // TODO: Можно чуть больше реализовать асинхронность - но мне пока лень.
-                var saveStorageTask = SaveStorageState();
-                await saveStorageTask;
-            }
-
-            //await baseShutDownTask;
-        }
-
-        public async Task SaveStorageState()
-        {
-            var getStorageStateTask = ((GUICitilinkExtractor)_dataExtractor).
-                GetScraperStorageStateAsync();
-
-            string storageState = await getStorageStateTask;
-            _miscRepository.SetExtractorStorageState(new(storageState));
         }
 
         public void SaveExtractionProgress()

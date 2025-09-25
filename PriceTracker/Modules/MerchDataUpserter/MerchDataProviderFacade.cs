@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.Playwright;
 using PriceTracker.Core.Configuration.ProvidedWithDI;
+using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Utils.ScrapingServices.HttpClients.Browser;
 using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
+using PriceTracker.Modules.Repository.Repositories.Base;
 
 
 /*
@@ -17,20 +17,22 @@ using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 namespace PriceTracker.Modules.MerchDataProvider
 {
     /// <summary>
-    /// Точка взаимодействия с модулем, и модуля - с внешним миром.
+    /// Точка взаимодействия с модулем, и модуля - с внешним окружением.
     /// </summary>
     public class MerchDataProviderFacade : IMerchDataProviderFacade
     {
-        private readonly UpsertionService _scheduledUpserter;
+        private UpsertionService _scheduledUpserter;
         private readonly IRepositoryFacade _repository;
         private readonly ILogger _logger;
         private readonly MerchUpsertionOptions _options;
+        private readonly IAppEnvironment _appEnvironment;
 
         public MerchDataProviderFacade(IRepositoryFacade repository, ILogger<Program> logger,
-            IOptions<MerchUpsertionOptions> options)
+            IOptions<MerchUpsertionOptions> options, IAppEnvironment appEnvironment)
         {
             _options = options.Value;
-            var citilinkOptions = _options.CitilinkUpsertionOptions;
+            _appEnvironment = appEnvironment;
+            
             _logger = logger;
 
             IExtractionExecutionStateProvider<CitilinkExtractionStateDto> executionStateProvider
@@ -38,27 +40,10 @@ namespace PriceTracker.Modules.MerchDataProvider
             _repository = repository;
 
 
-            CitilinkMerchDataUpserter consumer = new(repository, repository.GetCitilinkShop(),
-                logger: _logger);
+            
 
-            var browser = Playwright.CreateAsync().Result.Chromium.LaunchAsync().Result;
-            BrowserAdapter browserAdapter = new(browser, (citilinkOptions.HeadlessBrowserMinDelay,
-                citilinkOptions.HeadlessBrowserMaxDelay), _options.UserAgent,
-                _logger);
 
-            var CitilinkStorageState = ((ICitilinkMiscellaneousRepositoryFacade)_repository).
-                GetExtractorStorageState();
-            GUICitilinkExtractor extractor =
-                new(browserAdapter, (citilinkOptions.MaxPageRequestsPerTime, 
-                TimeSpan.FromHours(citilinkOptions.MinCooldownForPageRequests)), new(), citilinkOptions,
-                _options.UserAgent, _logger, storageState: CitilinkStorageState?.StorageState);
-
-            ScheduledCitilinkMerchUpserter
-                scheduledCitilinkMerchUpserter = new(consumer, extractor, TimeSpan.
-                FromDays(citilinkOptions.CitilinkPriceUpdatePeriod),
-                DateTime.Now, repository, _logger, TimeSpan.FromHours(citilinkOptions.MinCooldownForPageRequests));
-
-            _scheduledUpserter = new([scheduledCitilinkMerchUpserter]);
+            
 
         }
 
@@ -67,22 +52,23 @@ namespace PriceTracker.Modules.MerchDataProvider
             _logger.LogInformation($"{nameof(MerchDataProviderFacade)}: " +
                 $"Запущен процесс upsert'а товаров.");
 
-
-            try
+            if (_appEnvironment.IsDevelopment)
             {
                 await _scheduledUpserter.ProcessUpsertion();
             }
-            catch (DbUpdateException ex)
+            else
             {
-                _logger.LogError(ex.Message);
-                _logger.LogError(ex.InnerException?.Message);
+                try
+                {
+                    await _scheduledUpserter.ProcessUpsertion();
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.LogError(ex.Message);
+                    _logger.LogError(ex.InnerException?.Message);
+                }
             }
-            /*
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-            }
-            */
+
         }
 
         public async Task OnShutdownAsync()
@@ -95,6 +81,21 @@ namespace PriceTracker.Modules.MerchDataProvider
         {
             if (_options.UpsertionActive)
             {
+                var citilinkOptions = _options.CitilinkUpsertionOptions;
+                CitilinkMerchDataUpserter consumer = new(_repository, _repository.GetCitilinkShop(),
+                logger: _logger);
+                var CitilinkStorageState = ((ICitilinkMiscellaneousRepositoryFacade)_repository).
+                GetExtractorStorageState();
+                GUICitilinkExtractor extractor = new(new(), citilinkOptions, _options.UserAgent, _logger);
+
+                ScheduledCitilinkMerchUpserter
+                    scheduledCitilinkMerchUpserter = new(consumer, extractor, TimeSpan.
+                    FromDays(citilinkOptions.CitilinkPriceUpdatePeriod), _appEnvironment,
+                    DateTime.Now, _repository, _logger, TimeSpan.FromHours(citilinkOptions.MinCooldownForPageRequests));
+
+                _scheduledUpserter = new([scheduledCitilinkMerchUpserter]);
+
+
                 ProcessMerchUpsertion();
             }
             else

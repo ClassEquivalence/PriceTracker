@@ -1,5 +1,5 @@
 
-# ===== STAGE 1: Build =====
+# --- Этап 1: Build ---
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
@@ -7,14 +7,31 @@ WORKDIR /app
 COPY *.csproj ./
 RUN dotnet restore
 
-# Копируем остальной код и собираем проект
-COPY . .
-RUN dotnet publish -c Release -r linux-x64 --self-contained false -o /app
+# Копируем весь проект и публикуем в Release
+COPY . ./
+RUN dotnet publish -c Release --self-contained false -o /app/publish
 
-# Устанавливаем Playwright и скачиваем Chromium с зависимостями
-RUN pwsh /app/playwright.ps1 install chromium --with-deps
+# --- Этап 2: Runtime ---
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
 
-# Опционально: задаем переменную для Playwright
-ENV DOTNET_RUNNING_IN_CONTAINER=true
+# Копируем публикуемый билд
+COPY --from=build /app/publish .
 
+# Переменная среды для Production (как в launch profile)
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+ENV ASPNETCORE_HTTP_PORTS=5094
+
+# Открываем порты
+# EXPOSE 7170
+EXPOSE 5094
+
+# Если нужно HTTPS с сертификатом в контейнере:
+# ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+# ENV ASPNETCORE_Kestrel__Certificates__Default__Password=YourPassword
+
+# Запуск приложения
 ENTRYPOINT ["dotnet", "PriceTracker.dll"]
+
+# ENV ASPNETCORE_URLS=http://0.0.0.0:5094
