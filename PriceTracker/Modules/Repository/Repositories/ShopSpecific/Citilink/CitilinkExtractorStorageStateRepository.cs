@@ -5,6 +5,8 @@ using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Infrastructure;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
 using PriceTracker.Modules.Repository.Mapping;
+using PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink;
+using PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Modules.Repository.Repositories.Base.SingletonRepository;
 
 namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
@@ -15,11 +17,9 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
     {
 
         public CitilinkExtractorStorageStateRepository(IDbContextFactory<PriceTrackerContext>
-            factory, ICoreToEntityMapper<CitilinkExtractorStorageStateDto,
-                CitilinkExtractorStorageStateEntity> mapper):
+            factory, ICitilinkExtractorStorageStateMapper mapper):
             base(factory, mapper)
         {
-
         }
 
         protected override IQueryable<CitilinkExtractorStorageStateEntity> 

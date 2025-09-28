@@ -9,9 +9,9 @@ namespace PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel.Merch
     {
         public readonly List<IMerchSubtypeRepositoryAdapter> _repositoryAdapters;
 
-        public MerchRepository(List<IMerchSubtypeRepositoryAdapter> repositoryAdapters)
+        public MerchRepository(IEnumerable<IMerchSubtypeRepositoryAdapter> repositoryAdapters)
         {
-            _repositoryAdapters = repositoryAdapters;
+            _repositoryAdapters = repositoryAdapters.ToList();
         }
 
 

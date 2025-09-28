@@ -28,3 +28,16 @@ Implementation details:
 Warnings:
 1. CitilinkParsingExecutionStateRepository использует один DbContext на весь репозиторий.
 Да и сделан он костыльно. То же самое - CitilinkExtractorStorageStateRepository.
+
+Зарегистрировать: Citilink Merch, Misc; Shop
+
+IMerchRepositoryFacade merchRepository,
+            ITimestampedPriceRepositoryFacade timestampedPriceRepository,
+            IPriceHistoryRepositoryFacade priceHistoryRepository,
+            IShopRepositoryFacade shopRepository,
+            ICitilinkMerchRepositoryFacade citilinkMerchRepository
+            тоже зарегать
+
+RepositoryInitializer?
+
+Repository Adapters in merch Repository are by now skipped at DI.

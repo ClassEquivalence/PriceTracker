@@ -22,24 +22,28 @@ namespace PriceTracker.Modules.MerchDataProvider
     public class MerchDataProviderFacade : IMerchDataProviderFacade
     {
         private UpsertionService _scheduledUpserter;
-        private readonly IRepositoryFacade _repository;
         private readonly ILogger _logger;
         private readonly MerchUpsertionOptions _options;
         private readonly IAppEnvironment _appEnvironment;
 
-        public MerchDataProviderFacade(IRepositoryFacade repository, ILogger<Program> logger,
-            IOptions<MerchUpsertionOptions> options, IAppEnvironment appEnvironment)
+
+        private readonly ICitilinkMerchRepositoryFacade _citilinkMerchRepository;
+        private readonly IShopSelectorFacade _shopSelector;
+        private readonly ICitilinkMiscellaneousRepositoryFacade _citilinkMiscellaneousRepository;
+
+        public MerchDataProviderFacade(ILogger<Program> logger,
+            IOptions<MerchUpsertionOptions> options, IAppEnvironment appEnvironment, 
+            ICitilinkMerchRepositoryFacade citilinkMerchRepository, IShopSelectorFacade
+            shopSelector, ICitilinkMiscellaneousRepositoryFacade citilinkMiscellaneousRepository)
         {
             _options = options.Value;
             _appEnvironment = appEnvironment;
             
             _logger = logger;
 
-            IExtractionExecutionStateProvider<CitilinkExtractionStateDto> executionStateProvider
-                = repository;
-            _repository = repository;
-
-
+            _citilinkMerchRepository = citilinkMerchRepository;
+            _shopSelector = shopSelector;
+            _citilinkMiscellaneousRepository = citilinkMiscellaneousRepository;
             
 
 
@@ -82,16 +86,17 @@ namespace PriceTracker.Modules.MerchDataProvider
             if (_options.UpsertionActive)
             {
                 var citilinkOptions = _options.CitilinkUpsertionOptions;
-                CitilinkMerchDataUpserter consumer = new(_repository, _repository.GetCitilinkShop(),
-                logger: _logger);
-                var CitilinkStorageState = ((ICitilinkMiscellaneousRepositoryFacade)_repository).
+                CitilinkMerchDataUpserter consumer = new(_citilinkMerchRepository, 
+                    _shopSelector.GetCitilinkShop(), logger: _logger);
+                var CitilinkStorageState = _citilinkMiscellaneousRepository.
                 GetExtractorStorageState();
                 GUICitilinkExtractor extractor = new(new(), citilinkOptions, _options.UserAgent, _logger);
 
                 ScheduledCitilinkMerchUpserter
                     scheduledCitilinkMerchUpserter = new(consumer, extractor, TimeSpan.
                     FromDays(citilinkOptions.CitilinkPriceUpdatePeriod), _appEnvironment,
-                    DateTime.Now, _repository, _logger, TimeSpan.FromHours(citilinkOptions.MinCooldownForPageRequests));
+                    DateTime.Now, _citilinkMiscellaneousRepository, _logger, 
+                    TimeSpan.FromHours(citilinkOptions.MinCooldownForPageRequests));
 
                 _scheduledUpserter = new([scheduledCitilinkMerchUpserter]);
 

@@ -2,6 +2,7 @@
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;
 using PriceTracker.Modules.Repository.Mapping;
+using PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel.MerchRepository;
 
 namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
@@ -10,7 +11,7 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
         CitilinkMerchEntity, PriceTrackerContext>
     {
         public CitilinkMerchRepository(CitilinkMerchEntityRepository entityRepository,
-            ICoreToEntityMapper<CitilinkMerchDto, CitilinkMerchEntity>
+            ICitilinkMerchCoreToEntityMapper
             mapper, ILogger? logger = null) : base(entityRepository, mapper, logger)
         {
         }

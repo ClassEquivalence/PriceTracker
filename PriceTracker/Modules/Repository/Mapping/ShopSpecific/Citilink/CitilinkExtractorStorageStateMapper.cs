@@ -4,8 +4,7 @@ using PriceTracker.Modules.Repository.Entities.Infrastructure;
 namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink
 {
     public class CitilinkExtractorStorageStateMapper :
-        ICoreToEntityMapper<CitilinkExtractorStorageStateDto,
-                CitilinkExtractorStorageStateEntity>
+        ICitilinkExtractorStorageStateMapper
     {
         public CitilinkExtractorStorageStateDto Map(CitilinkExtractorStorageStateEntity entity)
         {

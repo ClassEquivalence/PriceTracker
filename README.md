@@ -51,3 +51,6 @@ To launch the application, you'll need the following installed:
 Note: For proper application operation its better to allocate at least 1 GB of RAM and 0.5 of CPU core resources.
 
 For detailed information on project structure, see [Docs.md](./Docs/Docs.md).
+
+⚠️ Build and launch instructions may require minor adjustments depending on environment.  
+⚠️ The app was tested locally and deployed to Render. However, stable operation requires more resources than Render’s free tier can provide (in particular, zero-downtime hosting).

@@ -3,6 +3,7 @@ using PriceTracker.Core.Configuration.ProvidedWithDI;
 using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
 using PriceTracker.Core.Utils;
 using PriceTracker.Modules.MerchDataProvider;
+using PriceTracker.Modules.Repository;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 
 namespace PriceTracker
@@ -17,6 +18,9 @@ namespace PriceTracker
             builder.Services.AddControllersWithViews();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // Does the code string below works properly?
+            builder.Services.AddSingleton<ILogger>(s => s.GetService<ILogger<Program>>());
 
             DependencyInjector.InjectRepositoryDependencies(builder.Services);
             DependencyInjector.InjectWebInterfaceDependencies(builder.Services);
@@ -66,7 +70,7 @@ namespace PriceTracker
             app.MapControllers();
             app.MapFallbackToFile("index.html");
 
-            app.Services.GetService<IRepositoryFacade>()?.EnsureRepositoryInitialized();
+            app.Services.GetService<RepositoryInitializer>()?.EnsureInitialized();
 
             var appTask = app.RunAsync();
             await appTask;

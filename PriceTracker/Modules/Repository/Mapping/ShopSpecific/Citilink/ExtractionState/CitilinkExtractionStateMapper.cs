@@ -9,13 +9,11 @@ namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink.Extracti
     /// Эта реализация маппера не следит за единичностью инстансов модели
     /// и просто создаёт новые при каждом вызове маппинга.
     /// </summary>
-    public class CitilinkExtractionStateMapper : ICoreToEntityMapper
-        <CitilinkExtractionStateDto, CitilinkParsingExecutionStateEntity>
+    public class CitilinkExtractionStateMapper : ICitilinkExtractionStateMapper
     {
         private readonly ICoreToEntityMapper
             <CatalogUrlsTree, CitilinkCatalogUrlsTreeEntity> _urlTreeMapper;
-        public CitilinkExtractionStateMapper(ICoreToEntityMapper
-            <CatalogUrlsTree, CitilinkCatalogUrlsTreeEntity> urlTreeMapper)
+        public CitilinkExtractionStateMapper(ICitilinkCatalogUrlTreeMapper urlTreeMapper)
         {
             _urlTreeMapper = urlTreeMapper;
         }

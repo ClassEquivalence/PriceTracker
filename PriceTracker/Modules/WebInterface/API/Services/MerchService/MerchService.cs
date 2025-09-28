@@ -18,16 +18,21 @@ namespace PriceTracker.Modules.WebInterface.API.Services.MerchService
 
         private readonly IDetailedMerchDtoMapper _detailedMerchDtoMapper;
         private readonly IOverviewMerchDtoMapper _overviewMerchDtoMapper;
-        public MerchService(ILogger logger, IRepositoryFacade repository,
+        public MerchService(ILogger logger,
             IDetailedMerchDtoMapper detailedMerchDtoMapper,
-            IOverviewMerchDtoMapper overviewMerchDtoMapper)
+            IOverviewMerchDtoMapper overviewMerchDtoMapper, 
+            IMerchRepositoryFacade merchRepository,
+            ITimestampedPriceRepositoryFacade timestampedPriceRepository, 
+            IPriceHistoryRepositoryFacade priceHistoryRepository, 
+            IShopRepositoryFacade shopRepository, 
+            ICitilinkMerchRepositoryFacade citilinkMerchRepository)
         {
             _logger = logger;
-            _merchRepository = repository;
-            _timestampedPriceRepository = repository;
-            _priceHistoryRepository = repository;
-            _shopRepository = repository;
-            _citilinkMerchRepository = repository;
+            _merchRepository = merchRepository;
+            _timestampedPriceRepository = timestampedPriceRepository;
+            _priceHistoryRepository = priceHistoryRepository;
+            _shopRepository = shopRepository;
+            _citilinkMerchRepository = citilinkMerchRepository;
 
             _detailedMerchDtoMapper = detailedMerchDtoMapper;
             _overviewMerchDtoMapper = overviewMerchDtoMapper;
