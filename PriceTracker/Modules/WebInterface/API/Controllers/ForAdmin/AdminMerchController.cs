@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PriceTracker.Core.Models.Domain;
+using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 using PriceTracker.Modules.WebInterface.API.DTOModels.Merch;
 using PriceTracker.Modules.WebInterface.API.Filters;
@@ -28,11 +29,18 @@ namespace PriceTracker.Modules.WebInterface.API.Controllers.ForAdmin
 
 
         public AdminMerchController(ILogger<Program> logger,
-            IWebInterfaceMapperProvider mapperProvider, IRepositoryFacade repositoryFacade)
+            IWebInterfaceMapperProvider mapperProvider,
+            IMerchRepositoryFacade merchRepository,
+            ITimestampedPriceRepositoryFacade timestampedPriceRepository,
+            IPriceHistoryRepositoryFacade priceHistoryRepository,
+            IShopRepositoryFacade shopRepository,
+            ICitilinkMerchRepositoryFacade citilinkMerchRepository)
         {
             _logger = logger;
-            _merchService = new(logger, repositoryFacade, mapperProvider.DetailedMerchDtoMapper,
-                mapperProvider.OverviewMerchDtoMapper);
+            _merchService = new(logger, mapperProvider.DetailedMerchDtoMapper,
+                mapperProvider.OverviewMerchDtoMapper,
+                merchRepository, timestampedPriceRepository, priceHistoryRepository,
+                shopRepository, citilinkMerchRepository);
         }
 
 

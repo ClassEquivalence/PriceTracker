@@ -53,19 +53,19 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
                 $"{nameof(CitilinkScraper)}, {nameof(ScrapProductPortionAsJsonAsync)}: " +
                 $"число попыток запроса не должно быть меньше 1.");
 
-            using var request = _merchFetchRequestBuilder.Build(categorySlug, page, perPage, cookie);
+            
 
             HttpResponseMessage? response = null;
 
             int attempt = 1;
             do
             {
+                using var request = _merchFetchRequestBuilder.Build(categorySlug, page, perPage, cookie);
 
-                
 
                 if (response != null)
                     response.Dispose();
-
+                
                 response = await _baseClient.SendAsync(request);
                 requestCount++;
                 if (response.StatusCode == HttpStatusCode.OK)

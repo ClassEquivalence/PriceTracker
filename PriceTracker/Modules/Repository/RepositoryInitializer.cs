@@ -4,16 +4,21 @@ namespace PriceTracker.Modules.Repository
 {
     public class RepositoryInitializer
     {
-
-        public void EnsureInitialized(ShopRepository repository)
+        private readonly ShopRepository _shopRepository;
+        public RepositoryInitializer(ShopRepository repository)
         {
-            var citilink = repository.SingleOrDefault(s => s.Name ==
+            _shopRepository = repository;
+        }
+
+        public void EnsureInitialized()
+        {
+            var citilink = _shopRepository.SingleOrDefault(s => s.Name ==
             RepositoryParameters.CitilinkShopName);
             if (citilink == null)
             {
                 citilink = new(default, RepositoryParameters.CitilinkShopName,
                     []);
-                repository.Create(citilink);
+                _shopRepository.Create(citilink);
             }
         }
 

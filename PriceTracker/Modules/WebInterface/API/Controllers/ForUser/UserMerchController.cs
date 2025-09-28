@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 using PriceTracker.Modules.WebInterface.API.DTOModels.Merch;
 using PriceTracker.Modules.WebInterface.API.Mapping.MapperProvider;
@@ -18,11 +19,18 @@ namespace PriceTracker.Modules.WebInterface.API.Controllers.ForUser
 
 
         public UserMerchController(ILogger<Program> logger,
-            IWebInterfaceMapperProvider mapperProvider, IRepositoryFacade repositoryFacade)
+            IWebInterfaceMapperProvider mapperProvider,
+            IMerchRepositoryFacade merchRepository,
+            ITimestampedPriceRepositoryFacade timestampedPriceRepository,
+            IPriceHistoryRepositoryFacade priceHistoryRepository,
+            IShopRepositoryFacade shopRepository,
+            ICitilinkMerchRepositoryFacade citilinkMerchRepository)
         {
             _logger = logger;
-            _merchService = new(logger, repositoryFacade, mapperProvider.DetailedMerchDtoMapper,
-                mapperProvider.OverviewMerchDtoMapper);
+            _merchService = new(logger, mapperProvider.DetailedMerchDtoMapper,
+                mapperProvider.OverviewMerchDtoMapper,
+                merchRepository, timestampedPriceRepository,
+                priceHistoryRepository, shopRepository, citilinkMerchRepository);
         }
 
         [HttpGet("{merchId:int}")]

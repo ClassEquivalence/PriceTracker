@@ -5,13 +5,11 @@ using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.C
 
 namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink.ExtractionState
 {
-    public class CitilinkCatalogUrlTreeMapper : ICoreToEntityMapper
-        <CatalogUrlsTree, CitilinkCatalogUrlsTreeEntity>
+    public class CitilinkCatalogUrlTreeMapper : ICitilinkCatalogUrlTreeMapper
     {
         private readonly ICoreToEntityMapper<Branch,
             CitilinkCatalogBranchEntity> _branchMapper;
-        public CitilinkCatalogUrlTreeMapper(ICoreToEntityMapper<Branch,
-            CitilinkCatalogBranchEntity> branchMapper)
+        public CitilinkCatalogUrlTreeMapper(ICitilinkCatalogUrlBranchMapper branchMapper)
         {
             _branchMapper = branchMapper;
         }

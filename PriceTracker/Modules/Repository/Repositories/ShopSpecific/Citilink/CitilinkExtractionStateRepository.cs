@@ -6,6 +6,7 @@ using PriceTracker.Modules.Repository.Entities;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree;
 using PriceTracker.Modules.Repository.Mapping;
+using PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Modules.Repository.Repositories.Base.SingletonRepository;
 
 namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
@@ -22,8 +23,7 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
     {
 
         public CitilinkExtractionStateRepository(IDbContextFactory<PriceTrackerContext>
-            factory, ICoreToEntityMapper<CitilinkExtractionStateDto, 
-                CitilinkParsingExecutionStateEntity> mapper):
+            factory, ICitilinkExtractionStateMapper mapper):
             base(factory, mapper)
         {
 
