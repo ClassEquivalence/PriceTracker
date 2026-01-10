@@ -44,8 +44,8 @@ Future refactor → move state management into a separate provider.
 ## Execution State
 
 - Tracks progress of extraction (e.g., last page visited, last product processed)
-- Enables **resuming** after app restart or crash
-- Currently managed inside `ScheduledUpserter`
+- Allows resuming after app being shutdown and started again.
+- Currently managed inside `ScheduledMerchUpserter`
 - Saved into DB via Repository
 
 Tip:  
@@ -56,7 +56,7 @@ When persisting execution state, always ensure it stays consistent between **Ext
 ## Lifecycle
 
 1. Application starts  
-2. `Modules/MerchDataUpserter/MerchDataProviderFacade` creates `ScheduledUpserter` instances (one per shop)  
+2. `Modules/MerchDataUpserter/MerchDataProviderFacade` creates `ScheduledMerchUpserter` instances (one per shop)  
 3. Each upserter runs independently on its schedule  
 4. After upsertion cycle/subcycle completes, event `UpsertionCycleCompleted` is triggered  
 5. Updated data is committed into repository  
