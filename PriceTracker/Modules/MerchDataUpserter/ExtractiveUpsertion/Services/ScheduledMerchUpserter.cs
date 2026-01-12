@@ -1,11 +1,10 @@
 ﻿using PriceTracker.Core.Models.Process;
-using PriceTracker.Modules.MerchDataUpserter.Core;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ForParsing;
 
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
 {
 
-    public abstract class ScheduledMerchUpserter : IMerchUpserter
+    public abstract class ScheduledMerchUpserter
     {
         public abstract Task ProcessUpsertion();
         public virtual async Task OnShutDownAsync() { }
@@ -16,27 +15,22 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
         where ExecutionState : ExtractionStateDto
         where MerchParsedDto : MerchParsingDto
     {
+        protected readonly IMerchUpsertionProcessor MerchUpserter;
 
         protected readonly ILogger? _logger;
-
-        private readonly IMerchDataConsumer<MerchParsedDto> _dataConsumer;
-        protected readonly IMerchDataExtractor<MerchParsedDto, ExecutionState>
-            _dataExtractor;
 
         private readonly TimeSpan _upsertionRestPeriod;
         private readonly TimeSpan _upsertionCyclePeriod;
         private DateTime _upsertionStartTime;
-        protected ExecutionState? _executionState;
 
         public event Action? UpsertionCycleCompleted;
 
-        public ScheduledMerchUpserter(IMerchDataConsumer<MerchParsedDto> dataConsumer,
-            IMerchDataExtractor<MerchParsedDto, ExecutionState> dataExtractor,
+        public ScheduledMerchUpserter(IMerchUpsertionProcessor merchUpserter,
             TimeSpan upsertionCyclePeriod, TimeSpan upsertionRestPeriod,
             DateTime upsertionStartTime, ILogger? logger = null)
         {
-            _dataConsumer = dataConsumer;
-            _dataExtractor = dataExtractor;
+            MerchUpserter = merchUpserter;
+
             _upsertionCyclePeriod = upsertionCyclePeriod;
             _upsertionRestPeriod = upsertionRestPeriod;
             _upsertionStartTime = upsertionStartTime;
@@ -46,10 +40,6 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
 
         public override async Task ProcessUpsertion()
         {
-            if(_executionState == null)
-            {
-                _executionState = GetOrCreateExecState();
-            }
             while (true)
             {
 
@@ -64,42 +54,19 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
                     await Task.Delay(_upsertionStartTime - DateTime.Now);
                 }
 
-                Task task;
-                if (_executionState.IsCompleted)
+                var result = await MerchUpserter.ProcessUpsertionSubCycleAsync();
+
+                switch (result)
                 {
-                    task = _dataConsumer.Upsert(_dataExtractor.
-                        RunExtractionProcess());
+                    case IMerchUpsertionProcessor.UpsertionSubcycleResult.SubcycleCompleted:
+                        _upsertionStartTime = DateTime.Now + _upsertionRestPeriod;
+                        continue;
+                    case IMerchUpsertionProcessor.UpsertionSubcycleResult.EntireCycleCompleted:
+                        _upsertionStartTime = DateTime.Now + _upsertionCyclePeriod;
+                        continue;
                 }
-                else
-                {
-                    task = _dataConsumer.Upsert(_dataExtractor.
-                        ContinueExtractionProcess(_executionState));
-                }
-
-
-                if (!_executionState.IsCompleted)
-                {
-                    _upsertionStartTime = DateTime.Now + _upsertionRestPeriod;
-                    await task;
-                    continue;
-                }
-
-                _upsertionStartTime = DateTime.Now + _upsertionCyclePeriod;
-
-
-                await task;
-
-
             }
         }
-
-        public ExecutionState GetOrCreateExecState()
-        {
-            return TryLoadExecutionState() ?? CreateNewExecutionState();
-        }
-
-        public abstract ExecutionState? TryLoadExecutionState();
-        public abstract ExecutionState CreateNewExecutionState();
 
     }
 }

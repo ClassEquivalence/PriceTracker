@@ -1,7 +1,7 @@
 ﻿using HtmlAgilityPack;
 using PriceTracker.Core.Utils;
 
-namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper
+namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.ParsingEngine.Scraper
 {
     public interface ICitilinkScraper
     {

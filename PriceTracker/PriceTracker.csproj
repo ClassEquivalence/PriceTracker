@@ -8,6 +8,13 @@
   
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Modules\MerchDataUpserter\ExtractiveUpsertion\Utils\**" />
+    <Content Remove="Modules\MerchDataUpserter\ExtractiveUpsertion\Utils\**" />
+    <EmbeddedResource Remove="Modules\MerchDataUpserter\ExtractiveUpsertion\Utils\**" />
+    <None Remove="Modules\MerchDataUpserter\ExtractiveUpsertion\Utils\**" />
+  </ItemGroup>
+
 	<!--
   <ItemGroup>
   <Content Include="wwwroot\**\*" CopyToPublishDirectory="PreserveNewest" />
@@ -29,9 +36,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Modules\MerchDataUpserter\Core\Models\" />
     <Folder Include="Modules\MerchDataUpserter\ExtractiveUpsertion\Models\ShopSpecific\Citilink\Process\" />
-    <Folder Include="Modules\MerchDataUpserter\ExtractiveUpsertion\Utils\" />
+    <Folder Include="Modules\MerchDataUpserter\Adapters\" />
     <Folder Include="Modules\Repository\Mapping\Process\" />
   </ItemGroup>
 

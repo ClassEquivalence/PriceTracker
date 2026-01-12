@@ -2,7 +2,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper
+namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.ParsingEngine.Scraper
 {
     public class MerchFetchRequestBuilder
     {

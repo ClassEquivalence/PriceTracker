@@ -1,5 +1,4 @@
-﻿
-namespace PriceTracker.Modules.MerchDataProvider
+﻿namespace PriceTracker.Modules.MerchDataUpserter.Facade
 {
     /// <summary>
     /// Внешний интерфейс модуля.

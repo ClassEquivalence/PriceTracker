@@ -4,13 +4,15 @@ using PriceTracker.Core.Models.Process;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
 using PriceTracker.Core.Utils;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Infrastructure.Factories.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Mapping;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.MerchParser;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper;
-using static PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.ICitilinkMerchCatalogUrlsParser;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.ParsingEngine;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.ParsingEngine.MerchParser;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.ParsingEngine.Scraper;
+using static PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.ParsingEngine.ICitilinkMerchCatalogUrlsParser;
 
 
 
@@ -42,25 +44,33 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         private readonly CitilinkScraper _baseScraper;
         private readonly CitilinkUpsertionOptions _upsertionOptions;
 
-        private CitilinkCatalogUrlsTreeMapper catalogUrlsTreeMapper;
+        private readonly MerchCatalogUrlsParserFactory _catalogParserFactory;
 
+        private CitilinkCatalogUrlsTreeMapper catalogUrlsTreeMapper;
+        private CatalogUrlsTreeProvider catalogUrlsTreeProvider;
 
         public event Action<CitilinkExtractionStateDto>? OnExecutionStateUpdate;
         public event Action? ExtractionProcessFinished;
         private ExtractionPartialCycleResult extractionResultInfo;
 
-
+        // No services constructed in here left.
         public GUICitilinkExtractor(CitilinkCatalogUrlsTreeMapper catalogTreeMapper,
             CitilinkUpsertionOptions upsertionOptions, string userAgent,
+            CatalogUrlsTreeProvider catalogUrlsTreeProvider, MerchCatalogUrlsParserFactory
+            catalogParserFactory, CitilinkScraper baseScraper, CitilinkMerchParser parser,
             ILogger? logger = null)
         {
-            CitilinkScraper baseScraper = _baseScraper = new(upsertionOptions, userAgent, logger);
+            this.catalogUrlsTreeProvider = catalogUrlsTreeProvider;
+            _baseScraper = baseScraper;
 
             baseScraper.RequestLimitReached += BaseScraper_OnRequestLimitReached;
 
-            _parser = new CitilinkMerchParser(baseScraper, logger,
-                upsertionOptions.IgnoredCategorySlugs.ToList());
 
+            _parser = parser;
+            //_parser = new CitilinkMerchParser(baseScraper, logger,
+            //    upsertionOptions.IgnoredCategorySlugs.ToList());
+
+            _catalogParserFactory = catalogParserFactory;
 
             _logger = logger;
             _upsertionOptions = upsertionOptions;
@@ -78,7 +88,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
 
             _catalogUrlsTree = CreateInitialTree();
 
-            _merchCatalogsParser = new(_baseScraper, _catalogUrlsTree, _upsertionOptions, _logger);
+            _merchCatalogsParser = _catalogParserFactory.Create(catalogUrlsTreeProvider);
 
             _logger?.LogTrace($"{nameof(GUICitilinkExtractor)}: начался новый процесс извлечения" +
                 $" товаров.");
@@ -94,19 +104,19 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecifi
         }
 
         public async IAsyncEnumerable<CitilinkMerchParsingDto>
-            ContinueExtractionProcess(CitilinkExtractionStateDto extractionData)
+            ContinueExtractionProcess()
         {
             isCompleted = false;
 
-            _catalogUrlsTree = catalogUrlsTreeMapper.Map(extractionData.CachedUrls);
+            _catalogUrlsTree = catalogUrlsTreeProvider.Provide();
 
-            _merchCatalogsParser = new(_baseScraper, _catalogUrlsTree, _upsertionOptions, _logger);
+            _merchCatalogsParser = _catalogParserFactory.Create(catalogUrlsTreeProvider);
 
             _logger?.LogTrace($"{nameof(GUICitilinkExtractor)}: инициировано продолжение процесса " +
                 $"извлечения товаров.");
 
             _logger?.LogTrace($"{nameof(GUICitilinkExtractor)}, {nameof(ContinueExtractionProcess)}:" +
-                $" Roots children count: {extractionData.CachedUrls.Root.Children.Count()}");
+                $" Roots children count: {_catalogUrlsTree.Root.Children.Count()}");
 
 
             var merches = ProcessExtraction();

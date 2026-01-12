@@ -4,9 +4,9 @@ using PriceTracker.Core.Utils;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
-using static PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper.ICitilinkScraper;
+using static PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.ParsingEngine.Scraper.ICitilinkScraper;
 
-namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper
+namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.ParsingEngine.Scraper
 {
     public class CitilinkScraper: ICitilinkScraper
     {

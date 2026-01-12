@@ -3,12 +3,12 @@ using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
 using PriceTracker.Core.Utils;
 using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Models.ShopSpecific.Citilink;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.Scraper;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.ParsingEngine.Scraper;
 using System.Runtime.CompilerServices;
 using System.Xml.Linq;
-using static PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.ICitilinkMerchCatalogUrlsParser;
+using static PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.ParsingEngine.ICitilinkMerchCatalogUrlsParser;
 
-namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2
+namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.ParsingEngine
 {
     /// <summary>
     /// TODO: убрать бы "магические константы" (особенно "notFound! !!!")
@@ -47,14 +47,14 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.Sh
 
 
         public CitilinkMerchCatalogUrlsParser(ICitilinkScraper scraper,
-            CitilinkCatalogUrlsTree catalogUrls, CitilinkUpsertionOptions options,
-            ILogger? logger = null)
+            CatalogUrlsTreeProvider citilinkCatalogUrlsTreeProvider,
+            CitilinkUpsertionOptions options, ILogger? logger = null)
         {
             _options = options;
-            CatalogUrlsTree = catalogUrls;
+            CatalogUrlsTree = citilinkCatalogUrlsTreeProvider.Provide();
             _scraper = scraper;
             _logger = logger;
-            root = catalogUrls.Root;
+            root = CatalogUrlsTree.Root;
             currentBranchRoute = [];
             currentBranchRoute.Push(root);
         }

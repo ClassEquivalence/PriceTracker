@@ -1,4 +1,4 @@
-﻿namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.Engine_v2.MerchParser.DeserializedMerchFetchResponse
+﻿namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services.ShopSpecific.Citilink.ParsingEngine.MerchParser.DeserializedMerchFetchResponse
 {
     public class Product
     {

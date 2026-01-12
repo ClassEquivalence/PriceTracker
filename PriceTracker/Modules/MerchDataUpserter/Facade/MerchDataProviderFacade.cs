@@ -14,7 +14,7 @@ using PriceTracker.Modules.Repository.Repositories.Base;
  Сделать передачу в репозиторий состояния выполнения
  Да и вообще зарефакторить весь модуль надо бы.
  */
-namespace PriceTracker.Modules.MerchDataProvider
+namespace PriceTracker.Modules.MerchDataUpserter.Facade
 {
     /// <summary>
     /// Точка взаимодействия с модулем, и модуля - с внешним окружением.
@@ -26,26 +26,16 @@ namespace PriceTracker.Modules.MerchDataProvider
         private readonly MerchUpsertionOptions _options;
         private readonly IAppEnvironment _appEnvironment;
 
-
-        private readonly ICitilinkMerchRepositoryFacade _citilinkMerchRepository;
-        private readonly IShopSelectorFacade _shopSelector;
-        private readonly ICitilinkMiscellaneousRepositoryFacade _citilinkMiscellaneousRepository;
-
         public MerchDataProviderFacade(ILogger<Program> logger,
             IOptions<MerchUpsertionOptions> options, IAppEnvironment appEnvironment, 
-            ICitilinkMerchRepositoryFacade citilinkMerchRepository, IShopSelectorFacade
-            shopSelector, ICitilinkMiscellaneousRepositoryFacade citilinkMiscellaneousRepository)
+            UpsertionService upsertionService)
         {
             _options = options.Value;
             _appEnvironment = appEnvironment;
             
             _logger = logger;
 
-            _citilinkMerchRepository = citilinkMerchRepository;
-            _shopSelector = shopSelector;
-            _citilinkMiscellaneousRepository = citilinkMiscellaneousRepository;
-            
-
+            _scheduledUpserter = upsertionService;
 
             
 
@@ -85,6 +75,7 @@ namespace PriceTracker.Modules.MerchDataProvider
         {
             if (_options.UpsertionActive)
             {
+                /*
                 var citilinkOptions = _options.CitilinkUpsertionOptions;
                 CitilinkMerchDataUpserter consumer = new(_citilinkMerchRepository, 
                     _shopSelector.GetCitilinkShop(), logger: _logger);
@@ -99,8 +90,9 @@ namespace PriceTracker.Modules.MerchDataProvider
                     TimeSpan.FromHours(citilinkOptions.MinCooldownForPageRequests));
 
                 _scheduledUpserter = new([scheduledCitilinkMerchUpserter]);
-
-
+                */
+                // TODO: Костыль? Не изучено, как должен работать StartAsync и взаимодействовать
+                // с CancellationToken.
                 ProcessMerchUpsertion();
             }
             else

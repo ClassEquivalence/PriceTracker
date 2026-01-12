@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PriceTracker.Modules.MerchDataProvider;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services;
+using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink;
+using PriceTracker.Modules.MerchDataUpserter.Facade;
 using PriceTracker.Modules.Repository;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Facade;
@@ -28,6 +31,10 @@ namespace PriceTracker.Core.Utils
         public static void InjectMerchDataProviderDependencies(
             IServiceCollection collection)
         {
+
+
+            collection.AddSingleton<UpsertionService>();
+            collection.AddSingleton<ScheduledMerchUpserter, ScheduledCitilinkMerchUpserter>();
 
             collection.AddSingleton<IMerchDataProviderFacade, MerchDataProviderFacade>();
             collection.AddSingleton<IHostedService>(sp => sp.

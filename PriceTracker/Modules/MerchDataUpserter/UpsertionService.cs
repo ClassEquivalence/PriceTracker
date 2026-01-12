@@ -5,10 +5,10 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion
     public class UpsertionService
     {
         private readonly List<ScheduledMerchUpserter> _merchUpserters;
-        public UpsertionService(List<ScheduledMerchUpserter>
+        public UpsertionService(IEnumerable<ScheduledMerchUpserter>
             scheduledUpserters)
         {
-            _merchUpserters = scheduledUpserters;
+            _merchUpserters = scheduledUpserters.ToList();
         }
 
         public async Task ProcessUpsertion()

@@ -50,7 +50,7 @@ namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
         /// Метод также завершает работу при окончании цикла апсершна.
         /// </summary>
         /// <returns></returns>
-        IAsyncEnumerable<Dto> ContinueExtractionProcess(ExecutionState extractionData);
+        IAsyncEnumerable<Dto> ContinueExtractionProcess();
         ExecutionState? GetProgress();
         public event Action<ExecutionState>? OnExecutionStateUpdate;
         public event Action ExtractionProcessFinished;

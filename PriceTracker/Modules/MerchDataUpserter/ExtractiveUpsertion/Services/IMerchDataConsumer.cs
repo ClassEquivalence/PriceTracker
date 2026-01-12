@@ -2,7 +2,11 @@
 
 namespace PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services
 {
-    public interface IMerchDataConsumer<Dto>
+    public interface IMerchDataConsumer
+    {
+    }
+
+    public interface IMerchDataConsumer<Dto>: IMerchDataConsumer
         where Dto : MerchParsingDto
     {
         Task Upsert(IAsyncEnumerable<Dto>
