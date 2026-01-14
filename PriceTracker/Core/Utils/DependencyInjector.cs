@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.Services;
-using PriceTracker.Modules.MerchDataUpserter.ExtractiveUpsertion.ShopSpecific.Citilink;
-using PriceTracker.Modules.MerchDataUpserter.Facade;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.CoordinationLayer;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.UpsertionInvocationLayer;
+using PriceTracker.Modules.MerchDataMaintenance.Facade;
 using PriceTracker.Modules.Repository;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Facade;

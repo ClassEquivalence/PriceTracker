@@ -9,10 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Modules\MerchDataUpserter\ExtractiveUpsertion\Utils\**" />
-    <Content Remove="Modules\MerchDataUpserter\ExtractiveUpsertion\Utils\**" />
-    <EmbeddedResource Remove="Modules\MerchDataUpserter\ExtractiveUpsertion\Utils\**" />
-    <None Remove="Modules\MerchDataUpserter\ExtractiveUpsertion\Utils\**" />
+    <Compile Remove="Modules\MerchDataMaintenance\ExtractiveMaintenance\Utils\**" />
+    <Content Remove="Modules\MerchDataMaintenance\ExtractiveMaintenance\Utils\**" />
+    <EmbeddedResource Remove="Modules\MerchDataMaintenance\ExtractiveMaintenance\Utils\**" />
+    <None Remove="Modules\MerchDataMaintenance\ExtractiveMaintenance\Utils\**" />
   </ItemGroup>
 
 	<!--
@@ -36,8 +36,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Modules\MerchDataUpserter\ExtractiveUpsertion\Models\ShopSpecific\Citilink\Process\" />
-    <Folder Include="Modules\MerchDataUpserter\Adapters\" />
+    <Folder Include="Modules\MerchDataMaintenance\Adapters\" />
+    <Folder Include="Modules\MerchDataMaintenance\ExtractiveMaintenance\Mapping\" />
+    <Folder Include="Modules\MerchDataMaintenance\ExtractiveMaintenance\ScrapingLayer\" />
     <Folder Include="Modules\Repository\Mapping\Process\" />
   </ItemGroup>
 
