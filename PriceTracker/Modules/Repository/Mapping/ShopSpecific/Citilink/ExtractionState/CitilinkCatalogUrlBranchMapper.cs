@@ -1,6 +1,4 @@
-﻿using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
-using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
-using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
+﻿using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree;
 
 namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink.ExtractionState
@@ -14,17 +12,22 @@ namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink.Extracti
             _logger = logger;
         }
 
-        public Branch Map(CitilinkCatalogBranchEntity entity)
+        public CitilinkBranch Map(CitilinkCatalogBranchEntity entity)
         {
-            return new Branch(entity.Id, entity.CurrentCatalogUrl, entity.Branches != null? 
-                entity.Branches.Select(Map).ToList(): [], entity.IsBranchProcessed);
+            return new CitilinkBranch(entity.Id, entity.Url, entity.Children != null ?
+                entity.Children.Select(Map).ToList() : [], entity.DescendantsProcessed,
+                entity.NodeType, entity.AugmentationState, processingErrorCount: 
+                entity.ProcessingErrorCount);
         }
 
-        public CitilinkCatalogBranchEntity Map(Branch model)
+        public CitilinkCatalogBranchEntity Map(CitilinkBranch model)
         {
-            //_logger?.LogTrace($"{nameof(CitilinkCatalogUrlBranchMapper)}: url ветви: {model.Url}");
-            return new CitilinkCatalogBranchEntity(model.Url,
-                model.Children .Select(Map).ToList(), model.IsProcessed, model.Id);
+            var entity = new CitilinkCatalogBranchEntity(model.Url, model.Children.Select(Map).ToList(),
+                model.DescendantsProcessed, model.AugmentationState, model.NodeType, model.Id,
+                processingErrorCount: model.ProcessingErrorCount);
+            _logger?.LogTrace($"Branch model to entity: Model - {model}\n" +
+                $"Entity - {entity}");
+            return entity;
         }
     }
 }

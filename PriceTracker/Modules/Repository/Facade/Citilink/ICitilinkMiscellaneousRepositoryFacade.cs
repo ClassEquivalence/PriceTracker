@@ -5,7 +5,7 @@ using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 namespace PriceTracker.Modules.Repository.Facade.Citilink
 {
     public interface ICitilinkMiscellaneousRepositoryFacade :
-        IExtractionExecutionStateProvider<CitilinkExtractionStateDto>
+        IExtractionExecutionStateRepository<CitilinkExtractionStateDto>
     {
         public void SetExtractorStorageState(CitilinkExtractorStorageStateDto storageStateDto);
         public CitilinkExtractorStorageStateDto? GetExtractorStorageState();

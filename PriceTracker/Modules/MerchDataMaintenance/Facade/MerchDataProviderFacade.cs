@@ -2,12 +2,7 @@
 using Microsoft.Extensions.Options;
 using PriceTracker.Core.Configuration.ProvidedWithDI;
 using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
-using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.CoordinationLayer;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink;
-using PriceTracker.Modules.Repository.Facade.Citilink;
-using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
-using PriceTracker.Modules.Repository.Repositories.Base;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Common.CommonLayers.CoordinationLayer;
 
 
 /*
@@ -27,17 +22,17 @@ namespace PriceTracker.Modules.MerchDataMaintenance.Facade
         private readonly IAppEnvironment _appEnvironment;
 
         public MerchDataProviderFacade(ILogger<Program> logger,
-            IOptions<MerchUpsertionOptions> options, IAppEnvironment appEnvironment, 
+            IOptions<MerchUpsertionOptions> options, IAppEnvironment appEnvironment,
             UpsertionService upsertionService)
         {
             _options = options.Value;
             _appEnvironment = appEnvironment;
-            
+
             _logger = logger;
 
             _scheduledUpserter = upsertionService;
 
-            
+
 
         }
 
@@ -108,7 +103,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.Facade
                 $"process started.");
             if (_options.UpsertionActive)
             {
-                
+
                 await OnShutdownAsync();
                 _logger?.LogInformation($"{nameof(MerchDataProviderFacade)}: shutdown" +
                    $"process completed.");

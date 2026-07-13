@@ -2,7 +2,6 @@
 using PriceTracker.Core.Models.Domain;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Domain;
-using PriceTracker.Modules.Repository.Mapping;
 using PriceTracker.Modules.Repository.Mapping.Domain;
 using PriceTracker.Modules.Repository.Repositories.Base;
 

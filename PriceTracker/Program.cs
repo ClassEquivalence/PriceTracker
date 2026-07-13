@@ -1,10 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using PriceTracker.Core.Configuration.ProvidedWithDI;
 using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
-using PriceTracker.Core.Utils;
-using PriceTracker.Modules.MerchDataProvider;
+using PriceTracker.Core.Utils.DependencyInjection;
 using PriceTracker.Modules.Repository;
-using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 
 namespace PriceTracker
 {
@@ -19,12 +16,12 @@ namespace PriceTracker
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // Does the code string below works properly?
+            // Does the code string below work properly?
             builder.Services.AddSingleton<ILogger>(s => s.GetService<ILogger<Program>>());
 
             DependencyInjector.InjectRepositoryDependencies(builder.Services);
             DependencyInjector.InjectWebInterfaceDependencies(builder.Services);
-            DependencyInjector.InjectMerchDataProviderDependencies(builder.Services);
+            DependencyInjector.InjectMerchDataMaintenanceDependencies(builder.Services);
 
             builder.Services.Configure<ProductionDbOptions>(
                 builder.Configuration.GetSection(ProductionDbOptions.OptionsSectionKey));

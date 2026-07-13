@@ -44,7 +44,7 @@ What should be documented in-code:
 <a name="in-docs"></a>
 
 What should be documented in Docs section:
-1. App architecture
+1. App architecture (including data flow, modules responsibility boundaries)
 2. Folders and files location with their technical purpose
 3. Code and docs writing and organization approach
 4. Consistency lists

@@ -20,11 +20,11 @@ namespace PriceTracker.Modules.WebInterface.API.Services.MerchService
         private readonly IOverviewMerchDtoMapper _overviewMerchDtoMapper;
         public MerchService(ILogger logger,
             IDetailedMerchDtoMapper detailedMerchDtoMapper,
-            IOverviewMerchDtoMapper overviewMerchDtoMapper, 
+            IOverviewMerchDtoMapper overviewMerchDtoMapper,
             IMerchRepositoryFacade merchRepository,
-            ITimestampedPriceRepositoryFacade timestampedPriceRepository, 
-            IPriceHistoryRepositoryFacade priceHistoryRepository, 
-            IShopRepositoryFacade shopRepository, 
+            ITimestampedPriceRepositoryFacade timestampedPriceRepository,
+            IPriceHistoryRepositoryFacade priceHistoryRepository,
+            IShopRepositoryFacade shopRepository,
             ICitilinkMerchRepositoryFacade citilinkMerchRepository)
         {
             _logger = logger;

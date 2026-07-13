@@ -1,6 +1,6 @@
 ﻿namespace PriceTracker.Core.Configuration.ProvidedWithDI
 {
-    public class HostEnvironmentAdapter: IAppEnvironment
+    public class HostEnvironmentAdapter : IAppEnvironment
     {
         private readonly IHostEnvironment _hostEnv;
 

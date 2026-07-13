@@ -1,26 +1,34 @@
-﻿using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
-using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
-using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
+﻿using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree;
 
 namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink.ExtractionState
 {
     public class CitilinkCatalogUrlTreeMapper : ICitilinkCatalogUrlTreeMapper
     {
-        private readonly ICoreToEntityMapper<Branch,
+        private readonly ICoreToEntityMapper<CitilinkBranch,
             CitilinkCatalogBranchEntity> _branchMapper;
-        public CitilinkCatalogUrlTreeMapper(ICitilinkCatalogUrlBranchMapper branchMapper)
+
+        private readonly ILogger? _logger;
+        public CitilinkCatalogUrlTreeMapper(ICitilinkCatalogUrlBranchMapper branchMapper,
+            ILogger? logger)
         {
             _branchMapper = branchMapper;
+            _logger = logger;
         }
         public CatalogUrlsTree Map(CitilinkCatalogUrlsTreeEntity entity)
         {
-            return new(_branchMapper.Map(entity.Root), entity.Id);
+            CatalogUrlsTree tree = new(_branchMapper.Map(entity.Root), entity.Id);
+            _logger?.LogTrace($"CatalogUrlsTree's being mapped:" +
+                $" entity -> model, {tree}");
+            return tree;
         }
 
         public CitilinkCatalogUrlsTreeEntity Map(CatalogUrlsTree model)
         {
-            return new(_branchMapper.Map(model.Root), model.Id);
+            CitilinkCatalogUrlsTreeEntity treeEntity = new(_branchMapper.Map(model.Root), model.Id);
+            _logger?.LogTrace($"CatalogUrlsTree's being mapped:" +
+                $" model -> entity, {treeEntity}");
+            return treeEntity;
         }
     }
 }

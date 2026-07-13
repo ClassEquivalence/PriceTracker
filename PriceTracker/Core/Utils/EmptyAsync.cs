@@ -1,6 +1,4 @@
-﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Models.ShopSpecific.Citilink;
-
-namespace PriceTracker.Core.Utils
+﻿namespace PriceTracker.Core.Utils
 {
     public class EmptyAsync
     {

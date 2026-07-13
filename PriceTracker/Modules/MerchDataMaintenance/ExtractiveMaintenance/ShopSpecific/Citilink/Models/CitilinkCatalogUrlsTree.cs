@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-
-namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models
+﻿namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models
 {
     public record CitilinkCatalogUrlsTree
     {
@@ -9,7 +7,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
 
         public event Action? FiltersAndDuplicatesRemoved;
 
-        public CitilinkCatalogUrlsTree(BranchWithFunctionality root, int id=default)
+        public CitilinkCatalogUrlsTree(BranchWithFunctionality root, int id = default)
         {
             Id = id;
             Root = root;
@@ -19,7 +17,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         {
             List<BranchWithFunctionality> all = GetAllBranches();
 
-            foreach(var branch in all)
+            foreach (var branch in all)
             {
                 branch.RemoveFilter();
             }
@@ -51,7 +49,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
 
         }
 
-        
+
 
         public int BranchWithUrlCount(string url)
         {
@@ -72,7 +70,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
 
             branches.AddRange(parent.Children);
 
-            foreach(BranchWithFunctionality branch in parent.Children)
+            foreach (BranchWithFunctionality branch in parent.Children)
             {
                 branches.AddRange(branch.Children);
             }

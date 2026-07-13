@@ -1,27 +1,48 @@
-﻿namespace PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree
+﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
+
+namespace PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree
 {
-    public class CitilinkCatalogBranchEntity: BaseEntity
+    public class CitilinkCatalogBranchEntity : BaseEntity
     {
-        public CitilinkCatalogBranchEntity(string currentCatalogUrl,
-            bool isBranchProcessed, int id = default) : base(id)
+        public CitilinkCatalogBranchEntity(string url,
+            bool descendantsProcessed, CitilinkNodeAugmentationState 
+            augmentationState, CitilinkNodeType nodeType, int id = default, 
+            int processingErrorCount = 0)
+            : base(id)
         {
-            CurrentCatalogUrl = currentCatalogUrl;
-            IsBranchProcessed = isBranchProcessed;
+            NodeType = nodeType;
+            Url = url;
+            DescendantsProcessed = descendantsProcessed;
+            ProcessingErrorCount = processingErrorCount;
+            AugmentationState = augmentationState;
         }
 
-        public CitilinkCatalogBranchEntity(string currentCatalogUrl,
-            List<CitilinkCatalogBranchEntity> branches,
-            bool isProcessed, int id =default)
-            : this(currentCatalogUrl, isProcessed, id)
+        public CitilinkCatalogBranchEntity(string url,
+            List<CitilinkCatalogBranchEntity> children,
+            bool descendantsProcessed, CitilinkNodeAugmentationState
+            augmentationState, CitilinkNodeType nodeType, int id = default,
+            int processingErrorCount = 0)
+            : this(url, descendantsProcessed,
+                  augmentationState, nodeType, id, processingErrorCount)
         {
-            Branches = branches;
+            Children = children;
         }
 
-        public string CurrentCatalogUrl { get; set; }
-        public List<CitilinkCatalogBranchEntity> Branches 
+        public string Url { get; set; }
+        public List<CitilinkCatalogBranchEntity> Children
         { get; set; }
 
-        public bool IsBranchProcessed { get; set; }
+        public bool DescendantsProcessed { get; set; }
 
+        public CitilinkNodeAugmentationState AugmentationState { get; set; }
+        public CitilinkNodeType NodeType { get; set; }
+        public int ProcessingErrorCount { get; set; }
+
+        public override string ToString()
+        {
+            return $"CitilinkBranchEntity: Id is {Id}, Url is {Url}, Children count is {Children.Count}, " +
+                $"AreDescendantsProcessed: {DescendantsProcessed}, AugmentationState is {AugmentationState}," +
+                $" NodeType is {NodeType}, ProcessingErrorCount is {ProcessingErrorCount}";
+        }
     }
 }

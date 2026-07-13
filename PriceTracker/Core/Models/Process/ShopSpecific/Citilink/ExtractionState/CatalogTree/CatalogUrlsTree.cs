@@ -1,12 +1,10 @@
-﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Models.ShopSpecific.Citilink;
-
-namespace PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree
+﻿namespace PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree
 {
-    public record CatalogUrlsTree: BaseDto
+    public record CatalogUrlsTree : BaseDto
     {
-        public Branch Root;
+        public CitilinkBranch Root;
         public int Id;
-        public CatalogUrlsTree(Branch root, int id = default)
+        public CatalogUrlsTree(CitilinkBranch root, int id = default)
         {
             Id = id;
             Root = root;
@@ -17,29 +15,27 @@ namespace PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState
             return new CatalogUrlsTree(Root.DeepClone(), Id);
         }
 
-
-        public List<Branch> GetAllBranches()
+        public List<CitilinkBranch> GetAllBranches()
         {
             var all = SelectAllBranchDescendants(Root);
             all.Add(Root);
-
             return all;
         }
 
-        private List<Branch> SelectAllBranchDescendants(Branch parent)
+
+        private List<CitilinkBranch> SelectAllBranchDescendants(CitilinkBranch parent)
         {
-            List<Branch> branches = [];
-
+            List<CitilinkBranch> branches = [];
             branches.AddRange(parent.Children);
-
-            foreach (Branch branch in parent.Children)
+            foreach (CitilinkBranch branch in parent.Children)
             {
-                branches.AddRange(branch.Children);
+                branches.AddRange(SelectAllBranchDescendants(branch));
             }
-
             return branches;
-
         }
-
+        public override string ToString()
+        {
+            return $"CatalogUrlsTree: Id is {Id}, Root is {Root}";
+        }
     }
 }

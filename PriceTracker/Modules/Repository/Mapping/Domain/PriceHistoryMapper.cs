@@ -28,7 +28,7 @@ namespace PriceTracker.Modules.Repository.Mapping.Domain
             var timestampedPricesAsEntities = previousPricesAsCoreDtos.
                 Select(pe => _timestampedPriceMapper.Map(pe)).Append(currentPriceAsEntity).ToList();
 
-            var currentPricePointerAsEntity = new CurrentPricePointerEntity(entity.Id, 
+            var currentPricePointerAsEntity = new CurrentPricePointerEntity(entity.Id,
                 currentPriceAsEntity.Id, model.CurrentPricePointerId);
 
             currentPricePointerAsEntity.MerchPriceHistory = entity;

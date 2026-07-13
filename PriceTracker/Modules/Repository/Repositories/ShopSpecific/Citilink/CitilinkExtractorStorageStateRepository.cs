@@ -1,31 +1,28 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PriceTracker.Core.Models.Infrastructure;
-using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Infrastructure;
-using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
-using PriceTracker.Modules.Repository.Mapping;
 using PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink;
-using PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Modules.Repository.Repositories.Base.SingletonRepository;
 
 namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
 {
-    public class CitilinkExtractorStorageStateRepository: 
+    public class CitilinkExtractorStorageStateRepository :
         EFGenericSingletonRepository<CitilinkExtractorStorageStateDto,
             CitilinkExtractorStorageStateEntity>
     {
 
         public CitilinkExtractorStorageStateRepository(IDbContextFactory<PriceTrackerContext>
-            factory, ICitilinkExtractorStorageStateMapper mapper):
+            factory, ICitilinkExtractorStorageStateMapper mapper) :
             base(factory, mapper)
         {
         }
 
-        protected override IQueryable<CitilinkExtractorStorageStateEntity> 
-            GetWithIncludedEntities(DbSet<CitilinkExtractorStorageStateEntity> entities)
+        protected override async Task<IQueryable<CitilinkExtractorStorageStateEntity>>
+            GetWithIncludedEntitiesAsync()
         {
-            return entities;
+            var context = await _dbContextFactory.CreateDbContextAsync();
+            return context.Set<CitilinkExtractorStorageStateEntity>();
         }
     }
 }

@@ -162,15 +162,24 @@ namespace PriceTracker.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AugmentationState")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("CitilinkCatalogBranchEntityId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("CurrentCatalogUrl")
+                    b.Property<bool>("DescendantsProcessed")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("NodeType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProcessingErrorCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<bool>("IsBranchProcessed")
-                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -306,7 +315,7 @@ namespace PriceTracker.Migrations
             modelBuilder.Entity("PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree.CitilinkCatalogBranchEntity", b =>
                 {
                     b.HasOne("PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree.CitilinkCatalogBranchEntity", null)
-                        .WithMany("Branches")
+                        .WithMany("Children")
                         .HasForeignKey("CitilinkCatalogBranchEntityId");
                 });
 
@@ -350,7 +359,7 @@ namespace PriceTracker.Migrations
 
             modelBuilder.Entity("PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree.CitilinkCatalogBranchEntity", b =>
                 {
-                    b.Navigation("Branches");
+                    b.Navigation("Children");
                 });
 #pragma warning restore 612, 618
         }

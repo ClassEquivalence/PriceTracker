@@ -1,6 +1,6 @@
 ﻿namespace PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree
 {
-    public record Branch: BaseDto
+    public record Branch : BaseDto
     {
         public int Id;
         public string Url;
@@ -21,7 +21,7 @@
 
         public Branch DeepClone()
         {
-            return new Branch(Id, Url, Children.Select(c=>c.DeepClone()).ToList(),
+            return new Branch(Id, Url, Children.Select(c => c.DeepClone()).ToList(),
                 IsProcessed);
         }
 

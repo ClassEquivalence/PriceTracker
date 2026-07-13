@@ -1,8 +1,6 @@
-﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.CoordinationLayer;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer;
+﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Common.CommonLayers.CoordinationLayer;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Common.CommonLayers.UpsertionInvocationLayer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionLayer;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.UpsertionInvocationLayer;
 using PriceTracker.Modules.MerchDataMaintenance.Facade;
 
 namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Infrastructure
@@ -50,21 +48,17 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Infras
              * 
             */
 
-            services.AddSingleton<CitilinkMerchDataUpserter>();
-            services.AddSingleton<GUICitilinkExtractor>();
 
             /*
             ExtractionStateSavePolicy
             extractionStateSavePolicy = ExtractionStateSavePolicy.OnUpsertionHaltIssued
              */
 
-            services.AddSingleton<CitilinkMerchUpsertionProcessor>();
             /*
             TimeSpan upsertionCyclePeriod,
             IAppEnvironment appEnvironment, DateTime upsertionStartTime, ILogger? logger, 
             TimeSpan upsertionRestPeriod
              */
-            services.AddSingleton<ScheduledMerchUpserter, ScheduledCitilinkMerchUpserter>();
             return services;
         }
 

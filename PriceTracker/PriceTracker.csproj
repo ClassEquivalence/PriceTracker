@@ -25,10 +25,12 @@
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.19" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.19" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.19">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="7.3.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="7.3.1" />
@@ -36,9 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Modules\MerchDataMaintenance\Adapters\" />
     <Folder Include="Modules\MerchDataMaintenance\ExtractiveMaintenance\Mapping\" />
-    <Folder Include="Modules\MerchDataMaintenance\ExtractiveMaintenance\ScrapingLayer\" />
     <Folder Include="Modules\Repository\Mapping\Process\" />
   </ItemGroup>
 

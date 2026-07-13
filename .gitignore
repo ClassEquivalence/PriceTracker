@@ -5,6 +5,7 @@
 
 # VS Code
 .filenesting.json
+TemplateEngineHost/
 
 # User-specific files
 *.rsuser

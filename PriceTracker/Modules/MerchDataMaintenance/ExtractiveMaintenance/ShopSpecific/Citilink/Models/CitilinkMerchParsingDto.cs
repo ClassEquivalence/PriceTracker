@@ -1,4 +1,4 @@
-﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ParsingLayer.Models;
+﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Common.CommonLayers.ParsingLayer.Models;
 
 namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models
 {

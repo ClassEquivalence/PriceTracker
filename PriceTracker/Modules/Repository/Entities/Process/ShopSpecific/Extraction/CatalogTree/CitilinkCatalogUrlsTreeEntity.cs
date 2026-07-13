@@ -1,17 +1,22 @@
 ﻿namespace PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree
 {
-    public class CitilinkCatalogUrlsTreeEntity: BaseEntity
+    public class CitilinkCatalogUrlsTreeEntity : BaseEntity
     {
         public CitilinkCatalogUrlsTreeEntity(int id = default) : base(id)
         {
         }
 
-        public CitilinkCatalogUrlsTreeEntity(CitilinkCatalogBranchEntity root, 
+        public CitilinkCatalogUrlsTreeEntity(CitilinkCatalogBranchEntity root,
             int id = default) : base(id)
         {
             Root = root;
         }
 
         public CitilinkCatalogBranchEntity Root { get; set; }
+
+        public override string ToString()
+        {
+            return $"CatalogUrlsTreeEntity's Id is {Id}, Root is {Root}";
+        }
     }
 }

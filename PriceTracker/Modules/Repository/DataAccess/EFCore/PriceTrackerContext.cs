@@ -1,12 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
+using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
 using PriceTracker.Modules.Repository.Entities.Domain;
 using PriceTracker.Modules.Repository.Entities.Domain.MerchPriceHistory;
 using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;
 using PriceTracker.Modules.Repository.Entities.Infrastructure;
 using PriceTracker.Modules.Repository.Entities.Process;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
+using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree;
 
 namespace PriceTracker.Modules.Repository.DataAccess.EFCore
 {
@@ -27,6 +29,7 @@ namespace PriceTracker.Modules.Repository.DataAccess.EFCore
         public DbSet<CitilinkParsingExecutionStateEntity> CitilinkParsingExecutionStateEntity
         { get; set; }
         public DbSet<CitilinkExtractorStorageStateEntity> CitilinkExtractionStorageStates { get; set; }
+        public DbSet<CitilinkCatalogBranchEntity> CitilinkBranches { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -47,6 +50,12 @@ namespace PriceTracker.Modules.Repository.DataAccess.EFCore
 
             optionsBuilder.EnableSensitiveDataLogging(true);
 
+        }
+
+        protected PriceTrackerContext(ILogger<Program>? logger = null)
+        {
+            _logger = logger;
+            _logger?.LogTrace($"{nameof(PriceTrackerContext)}: Попытка подключиться к БД");
         }
         public PriceTrackerContext(IOptions<ProductionDbOptions> options, ILogger<Program>? logger = null)
         {

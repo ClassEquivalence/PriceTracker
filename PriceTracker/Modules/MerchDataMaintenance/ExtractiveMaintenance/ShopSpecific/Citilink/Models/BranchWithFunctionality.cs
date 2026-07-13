@@ -1,7 +1,4 @@
-﻿using HtmlAgilityPack;
-using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
-
-namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models
+﻿namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models
 {
 
 
@@ -9,7 +6,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
     public record BranchWithFunctionality
     {
 
-        
+
 
         public int Id;
         public string Url;
@@ -23,7 +20,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
 
         public BranchFunctionality? functionality;
 
-        public BranchWithFunctionality(int id, string url, List<BranchWithFunctionality> children, 
+        public BranchWithFunctionality(int id, string url, List<BranchWithFunctionality> children,
             bool isProcessed = false)
         {
             Id = id;
@@ -45,7 +42,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
 
         public bool HasFilter()
         {
-            return GetCategoryString().Split("--").Count()>1;
+            return GetCategoryString().Split("--").Count() > 1;
         }
 
         public void RemoveFilter()

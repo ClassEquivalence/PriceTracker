@@ -7,7 +7,7 @@ using PriceTracker.Modules.Repository.Mapping;
 namespace PriceTracker.Modules.Repository.Repositories.Base.SingletonRepository
 {
     public abstract class EFGenericSingletonRepository<Dto, TEntity> : ISingletonRepository<Dto>
-        where Dto : BaseDto where TEntity: BaseEntity
+        where Dto : BaseDto where TEntity : BaseEntity
     {
         protected readonly IDbContextFactory<PriceTrackerContext> _dbContextFactory;
         protected readonly ICoreToEntityMapper<Dto, TEntity> _mapper;
@@ -25,14 +25,14 @@ namespace PriceTracker.Modules.Repository.Repositories.Base.SingletonRepository
                 throw new InvalidOperationException($"Строк {nameof(TEntity)}" +
                     "в БД должно быть не более одной.");
             }
-            
+
         }
 
         public Dto? Get()
         {
             using var context = _dbContextFactory.CreateDbContext();
             var set = context.Set<TEntity>();
-            var entities = GetWithIncludedEntities(set);
+            var entities = GetWithIncludedEntitiesAsync().Result;
 
             if (!(entities.Count() == 1))
                 return null;
@@ -49,13 +49,13 @@ namespace PriceTracker.Modules.Repository.Repositories.Base.SingletonRepository
             using var context_second = _dbContextFactory.CreateDbContext();
 
             var count = set.Count();
-            if (count == 1) 
+            if (count == 1)
             {
                 entity.Id = set.Single().Id;
                 context_second.Set<TEntity>().Update(entity);
                 context_second.SaveChanges();
             }
-            else if(count == 0)
+            else if (count == 0)
             {
                 context_second.Set<TEntity>().Add(entity);
                 context_second.SaveChanges();
@@ -89,7 +89,7 @@ namespace PriceTracker.Modules.Repository.Repositories.Base.SingletonRepository
                 return false;
         }
 
-        protected abstract IQueryable<TEntity> GetWithIncludedEntities
-            (DbSet<TEntity> entities);
+        protected abstract Task<IQueryable<TEntity>> GetWithIncludedEntitiesAsync
+            ();
     }
 }

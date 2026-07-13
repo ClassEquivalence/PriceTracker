@@ -1,11 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree;
-using PriceTracker.Modules.Repository.Mapping;
 using PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Modules.Repository.Repositories.Base.SingletonRepository;
 
@@ -18,12 +16,12 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
     // Ещё в отличие от других репозиториев уровня сущности, этот использует 
     // DbContext один на весь репозиторий, из-за чего при расширении его использования
     // до многопоточного к нему доступа могут возникнуть проблемы. Уязвимое место!
-    public class CitilinkExtractionStateRepository: EFGenericSingletonRepository<
+    public class CitilinkExtractionStateRepository : EFGenericSingletonRepository<
         CitilinkExtractionStateDto, CitilinkParsingExecutionStateEntity>
     {
 
         public CitilinkExtractionStateRepository(IDbContextFactory<PriceTrackerContext>
-            factory, ICitilinkExtractionStateMapper mapper):
+            factory, ICitilinkExtractionStateMapper mapper) :
             base(factory, mapper)
         {
 
@@ -31,18 +29,17 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
 
 
 
-        protected override IQueryable<CitilinkParsingExecutionStateEntity> 
-            GetWithIncludedEntities(DbSet<CitilinkParsingExecutionStateEntity> entities)
+        protected async override Task<IQueryable<CitilinkParsingExecutionStateEntity>>
+            GetWithIncludedEntitiesAsync()
         {
-            return entities.Include(e => e.CatalogUrls).ThenInclude(cu => cu.Root)
-                .ThenInclude(r => r.Branches).ThenInclude(b => b.Branches);
+            var context = await _dbContextFactory.CreateDbContextAsync();
+            await context.CitilinkBranches.LoadAsync();
+            var entities = context.CitilinkParsingExecutionStateEntity;
+            return entities.Include(e => e.CatalogUrls).ThenInclude(cu => cu.Root);
         }
 
         public override void Set(CitilinkExtractionStateDto dto)
         {
-            base.Set(dto);
-
-
             using var context = _dbContextFactory.CreateDbContext();
             var set = context.Set<CitilinkParsingExecutionStateEntity>();
             var entity = _mapper.Map(dto);
@@ -68,7 +65,7 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
                 }
 
                 CleanRelatedEntityGarbage<CitilinkCatalogBranchEntity>(context_second, dto.CachedUrls?.
-                    GetAllBranches().Select(b=>b.Id).ToArray() ?? []);
+                    GetAllBranches().Select(b => b.Id).ToArray() ?? []);
 
 
                 context_second.SaveChanges();
@@ -98,7 +95,7 @@ namespace PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink
         /// <typeparam name="TCleanableEntity"></typeparam>
         /// <param name="idsToSpare"></param>
         private void CleanRelatedEntityGarbage<TCleanableEntity>(DbContext context, int[] idsToSpare)
-            where TCleanableEntity: BaseEntity
+            where TCleanableEntity : BaseEntity
         {
             var set = context.Set<TCleanableEntity>();
             var toRemove = set.Where(e => !idsToSpare.Contains(e.Id));

@@ -3,13 +3,13 @@
 namespace PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState
 {
 
-    public record CitilinkExtractionStateDto: ExtractionStateDto
+    public record CitilinkExtractionStateDto : ExtractionStateDto
     {
 
         public CatalogUrlsTree? CachedUrls { get; set; }
 
         public CitilinkExtractionStateDto(CatalogUrlsTree? cachedUrls, bool isCompleted)
-            :base(isCompleted)
+            : base(isCompleted)
         {
             CachedUrls = cachedUrls;
         }
