@@ -1,5 +1,5 @@
 ﻿using PriceTracker.Core.Models.Domain;
-using PriceTracker.Modules.MerchDataMaintenance.Adapters;
+using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
 using PriceTracker.Modules.Repository;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Domain;

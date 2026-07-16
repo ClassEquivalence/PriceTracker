@@ -3,7 +3,7 @@ using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.Cat
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
 using PriceTracker.Modules.Repository.Facade.Citilink;
 
-namespace PriceTracker.Modules.MerchDataMaintenance.Adapters
+namespace PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository
 {
     public class CitilinkCatalogTreeRepositoryAdapter : ICitilinkCatalogTreeRepositoryAdapter
     {

@@ -1,6 +1,6 @@
 ﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
 
-namespace PriceTracker.Modules.MerchDataMaintenance.Adapters
+namespace PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository
 {
     public interface ICitilinkCatalogTreeRepositoryAdapter
     {
