@@ -33,10 +33,13 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         {
             _logger?.LogTrace($"{nameof(CitilinkInnerDataAugmenter)}, {nameof(AugmentNodeAsync)}:" +
                 $" Node data's being augmented.");
-            await TryAugmentWithType(node, nodeDataSnapshot);
-            await TryAugmentWithDescendants(node, nodeDataSnapshot);
-            await TryAugmentWithMerchesAsync(node, nodeDataSnapshot);
-            await TryAugmentWithScrapeTargets(node, nodeDataSnapshot);
+
+            var purgedSnapshot = PurgeRepetitions(nodeDataSnapshot);
+
+            await TryAugmentWithType(node, purgedSnapshot);
+            await TryAugmentWithDescendants(node, purgedSnapshot);
+            await TryAugmentWithMerchesAsync(node, purgedSnapshot);
+            await TryAugmentWithScrapeTargets(node, purgedSnapshot);
         }
 
         public async Task MarkNodeLocationAsProcessed(CitilinkNode node, CitilinkScrapeTarget
@@ -177,6 +180,32 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                 ParsableType.Unknown => CitilinkNodeType.Unknown,
                 _ => throw new InvalidOperationException()
             };
+        }
+
+        private CitilinkParsingSnapshot PurgeRepetitions(CitilinkParsingSnapshot snapshot)
+        {
+            CitilinkParsingSnapshot purged = new();
+            purged.Type = snapshot.Type;
+            purged.DescendantNodeUrls = snapshot.DescendantNodeUrls?.DistinctBy(dn => dn).ToList();
+            purged.Merches = snapshot.Merches?.DistinctBy(m => m.CitilinkId).ToList();
+
+            var snapshotMerchesCount = snapshot.Merches?.Count ?? 0;
+            var purgedSnapshotMerchesCount = purged.Merches?.Count ?? 0;
+            var snapshotDescendantCount = snapshot.DescendantNodeUrls?.Count ?? 0;
+            var purgedSnapshotDescendantCount = purged.DescendantNodeUrls?.Count ?? 0;
+
+            if (snapshotMerchesCount > purgedSnapshotMerchesCount)
+            {
+                _logger?.LogInformation($"snapshot of {snapshotMerchesCount} merches got rid of" +
+                    $" {snapshotMerchesCount - purgedSnapshotMerchesCount} repetitions");
+            }
+            if(snapshotDescendantCount > purgedSnapshotDescendantCount)
+            {
+                _logger?.LogInformation($"snapshot of {snapshotDescendantCount} descendants got rid of" +
+                    $" {snapshotDescendantCount - purgedSnapshotDescendantCount} repetitions");
+            }
+
+            return purged;
         }
     }
 }
