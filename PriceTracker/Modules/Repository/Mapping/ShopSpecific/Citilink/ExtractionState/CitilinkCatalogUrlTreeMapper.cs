@@ -5,8 +5,7 @@ namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink.Extracti
 {
     public class CitilinkCatalogUrlTreeMapper : ICitilinkCatalogUrlTreeMapper
     {
-        private readonly ICoreToEntityMapper<CitilinkBranch,
-            CitilinkCatalogBranchEntity> _branchMapper;
+        private readonly ICitilinkCatalogUrlBranchMapper _branchMapper;
 
         private readonly ILogger? _logger;
         public CitilinkCatalogUrlTreeMapper(ICitilinkCatalogUrlBranchMapper branchMapper,
