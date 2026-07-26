@@ -27,10 +27,8 @@ namespace PriceTracker.Modules.WebInterface.API.Controllers.ForUser
             ICitilinkMerchRepositoryFacade citilinkMerchRepository)
         {
             _logger = logger;
-            _merchService = new(logger, mapperProvider.DetailedMerchDtoMapper,
-                mapperProvider.OverviewMerchDtoMapper,
-                merchRepository, timestampedPriceRepository,
-                priceHistoryRepository, shopRepository, citilinkMerchRepository);
+            _merchService = new(mapperProvider.DetailedMerchDtoMapper,
+                merchRepository, citilinkMerchRepository);
         }
 
         [HttpGet("{merchId:int}")]
