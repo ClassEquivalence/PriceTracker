@@ -24,8 +24,7 @@ namespace PriceTrackerTest.IntegrationTests
             TestAppBuilder appBuilder = new();
             _testApp = appBuilder.BuildWithDefaults(new TestOutputLogger(outputHelper));
 
-            RepositoryInitializer repositoryInitializer = new(_testApp.ProvideShopRepository());
-            repositoryInitializer.EnsureInitialized();
+            _testApp.Initialize();
 
             _upsertionInvoker = _testApp.ProvideUpsertionInvoker();
             _logger = _testApp.ProvideLogger();

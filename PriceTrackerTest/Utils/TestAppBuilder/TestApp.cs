@@ -47,6 +47,17 @@ namespace PriceTrackerTest.Utils.TestAppBuilder
             return ProvideService<ICitilinkMiscellaneousRepositoryFacade>();
         }
 
+        public RepositoryInitializer ProvideRepositoryInitializer()
+        {
+            return ProvideService<RepositoryInitializer>();
+        }
+
+        public void Initialize()
+        {
+            var initializer = ProvideRepositoryInitializer();
+            initializer.EnsureInitialized();
+        }
+
         private T ProvideService<T>()
         {
             var service = _appServiceProvider.GetService<T>();
