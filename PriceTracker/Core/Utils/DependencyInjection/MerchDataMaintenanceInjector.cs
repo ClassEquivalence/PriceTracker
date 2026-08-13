@@ -39,7 +39,6 @@ namespace PriceTracker.Core.Utils.DependencyInjection
             //public CitilinkInnerDataAugmenter(IInnerCitilinkMerchUpserter merchUpserter,
             //ICitilinkCatalogTreeMaintainer treeMaintainer)
             collection.AddSingleton<IInnerCitilinkMerchUpserter, InnerCitilinkMerchUpserter>();
-            collection.AddSingleton<ICitilinkCatalogTreeMaintainer, CitilinkCatalogTreeMaintainer>();
 
             /*
              public InnerCitilinkParser(ICitilinkParsableClassifier classifier,

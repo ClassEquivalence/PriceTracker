@@ -1,4 +1,5 @@
 ﻿using Moq;
+using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Inner;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Inner.CatalogTreeMaintainer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Upsertion;
@@ -21,12 +22,13 @@ namespace PriceTrackerTest.UnitTests.Modules.MerchDataMaintenance.DataSynchroniz
 
             var merchUpserterMock = new Mock<IInnerCitilinkMerchUpserter>();
             merchUpserterMock.Setup(mu => mu.EnqueueForUpsertionAsync(It.IsAny<CitilinkMerchParsingDto>()));
-            var treeMaintainerMock = new Mock<ICitilinkCatalogTreeMaintainer>();
-            treeMaintainerMock.Setup(tm => tm.FillDescendantsAsync(It.IsAny<CitilinkNode>(),
+            var catalogTreeRepositoryMock = new Mock<ICitilinkCatalogTreeRepositoryAdapter>();
+            catalogTreeRepositoryMock.Setup(r => r.AppendBranchesAsync(It.IsAny<CitilinkNode>(),
                 It.IsAny<List<CitilinkScrapeTarget>>()));
             IInnerCitilinkMerchUpserter merchUpserter = merchUpserterMock.Object;
-            ICitilinkCatalogTreeMaintainer treeMaintainer = treeMaintainerMock.Object;
-            CitilinkInnerDataAugmenter augmenter = new(merchUpserter, treeMaintainer);
+            ICitilinkCatalogTreeRepositoryAdapter catalogTreeRepositoryAdapter = 
+                catalogTreeRepositoryMock.Object;
+            CitilinkInnerDataAugmenter augmenter = new(merchUpserter, catalogTreeRepositoryAdapter);
             CitilinkNode? node = new CitilinkNode(new(""), CitilinkNodeAugmentationState.Unprocessed);
             
             CitilinkMerchParsingDto dto = new(2, "22", "22221a");
@@ -62,8 +64,9 @@ namespace PriceTrackerTest.UnitTests.Modules.MerchDataMaintenance.DataSynchroniz
             int actualTargetCount = 0;
             var merchUpserterMock = new Mock<IInnerCitilinkMerchUpserter>();
             merchUpserterMock.Setup(mu => mu.EnqueueForUpsertionAsync(It.IsAny<CitilinkMerchParsingDto>()));
-            var treeMaintainerMock = new Mock<ICitilinkCatalogTreeMaintainer>();
-            treeMaintainerMock.Setup(tm => tm.FillDescendantsAsync(It.IsAny<CitilinkNode>(),
+
+            var catalogTreeRepositoryMock = new Mock<ICitilinkCatalogTreeRepositoryAdapter>();
+            catalogTreeRepositoryMock.Setup(r => r.AppendBranchesAsync(It.IsAny<CitilinkNode>(),
                 It.IsAny<List<CitilinkScrapeTarget>>()))
                 .Callback((CitilinkNode node, List<CitilinkScrapeTarget> targets) =>
                 {
@@ -71,8 +74,9 @@ namespace PriceTrackerTest.UnitTests.Modules.MerchDataMaintenance.DataSynchroniz
                 });
 
             IInnerCitilinkMerchUpserter merchUpserter = merchUpserterMock.Object;
-            ICitilinkCatalogTreeMaintainer treeMaintainer = treeMaintainerMock.Object;
-            CitilinkInnerDataAugmenter augmenter = new(merchUpserter, treeMaintainer);
+            ICitilinkCatalogTreeRepositoryAdapter catalogTreeRepositoryAdapter =
+                catalogTreeRepositoryMock.Object;
+            CitilinkInnerDataAugmenter augmenter = new(merchUpserter, catalogTreeRepositoryAdapter);
             CitilinkNode? node = new CitilinkNode(new(""), CitilinkNodeAugmentationState.Unprocessed);
 
             List<string> descendantsList = [];

@@ -1,4 +1,5 @@
-﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Inner.CatalogTreeMaintainer;
+﻿using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Inner.CatalogTreeMaintainer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Upsertion;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
@@ -10,16 +11,16 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
     public class CitilinkInnerDataAugmenter
     {
         private readonly IInnerCitilinkMerchUpserter _merchUpserter;
-        private readonly ICitilinkCatalogTreeMaintainer _treeMaintainer;
         private readonly ILogger? _logger;
+        private readonly ICitilinkCatalogTreeRepositoryAdapter _catalogTreeRepository;
 
         private const int _perPage = 36;
         public CitilinkInnerDataAugmenter(IInnerCitilinkMerchUpserter merchUpserter,
-            ICitilinkCatalogTreeMaintainer treeMaintainer, ILogger? logger = null)
+            ICitilinkCatalogTreeRepositoryAdapter catalogTreeRepository, ILogger? logger = null)
         {
             _merchUpserter = merchUpserter;
-            _treeMaintainer = treeMaintainer;
             _logger = logger;
+            _catalogTreeRepository = catalogTreeRepository;
         }
 
 
@@ -48,7 +49,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
             if (!node.LocationsList.Contains(nodeLocation))
                 throw new InvalidOperationException();
             nodeLocation.IsProcessed = true;
-            await _treeMaintainer.UpdateNodeAsync(node);
+            await _catalogTreeRepository.UpdateNodeAsync(node);
         }
 
         private async Task TryAugmentWithType(CitilinkNode node, CitilinkParsingSnapshot snapshot)
@@ -56,7 +57,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
             node.NodeType = NodeTypeByParsableType(snapshot.Type ?? ParsableType.Unknown);
             if (node.NodeType != CitilinkNodeType.Unknown)
                 node.AugmentationState = CitilinkNodeAugmentationState.PartiallyProcessed_TypeIsKnown;
-            await _treeMaintainer.UpdateNodeAsync(node);
+            await _catalogTreeRepository.UpdateNodeAsync(node);
         }
         private async Task TryAugmentWithDescendants(CitilinkNode node, CitilinkParsingSnapshot snapshot)
         {
@@ -65,7 +66,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
             {
                 var webLocationDataList = childrenUrls.Select<string, CitilinkScrapeTarget>
                     (url => new CitilinkScrapeTarget(url)).ToList();
-                await _treeMaintainer.FillDescendantsAsync(node, webLocationDataList);
+                await _catalogTreeRepository.AppendBranchesAsync(node, webLocationDataList);
             }
         }
         private async Task TryAugmentWithMerchesAsync(CitilinkNode node, CitilinkParsingSnapshot snapshot)
@@ -93,7 +94,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
             {
                 case CitilinkNodeType.MerchCatalog:
                     TryAugmentMerchNodeWithScrapeTargets(node, snapshot);
-                    await _treeMaintainer.UpdateNodeAsync(node);
+                    await _catalogTreeRepository.UpdateNodeAsync(node);
                     break;
                 default:
                     break;
