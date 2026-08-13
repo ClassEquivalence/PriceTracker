@@ -1,3 +1,4 @@
+﻿using Microsoft.Data.Sqlite;
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -39,6 +40,19 @@ namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
 
         public IServiceCollection AddRepository(IServiceCollection services)
         {
+            var connectionStringBuilder = new SqliteConnectionStringBuilder
+            {
+                DataSource = "TestDatabase",
+                Mode = SqliteOpenMode.Memory,
+                Cache = SqliteCacheMode.Shared
+            };
+            var connectionString = connectionStringBuilder.ToString();
+
+            // Пока эта переменная жива, база данных существует в памяти
+            var connection = new SqliteConnection(connectionString);
+            connection.Open();
+
+            services.AddSingleton(connection);
             services.AddDbContextFactory<DbContextType>();
             services.AddSingleton<IDbContextFactory<PriceTrackerContext>, 
                 TestDbContextFactory<PriceTrackerContext, DbContextType>>();
