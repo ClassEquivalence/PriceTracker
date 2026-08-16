@@ -16,6 +16,7 @@ using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
 using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel.MerchRepository;
 using PriceTracker.Modules.Repository.Repositories.Domain.EntityLevel;
 using PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink;
+using PriceTracker.Modules.WebInterface.Adapters.Repository;
 
 namespace PriceTracker.Core.Utils.DependencyInjection
 {
@@ -89,6 +90,7 @@ namespace PriceTracker.Core.Utils.DependencyInjection
         {
             services.AddSingleton<ICitilinkCatalogTreeRepositoryAdapter, 
                 CitilinkCatalogTreeRepositoryAdapter>();
+            services.AddSingleton<IMerchRepositoryAdapter, MerchRepositoryAdapter>();
             return services;
         }
 

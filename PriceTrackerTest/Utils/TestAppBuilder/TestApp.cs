@@ -1,11 +1,16 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Pipeline;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer;
+using PriceTracker.Modules.Repository;
 using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
+using PriceTracker.Modules.WebInterface.Adapters.Repository;
+using PriceTrackerTest.Utils.TestAppBuilder.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +51,19 @@ namespace PriceTrackerTest.Utils.TestAppBuilder
         {
             return ProvideService<ICitilinkMiscellaneousRepositoryFacade>();
         }
+        public ICitilinkMerchRepositoryFacade ProvideMerchRepository()
+        {
+            return ProvideService<ICitilinkMerchRepositoryFacade>();
+        }
+        public IMerchRepositoryAdapter ProvideMerchRepositoryAdapter()
+        {
+            return ProvideService<IMerchRepositoryAdapter>();
+        }
+        public IDbContextFactory<PriceTrackerTestContext> ProvideDbContextFactory()
+        {
+            return ProvideService<IDbContextFactory<PriceTrackerTestContext>>();
+        }
+
 
         public RepositoryInitializer ProvideRepositoryInitializer()
         {

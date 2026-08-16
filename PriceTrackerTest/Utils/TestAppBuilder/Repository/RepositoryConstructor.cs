@@ -1,5 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +22,7 @@ using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
 using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel.MerchRepository;
 using PriceTracker.Modules.Repository.Repositories.Domain.EntityLevel;
 using PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink;
+using PriceTracker.Modules.WebInterface.Adapters.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -133,6 +134,7 @@ namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
         {
             services.AddSingleton<ICitilinkCatalogTreeRepositoryAdapter,
                 CitilinkCatalogTreeRepositoryAdapter>();
+            services.AddSingleton<IMerchRepositoryAdapter, MerchRepositoryAdapter>();
             return services;
         }
 
