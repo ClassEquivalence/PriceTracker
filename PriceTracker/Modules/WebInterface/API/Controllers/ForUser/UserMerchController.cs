@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
+using PriceTracker.Modules.WebInterface.Adapters.Repository;
 using PriceTracker.Modules.WebInterface.API.DTOModels.Merch;
 using PriceTracker.Modules.WebInterface.API.Mapping.MapperProvider;
 using PriceTracker.Modules.WebInterface.API.Routing;
@@ -12,35 +13,27 @@ namespace PriceTracker.Modules.WebInterface.API.Controllers.ForUser
     [ApiController]
     public class UserMerchController : ControllerBase
     {
-
-        private readonly MerchService _merchService;
+        private readonly IMerchRepositoryAdapter _merchRepository;
 
         private readonly ILogger _logger;
 
 
         public UserMerchController(ILogger<Program> logger,
-            IWebInterfaceMapperProvider mapperProvider,
-            IMerchRepositoryFacade merchRepository,
-            ITimestampedPriceRepositoryFacade timestampedPriceRepository,
-            IPriceHistoryRepositoryFacade priceHistoryRepository,
-            IShopRepositoryFacade shopRepository,
-            ICitilinkMerchRepositoryFacade citilinkMerchRepository)
+            IMerchRepositoryAdapter merchRepositoryAdapter)
         {
             _logger = logger;
-            _merchService = new(mapperProvider.DetailedMerchDtoMapper,
-                merchRepository, citilinkMerchRepository);
+            _merchRepository = merchRepositoryAdapter;
         }
 
         [HttpGet("{merchId:int}")]
-        public DetailedMerchDto? Get(int merchId)
+        public async Task<DetailedMerchDto?> Get(int merchId)
         {
-            return _merchService.Get(merchId);
+            return await _merchRepository.GetMerchAsync(merchId);
         }
-
         [HttpGet("citilink/{citilinkMerchCode}")]
-        public DetailedMerchDto? GetCitilinkMerch(string citilinkMerchCode)
+        public async Task<DetailedMerchDto?> GetCitilinkMerch(string citilinkMerchCode)
         {
-            return _merchService.GetCitilinkMerch(citilinkMerchCode);
+            return await _merchRepository.GetCitilinkMerchAsync(citilinkMerchCode);
         }
 
     }

@@ -18,8 +18,6 @@ namespace PriceTracker.Core.Utils.DependencyInjection
         public static void InjectWebInterfaceDependencies(
             IServiceCollection collection)
         {
-            collection.AddSingleton<IWebInterfaceMapperProvider, WebInterfaceMapperProvider>();
-            collection.AddSingleton<APIRouteLinkBuilder>();
         }
 
         public static void InjectMerchDataMaintenanceDependencies(
