@@ -5,7 +5,6 @@ namespace PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository
     public interface ICitilinkCatalogTreeRepositoryAdapter
     {
         Task RecreateTreeAsync();
-        Task<CitilinkNode> GetRootAsync();
         Task AppendBranchesAsync(CitilinkNode parent, List<CitilinkScrapeTarget>
             descendants);
         /// <summary>
@@ -14,6 +13,13 @@ namespace PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository
         /// </summary>
         /// <returns></returns>
         Task<CitilinkNode?> GetUnprocessedNodeAsync(int maxErrorsCount = -1);
+
+        /// <summary>
+        /// Работает ТОЛЬКО с ненавигационными, собственными полями узла.
+        /// Для работы со связанными сущностями допускается использование других методов.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         Task UpdateNodeAsync(CitilinkNode node);
     }
 }

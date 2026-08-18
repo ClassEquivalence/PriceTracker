@@ -133,7 +133,7 @@ namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
         private static IServiceCollection AddAdapters(IServiceCollection services) //completed
         {
             services.AddSingleton<ICitilinkCatalogTreeRepositoryAdapter,
-                CitilinkCatalogTreeRepositoryAdapter>();
+                NewCitilinkCatalogTreeRepositoryAdapter>();
             services.AddSingleton<IMerchRepositoryAdapter, MerchRepositoryAdapter>();
             return services;
         }

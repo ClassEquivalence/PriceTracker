@@ -88,8 +88,8 @@ namespace PriceTracker.Core.Utils.DependencyInjection
 
         private static IServiceCollection AddAdapters(IServiceCollection services) //completed
         {
-            services.AddSingleton<ICitilinkCatalogTreeRepositoryAdapter, 
-                CitilinkCatalogTreeRepositoryAdapter>();
+            services.AddSingleton<ICitilinkCatalogTreeRepositoryAdapter,
+                NewCitilinkCatalogTreeRepositoryAdapter>();
             services.AddSingleton<IMerchRepositoryAdapter, MerchRepositoryAdapter>();
             return services;
         }

@@ -51,6 +51,11 @@ namespace PriceTrackerTest.Utils.TestAppBuilder
         {
             return ProvideService<ICitilinkMiscellaneousRepositoryFacade>();
         }
+
+        public ICitilinkCatalogTreeRepositoryAdapter ProvideCatalogTreeRepository()
+        {
+            return ProvideService<ICitilinkCatalogTreeRepositoryAdapter>();
+        }
         public ICitilinkMerchRepositoryFacade ProvideMerchRepository()
         {
             return ProvideService<ICitilinkMerchRepositoryFacade>();

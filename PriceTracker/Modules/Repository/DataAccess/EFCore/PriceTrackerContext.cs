@@ -28,6 +28,7 @@ namespace PriceTracker.Modules.Repository.DataAccess.EFCore
         public DbSet<TimeExtractionProcessHappened> TimeExtractionProcessHappened { get; set; }
         public DbSet<CitilinkParsingExecutionStateEntity> CitilinkParsingExecutionStateEntity
         { get; set; }
+        public DbSet<CitilinkCatalogUrlsTreeEntity> CatalogUrlsTreeEntity { get; set; }
         public DbSet<CitilinkExtractorStorageStateEntity> CitilinkExtractionStorageStates { get; set; }
         public DbSet<CitilinkCatalogBranchEntity> CitilinkBranches { get; set; }
 

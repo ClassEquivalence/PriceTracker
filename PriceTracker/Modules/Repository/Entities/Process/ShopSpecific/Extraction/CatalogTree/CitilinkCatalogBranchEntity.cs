@@ -5,8 +5,8 @@ namespace PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extracti
     public class CitilinkCatalogBranchEntity : BaseEntity
     {
         public CitilinkCatalogBranchEntity(string url,
-            bool descendantsProcessed, CitilinkNodeAugmentationState 
-            augmentationState, CitilinkNodeType nodeType, int id = default, 
+            bool descendantsProcessed, CitilinkNodeAugmentationState
+            augmentationState, CitilinkNodeType nodeType, int id = default,
             int processingErrorCount = 0)
             : base(id)
         {
@@ -15,6 +15,7 @@ namespace PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extracti
             DescendantsProcessed = descendantsProcessed;
             ProcessingErrorCount = processingErrorCount;
             AugmentationState = augmentationState;
+            Children = [];
         }
 
         public CitilinkCatalogBranchEntity(string url,

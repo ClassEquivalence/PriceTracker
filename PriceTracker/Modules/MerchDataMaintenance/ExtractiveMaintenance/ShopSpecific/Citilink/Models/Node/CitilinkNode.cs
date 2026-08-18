@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node
+﻿namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node
 {
     /// <summary>
     /// Processed = обработана и ветвь и рекурсивно все её потомки.
@@ -11,7 +9,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
     /// </summary>
     public enum CitilinkNodeAugmentationState
     {
-        Processed, 
+        Processed,
         PartiallyProcessed_TypeIsKnown,
         PartiallyProcessed_TypeIsUnknown,
         Unprocessed
@@ -31,7 +29,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         private List<CitilinkScrapeTarget> locationsList;
         public IReadOnlyList<CitilinkScrapeTarget> LocationsList => locationsList.
             Append(DefaultLocation).ToList();
-        public List<CitilinkNode> Descendants;
+
         public CitilinkNodeAugmentationState AugmentationState;
         public CitilinkNodeType NodeType;
         public bool DescendantsProcessed;
@@ -39,11 +37,11 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         public int ProcessingErrorCount;
 
         public CitilinkMerchNodeScrapeTargetsAugmentationState
-            MerchNodeScrapeTargetsAugmentationState = 
+            MerchNodeScrapeTargetsAugmentationState =
             CitilinkMerchNodeScrapeTargetsAugmentationState.NotAugmented;
 
-        public string CategorySlug 
-        { 
+        public string CategorySlug
+        {
             get
             {
                 return DefaultLocation.Url.Replace("https://www.citilink.ru/catalog/", "")
@@ -53,7 +51,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
 
         public CitilinkNode(CitilinkScrapeTarget defaultLocation,
             CitilinkNodeAugmentationState state, CitilinkNodeType type = CitilinkNodeType.Unknown,
-            List<CitilinkNode>? descendants = null, bool descendantsProcessed = false,
+            bool descendantsProcessed = false,
             int processingErrorCount = 0)
         {
             if (defaultLocation.Purpose != CitilinkScrapeTargetPurpose.Default)
@@ -64,7 +62,6 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
             AugmentationState = state;
             NodeType = type;
             locationsList = [];
-            Descendants = descendants ?? [];
             DescendantsProcessed = descendantsProcessed;
             ProcessingErrorCount = processingErrorCount;
         }
