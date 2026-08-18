@@ -4,7 +4,6 @@ using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecif
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Models;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies.PolicyEnforcersProvider;
 
 namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Pipeline
 {
@@ -30,7 +29,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
             AugmentNodeDataAsync(CitilinkNode node, ICitilinkScraperPoliciesEnforcer enforcer)
         {
             var nodeLocation = GetUnprocessed(node);
-            if(nodeLocation == null)
+            if (nodeLocation == null)
             {
                 CitilinkExecutionMetadata metadata = new();
                 metadata.DataSyncMetadata = new(CitilinkNodeAugmenterAugmentationState.
@@ -38,7 +37,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                 return metadata;
             }
             var parseResult = await _parser.ParseUnitAsync(nodeLocation, enforcer);
-            
+
             var pipelineMetadata = parseResult.Info;
             if (pipelineMetadata.ParseMetadata?.State == ParseCompletionState.Success)
             {

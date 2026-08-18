@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PriceTracker.Modules.Repository.Facade.Citilink;
-using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 using PriceTracker.Modules.WebInterface.Adapters.Repository;
 using PriceTracker.Modules.WebInterface.API.DTOModels.Merch;
-using PriceTracker.Modules.WebInterface.API.Mapping.MapperProvider;
 using PriceTracker.Modules.WebInterface.API.Routing;
-using PriceTracker.Modules.WebInterface.API.Services.MerchService;
 
 namespace PriceTracker.Modules.WebInterface.API.Controllers.ForUser
 {

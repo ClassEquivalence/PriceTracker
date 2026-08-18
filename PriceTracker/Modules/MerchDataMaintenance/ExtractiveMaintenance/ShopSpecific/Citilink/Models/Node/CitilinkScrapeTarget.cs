@@ -23,7 +23,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
 
         public virtual CitilinkScrapeEpisodeDescriptor CreateDescriptor()
         {
-            if(Purpose == CitilinkScrapeTargetPurpose.Default)
+            if (Purpose == CitilinkScrapeTargetPurpose.Default)
             {
                 CitilinkScrapeEpisodeDescriptor descriptor = new(Url, HttpMethod.Get,
                     [HttpStatusCode.OK]);

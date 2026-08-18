@@ -1,11 +1,9 @@
 ﻿using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.CoordinationLayer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Pipeline;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Models;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies.PolicyEnforcersProvider;
 
 namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer
@@ -76,7 +74,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                     break;
                 case PartialCycleExecutionMode.Continue:
                     node = await _treeRepository.GetUnprocessedNodeAsync();
-                    if(node == null)
+                    if (node == null)
                     {
                         return PartialCycleState.FullCompleted;
                     }
@@ -128,7 +126,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         public async Task StopPartialCycleAsync()
         {
             cycleStopRequested = true;
-            if(mainCycleTask!= null && !mainCycleTask.IsCompleted)
+            if (mainCycleTask != null && !mainCycleTask.IsCompleted)
             {
                 await mainCycleTask;
             }
@@ -197,7 +195,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                     break;
             }
             var returnable = await returnableTask;
-            if(returnable == PostHandlingActions.None_Succcess)
+            if (returnable == PostHandlingActions.None_Succcess)
             {
                 node.AugmentationState = CitilinkNodeAugmentationState.Processed;
                 await _treeRepository.UpdateNodeAsync(node);
@@ -207,10 +205,10 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
 
         private async Task<PostHandlingActions> ProcessUntilTypeDiscovered(CitilinkNode node)
         {
-            while(node.NodeType == CitilinkNodeType.Unknown)
+            while (node.NodeType == CitilinkNodeType.Unknown)
             {
                 var processingResult = await ProcessUnknownTypeNode(node);
-                
+
                 if (processingResult.errorsOccured)
                 {
                     return processingResult.actions;
@@ -220,7 +218,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         }
 
 
-        private async Task<(PostHandlingActions actions, bool errorsOccured)> 
+        private async Task<(PostHandlingActions actions, bool errorsOccured)>
             ProcessUnknownTypeNode(CitilinkNode node)
         {
             // Проверка входных данных на допустимость
@@ -255,7 +253,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
             }
         }
 
-        
+
 
         private async Task<PostHandlingActions> CompleteProcessingMerchCatalogNode(CitilinkNode node)
         {
@@ -265,7 +263,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                 || state == CitilinkNodeAugmentationState.Unprocessed)
                 throw new ArgumentException();
 
-            while (true) 
+            while (true)
             {
                 if (node.LocationsList.Any(t => !t.IsProcessed))
                 {
@@ -291,7 +289,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                         return actions;
                     }
                 }
-                else if(node.MerchNodeScrapeTargetsAugmentationState ==
+                else if (node.MerchNodeScrapeTargetsAugmentationState ==
                 CitilinkMerchNodeScrapeTargetsAugmentationState.AllTargetsPresent)
                 {
                     node.AugmentationState = CitilinkNodeAugmentationState.Processed;
@@ -308,7 +306,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         {
             var type = node.NodeType;
             var state = node.AugmentationState;
-            if ((type != CitilinkNodeType.CatalogsCatalog && type != CitilinkNodeType.RootCatalog) 
+            if ((type != CitilinkNodeType.CatalogsCatalog && type != CitilinkNodeType.RootCatalog)
                 || state == CitilinkNodeAugmentationState.Processed
                 || state == CitilinkNodeAugmentationState.Unprocessed)
                 throw new ArgumentException();
@@ -328,7 +326,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                         case PostHandlingActions.None_Succcess:
                             break;
 
-                        case PostHandlingActions.PartialCycle_ExpectedCooldown or 
+                        case PostHandlingActions.PartialCycle_ExpectedCooldown or
                         PostHandlingActions.PartialCycle_UnexpectedCooldown:
                             return actions;
 
@@ -345,7 +343,9 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
 
 
 
-        protected enum PostHandlingActions { None_Succcess, PartialCycle_ExpectedCooldown,
+        protected enum PostHandlingActions
+        {
+            None_Succcess, PartialCycle_ExpectedCooldown,
             PartialCycle_UnexpectedCooldown, RetryRequest, ConsiderNodeAugmentationError,
             RequestStop
         };
@@ -434,10 +434,10 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
             metadata = await _dataSynchronizer.AugmentNodeDataAsync(node, enforcer);
             if (metadata.DataSyncMetadata.State == CitilinkNodeAugmenterAugmentationState.Success)
                 return metadata;
-            while (enforcer.TryRegisterScrapeRequest()) 
+            while (enforcer.TryRegisterScrapeRequest())
             {
                 metadata = await _dataSynchronizer.AugmentNodeDataAsync(node, enforcer);
-                if(metadata.DataSyncMetadata.State == CitilinkNodeAugmenterAugmentationState.Success)
+                if (metadata.DataSyncMetadata.State == CitilinkNodeAugmenterAugmentationState.Success)
                     return metadata;
             }
             return metadata;

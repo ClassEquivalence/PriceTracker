@@ -1,15 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
 {
     public class TestDbContextFactory<SourceType, Implementation> : IDbContextFactory<SourceType>
-        where SourceType : DbContext where Implementation: SourceType
+        where SourceType : DbContext where Implementation : SourceType
     {
         private readonly IDbContextFactory<Implementation> _dbContextFactory;
         public TestDbContextFactory(IDbContextFactory<Implementation> dbContextFactory)

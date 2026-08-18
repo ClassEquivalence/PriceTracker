@@ -10,7 +10,7 @@ using PriceTrackerTest.Utils.TestAppBuilder.Repository;
 namespace PriceTrackerTest.Utils.TestAppBuilder
 {
 
-    public enum RepositoryType { InMemory_Test}
+    public enum RepositoryType { InMemory_Test }
 
     [Flags]
     public enum ConstructableComponents
@@ -46,7 +46,7 @@ namespace PriceTrackerTest.Utils.TestAppBuilder
                 case RepositoryType.InMemory_Test:
                     RepositoryConstructor<PriceTrackerTestContext> constructor = new();
                     constructor.AddRepository(_services);
-                break;
+                    break;
             }
             constructedComponents |= ConstructableComponents.Repository;
             return this;

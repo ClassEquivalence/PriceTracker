@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Web;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer;
@@ -23,7 +22,7 @@ namespace PriceTrackerTest.IntegrationTests.ParsingLayerIntegrationTests
 
             NewCitilinkScraper innerScraper = new(new(), new TestOutputLogger(testOutput));
             CitilinkScrapeAssignmentFactory assignmentFactory = new();
-            CitilinkScraper scraper = new CitilinkScraper(innerScraper, 
+            CitilinkScraper scraper = new CitilinkScraper(innerScraper,
                 assignmentFactory);
 
 
@@ -58,8 +57,8 @@ namespace PriceTrackerTest.IntegrationTests.ParsingLayerIntegrationTests
             CitilinkPolicyEnforcersContextfulProvider provider = new(sharedContext);
             var parseRes = (await _outerParser.ParseUnitAsync(scrapeTarget, provider.ProvideForEntireNodeAugmentationEpisode()))
                 .Result;
-            
-            if(parseRes.Merches != null)
+
+            if (parseRes.Merches != null)
             {
                 _testOutput.WriteLine("Merches section starts:");
                 foreach (var merch in parseRes.Merches)
@@ -69,7 +68,7 @@ namespace PriceTrackerTest.IntegrationTests.ParsingLayerIntegrationTests
                 }
                 _testOutput.WriteLine("Merches section ends.");
             }
-            if(parseRes.DescendantNodeUrls != null)
+            if (parseRes.DescendantNodeUrls != null)
             {
                 _testOutput.WriteLine("Descendant urls section starts:");
                 foreach (var descendant in parseRes.DescendantNodeUrls)
@@ -78,7 +77,7 @@ namespace PriceTrackerTest.IntegrationTests.ParsingLayerIntegrationTests
                 }
                 _testOutput.WriteLine("Descendant urls section ends.");
             }
-            
+
             _testOutput.WriteLine($"GuessedType: {parseRes.Type}");
         }
 

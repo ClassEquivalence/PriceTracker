@@ -54,7 +54,7 @@ namespace PriceTrackerTest.IntegrationTests
             (async list =>
             {
                 _outputHelper.WriteLine("Merch UpdateMany List starts ---");
-                foreach(var dto in list)
+                foreach (var dto in list)
                 {
                     _outputHelper.WriteLine($"{dto.Name}, {dto.CitilinkId}, " +
                         $"{dto.PriceTrack.CurrentPrice}");
@@ -119,7 +119,7 @@ namespace PriceTrackerTest.IntegrationTests
 
 
             CitilinkEnforcersSharedContext sharedContext = new();
-            CitilinkPolicyEnforcersContextfulProvider contextfulProvider = 
+            CitilinkPolicyEnforcersContextfulProvider contextfulProvider =
                 new(sharedContext);
 
             CitilinkScrapeTarget defaultLocation = new(locationUrl);

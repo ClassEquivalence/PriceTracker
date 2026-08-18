@@ -16,7 +16,7 @@ namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink.Extracti
         {
             return new CitilinkBranch(entity.Id, entity.Url, entity.Children != null ?
                 entity.Children.Select(Map).ToList() : [], entity.DescendantsProcessed,
-                entity.NodeType, entity.AugmentationState, processingErrorCount: 
+                entity.NodeType, entity.AugmentationState, processingErrorCount:
                 entity.ProcessingErrorCount);
         }
 

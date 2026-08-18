@@ -39,7 +39,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                 $"{response.data.productsFilter.record.products}");
 
             var products = response.data.productsFilter.record.products;
-            
+
 
             List<CitilinkMerchParsingDto> merchParsingDtos = [];
 

@@ -1,7 +1,6 @@
 ﻿using Moq;
 using Moq.Protected;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies.PolicyEnforcersProvider;
 using System.Net;
 
@@ -44,7 +43,7 @@ namespace PriceTrackerTest.UnitTests.Modules.MerchDataMaintenance.ScrapingLayer
             var innerScraper = new NewCitilinkScraper(httpClient);
 
             CitilinkEnforcersSharedContext sharedContext = new(); // or 1, 1
-            CitilinkScrapeAssignment assignment = new(uriString, HttpMethod.Get, 
+            CitilinkScrapeAssignment assignment = new(uriString, HttpMethod.Get,
                 [HttpStatusCode.OK], sharedContext);
             var scrapeRes = await innerScraper.ScrapeAsync(assignment);
 
@@ -80,7 +79,7 @@ namespace PriceTrackerTest.UnitTests.Modules.MerchDataMaintenance.ScrapingLayer
             });
             var innerScraper = new NewCitilinkScraper(httpClient);
 
-            CitilinkEnforcersSharedContext sharedContext = new(attempts, attempts*2); // or 1, 1
+            CitilinkEnforcersSharedContext sharedContext = new(attempts, attempts * 2); // or 1, 1
             CitilinkScrapeAssignment assignment = new(uriString, HttpMethod.Get,
                 [HttpStatusCode.OK], sharedContext);
 
@@ -113,7 +112,7 @@ namespace PriceTrackerTest.UnitTests.Modules.MerchDataMaintenance.ScrapingLayer
             });
             var innerScraper = new NewCitilinkScraper(httpClient);
 
-            CitilinkEnforcersSharedContext sharedContext = new(attempts*2, attempts); // or 1, 1
+            CitilinkEnforcersSharedContext sharedContext = new(attempts * 2, attempts); // or 1, 1
             CitilinkScrapeAssignment assignment = new(uriString, HttpMethod.Get,
                 [HttpStatusCode.OK], sharedContext);
 
@@ -127,7 +126,7 @@ namespace PriceTrackerTest.UnitTests.Modules.MerchDataMaintenance.ScrapingLayer
 
 
         [Theory]
-        [InlineData(HttpStatusCode.OK, new HttpStatusCode[] { HttpStatusCode.OK }, 
+        [InlineData(HttpStatusCode.OK, new HttpStatusCode[] { HttpStatusCode.OK },
             ScrapeCompletionState.Success)]
         [InlineData(HttpStatusCode.RequestTimeout, new HttpStatusCode[] { HttpStatusCode.OK },
             ScrapeCompletionState.UnallowedStatus)]

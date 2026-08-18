@@ -2,16 +2,9 @@
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer;
-using PriceTracker.Modules.Repository;
 using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTrackerTest.Utils.Logging;
 using PriceTrackerTest.Utils.TestAppBuilder;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit.Abstractions;
 
 namespace PriceTrackerTest.IntegrationTests.RepositoryIntegrationTests

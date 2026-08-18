@@ -3,7 +3,6 @@ using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models;
 using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
-using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
 using System.Text;
 
 namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Upsertion
@@ -20,7 +19,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         private bool isCompleted = false;
 
         public InnerCitilinkMerchUpserter(ICitilinkMerchRepositoryFacade repository,
-            IShopRepositoryFacade shopRepository, int upsertablePortionSize = 100, 
+            IShopRepositoryFacade shopRepository, int upsertablePortionSize = 100,
             ILogger? logger = null)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(upsertablePortionSize,

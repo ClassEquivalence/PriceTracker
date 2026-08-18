@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
+﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies.PolicyEnforcersProvider;
-using System.Net;
 
 namespace PriceTrackerTest.IntegrationTests
 {
@@ -25,7 +23,7 @@ namespace PriceTrackerTest.IntegrationTests
             CitilinkScraperPoliciesEnforcer enforcer = new(sharedContext);
             CitilinkScrapeAssignment assignment = new(descriptor, enforcer);
             var scrapeRes = await innerScraper.ScrapeAsync(assignment);
-            if (scrapeRes.Info.CompletionState != ScrapeCompletionState.Success) 
+            if (scrapeRes.Info.CompletionState != ScrapeCompletionState.Success)
             {
                 Assert.Fail($"{scrapeRes.Info.CompletionState} should be " +
                     $"{ScrapeCompletionState.Success}");

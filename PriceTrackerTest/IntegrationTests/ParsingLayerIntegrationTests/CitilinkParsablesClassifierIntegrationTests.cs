@@ -2,15 +2,9 @@
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Pipeline;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies.PolicyEnforcersProvider;
 using PriceTrackerTest.Utils.Logging;
 using PriceTrackerTest.Utils.TestAppBuilder;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit.Abstractions;
 
 namespace PriceTrackerTest.IntegrationTests.ParsingLayerIntegrationTests
@@ -40,7 +34,7 @@ namespace PriceTrackerTest.IntegrationTests.ParsingLayerIntegrationTests
                 = new(context);
             CitilinkScrapeTarget scrapeTarget = new(url);
             var scrapeRes = await scraper.ScrapeAsync(scrapeTarget, citilinkPolicyEnforcersProvider.ProvideForEntireNodeAugmentationEpisode());
-            if(scrapeRes.Info.ScrapeMetadata.CompletionState != ScrapeCompletionState.Success
+            if (scrapeRes.Info.ScrapeMetadata.CompletionState != ScrapeCompletionState.Success
                 || scrapeRes.Result == null)
             {
                 throw new InvalidOperationException();

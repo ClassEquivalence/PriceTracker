@@ -1,9 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using PriceTracker.Core.Models.Domain;
 using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
 using PriceTracker.Modules.Repository;
@@ -23,16 +20,11 @@ using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel.MerchRepo
 using PriceTracker.Modules.Repository.Repositories.Domain.EntityLevel;
 using PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink;
 using PriceTracker.Modules.WebInterface.Adapters.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
 {
     public class RepositoryConstructor<DbContextType>
-        where DbContextType: PriceTrackerContext
+        where DbContextType : PriceTrackerContext
     {
         public RepositoryConstructor()
         {
@@ -55,7 +47,7 @@ namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
 
             services.AddSingleton(connection);
             services.AddDbContextFactory<DbContextType>();
-            services.AddSingleton<IDbContextFactory<PriceTrackerContext>, 
+            services.AddSingleton<IDbContextFactory<PriceTrackerContext>,
                 TestDbContextFactory<PriceTrackerContext, DbContextType>>();
 
             services = AddEntityRepositories(services);

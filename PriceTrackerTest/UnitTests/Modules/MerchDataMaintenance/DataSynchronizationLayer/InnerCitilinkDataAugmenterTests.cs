@@ -1,7 +1,6 @@
 ﻿using Moq;
 using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Inner;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Inner.CatalogTreeMaintainer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Upsertion;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
@@ -26,14 +25,14 @@ namespace PriceTrackerTest.UnitTests.Modules.MerchDataMaintenance.DataSynchroniz
             catalogTreeRepositoryMock.Setup(r => r.AppendBranchesAsync(It.IsAny<CitilinkNode>(),
                 It.IsAny<List<CitilinkScrapeTarget>>()));
             IInnerCitilinkMerchUpserter merchUpserter = merchUpserterMock.Object;
-            ICitilinkCatalogTreeRepositoryAdapter catalogTreeRepositoryAdapter = 
+            ICitilinkCatalogTreeRepositoryAdapter catalogTreeRepositoryAdapter =
                 catalogTreeRepositoryMock.Object;
             CitilinkInnerDataAugmenter augmenter = new(merchUpserter, catalogTreeRepositoryAdapter);
             CitilinkNode? node = new CitilinkNode(new(""), CitilinkNodeAugmentationState.Unprocessed);
-            
+
             CitilinkMerchParsingDto dto = new(2, "22", "22221a");
             List<CitilinkMerchParsingDto> merchesList = new() { dto };
-            for(int i = 1; i < merchDtoCount; i++)
+            for (int i = 1; i < merchDtoCount; i++)
             {
                 merchesList.Add(dto with { });
             }

@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Common.CommonLayers.CoordinationLayer;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Inner;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Inner.CatalogTreeMaintainer;
+﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Inner;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Pipeline;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Upsertion;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer;
@@ -11,9 +8,6 @@ using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecif
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Pipeline;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies.PolicyEnforcersProvider;
-using PriceTracker.Modules.MerchDataMaintenance.Facade;
-using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
-using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
 
 namespace PriceTracker.Core.Utils.DependencyInjection
 {
@@ -47,7 +41,7 @@ namespace PriceTracker.Core.Utils.DependencyInjection
             ICitilinkRootCatalogParser rootCatalogParser)
              */
             collection.AddSingleton<ICitilinkParsableClassifier, CitilinkParsablesClassifier>();
-            collection.AddSingleton<ICitilinkCatalogsCatalogParser,  CitilinkCatalogsCatalogParser>();
+            collection.AddSingleton<ICitilinkCatalogsCatalogParser, CitilinkCatalogsCatalogParser>();
             collection.AddSingleton<ICitilinkMerchCatalogParser, CitilinkMerchCatalogParser>();
             collection.AddSingleton<ICitilinkRootCatalogParser, CitilinkRootCatalogParser>();
 
@@ -61,7 +55,7 @@ namespace PriceTracker.Core.Utils.DependencyInjection
             //public CitilinkScraper(IInnerCitilinkScraper innerScraper,
             //ICitilinkScrapeAssignmentFactory assignmentFactory)
             collection.AddSingleton<IInnerCitilinkScraper, NewCitilinkScraper>();
-            collection.AddSingleton<ICitilinkScrapeAssignmentFactory, 
+            collection.AddSingleton<ICitilinkScrapeAssignmentFactory,
                 CitilinkScrapeAssignmentFactory>();
 
             //public NewCitilinkOuterParser(ICitilinkScraper scraper, IInnerCitilinkParser

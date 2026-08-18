@@ -1,5 +1,4 @@
 ﻿using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Inner.CatalogTreeMaintainer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Upsertion;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
@@ -101,7 +100,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
             }
         }
 
-        private void TryAugmentMerchNodeWithScrapeTargets(CitilinkNode node, 
+        private void TryAugmentMerchNodeWithScrapeTargets(CitilinkNode node,
             CitilinkParsingSnapshot snapshot)
         {
             if (node.NodeType != CitilinkNodeType.MerchCatalog)
@@ -113,7 +112,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                     if (snapshot.NodeMerchesCount != null && snapshot.NodeMerchesCount > 0)
                     {
                         FullyAugment();
-                        node.MerchNodeScrapeTargetsAugmentationState = 
+                        node.MerchNodeScrapeTargetsAugmentationState =
                             CitilinkMerchNodeScrapeTargetsAugmentationState.AllTargetsPresent;
                     }
                     else
@@ -152,7 +151,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                         (categorySlug, page: i, perPage: _perPage);
 
                     if (!node.LocationsList.Any
-                        (t => t is CitilinkScrapeMerchJsonTarget && 
+                        (t => t is CitilinkScrapeMerchJsonTarget &&
                         (t as CitilinkScrapeMerchJsonTarget).Page == i))
                     {
                         node.AddWebLocation(target);
@@ -200,7 +199,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                 _logger?.LogInformation($"snapshot of {snapshotMerchesCount} merches got rid of" +
                     $" {snapshotMerchesCount - purgedSnapshotMerchesCount} repetitions");
             }
-            if(snapshotDescendantCount > purgedSnapshotDescendantCount)
+            if (snapshotDescendantCount > purgedSnapshotDescendantCount)
             {
                 _logger?.LogInformation($"snapshot of {snapshotDescendantCount} descendants got rid of" +
                     $" {snapshotDescendantCount - purgedSnapshotDescendantCount} repetitions");

@@ -1,6 +1,4 @@
 ﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Common.CommonLayers.CoordinationLayer;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Common.CommonLayers.UpsertionInvocationLayer;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer;
 using PriceTracker.Modules.MerchDataMaintenance.Facade;
 
 namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Infrastructure

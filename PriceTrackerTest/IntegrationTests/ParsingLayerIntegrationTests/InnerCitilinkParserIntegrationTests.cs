@@ -2,11 +2,6 @@
 using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner.Parsers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit.Abstractions;
 
 namespace PriceTrackerTest.IntegrationTests.ParsingLayerIntegrationTests
@@ -47,8 +42,8 @@ namespace PriceTrackerTest.IntegrationTests.ParsingLayerIntegrationTests
             {
                 throw new InvalidOperationException();
             }
-            
-            foreach(var merch in parseRes.Result.Merches)
+
+            foreach (var merch in parseRes.Result.Merches)
             {
                 _loggerHelper.WriteLine($"Name: {merch.Name}, Price: {merch.Price},\n " +
                     $"CitilinkId: {merch.CitilinkId}");

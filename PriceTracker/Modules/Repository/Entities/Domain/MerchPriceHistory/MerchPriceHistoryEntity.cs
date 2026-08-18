@@ -12,6 +12,5 @@
         public MerchPriceHistoryEntity(int id = default) : base(id)
         {
         }
-
     }
 }

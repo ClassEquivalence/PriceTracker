@@ -2,13 +2,12 @@
 using PriceTracker.Core.Models.Domain;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Domain;
-using PriceTracker.Modules.Repository.Entities.Domain.MerchPriceHistory;
 using PriceTracker.Modules.WebInterface.API.DTOModels.Merch;
 using System.Linq.Expressions;
 
 namespace PriceTracker.Modules.WebInterface.Adapters.Repository
 {
-    public class MerchRepositoryAdapter: IMerchRepositoryAdapter
+    public class MerchRepositoryAdapter : IMerchRepositoryAdapter
     {
         // TODO: много где хорошо бы сделать асинхронность.
         private readonly IDbContextFactory<PriceTrackerContext> _dbContextFactory;

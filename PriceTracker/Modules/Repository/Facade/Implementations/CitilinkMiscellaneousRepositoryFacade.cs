@@ -67,7 +67,7 @@ namespace PriceTracker.Modules.Repository.Facade.Implementations
             else
             {
                 var removable = parent.Children.Single(b => b.Id == branch.Id);
-                
+
                 parent.Children.Remove(removable);
                 parent.Children.Add(branch with { Children = removable.Children });
             }

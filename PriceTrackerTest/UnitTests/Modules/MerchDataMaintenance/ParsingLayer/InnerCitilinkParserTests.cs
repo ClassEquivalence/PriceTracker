@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner.Parsers;
 
@@ -77,14 +76,14 @@ namespace PriceTrackerTest.UnitTests.Modules.MerchDataMaintenance.ParsingLayer
         {
             string parsable = File.ReadAllText(filePath);
 
-            
+
 
             CitilinkUpsertionOptions upsertionOptions = new()
             {
                 CitilinkUrl = "https://www.citilink.ru/"
             };
 
-            IOptions<CitilinkUpsertionOptions> interfacedOptions = 
+            IOptions<CitilinkUpsertionOptions> interfacedOptions =
                 Options.Create<CitilinkUpsertionOptions>(upsertionOptions);
 
             ICitilinkParsableClassifier classifier = new CitilinkParsablesClassifier();
@@ -101,6 +100,6 @@ namespace PriceTrackerTest.UnitTests.Modules.MerchDataMaintenance.ParsingLayer
         }
 
 
-        
+
     }
 }

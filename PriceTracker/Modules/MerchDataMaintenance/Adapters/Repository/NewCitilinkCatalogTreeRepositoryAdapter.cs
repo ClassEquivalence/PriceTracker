@@ -56,7 +56,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository
             var childrenList = entityBranchParent.Children;
 
             // Шаг 2: присоединим к childrenList - нужных наследников.
-            var addableChildrenList = descendants.ExceptBy(childrenList.Select(c=>c.Url),
+            var addableChildrenList = descendants.ExceptBy(childrenList.Select(c => c.Url),
                 st => st.Url).Select(CreateBranchFromTarget);
             childrenList.AddRange(addableChildrenList);
             await context.SaveChangesAsync();
@@ -65,7 +65,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository
         public async Task<CitilinkNode?> GetUnprocessedNodeAsync(int maxErrorsCount = -1)
         {
             if (_retreivedNodeCache.All(nc => nc.AugmentationState
-            == CitilinkNodeAugmentationState.Processed || 
+            == CitilinkNodeAugmentationState.Processed ||
             (nc.ProcessingErrorCount > maxErrorsCount && maxErrorsCount != -1)))
             {
                 // берём до 50 элементов через 1 where? хардкод-константа.

@@ -1,6 +1,5 @@
 ﻿
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 
 namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner
 {
@@ -16,10 +15,10 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
             HttpMethod method = descriptor.Method;
             string uri = descriptor.Uri;
             ScrapeHttpRequest request = new ScrapeHttpRequest(method, uri);
-            if(descriptor.Cookies.Count > 0)
+            if (descriptor.Cookies.Count > 0)
                 request.AddCookies(descriptor.Cookies);
 
-            if(descriptor.RequestBody != null && descriptor.RequestBodyEncoding != null
+            if (descriptor.RequestBody != null && descriptor.RequestBodyEncoding != null
                 && descriptor.RequestBodyMediaType != null)
             {
                 request.Content = new StringContent(descriptor.RequestBody,

@@ -6,7 +6,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Common
 {
     public class UpsertionService
     {
-        private readonly ICitilinkUpsertionInvoker 
+        private readonly ICitilinkUpsertionInvoker
             _citilinkUpsertionInvoker;
         private readonly List<ScheduledMerchUpserter> _merchUpserters;
         public UpsertionService(ICitilinkUpsertionInvoker citilinkUpsertionInvoker)
@@ -16,7 +16,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Common
 
         public async Task ProcessUpsertion()
         {
-            while (true) 
+            while (true)
             {
                 CitilinkEnforcersSharedContext sharedContext = new();
                 var cycleState = await _citilinkUpsertionInvoker.

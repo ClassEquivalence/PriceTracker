@@ -31,7 +31,7 @@ namespace PriceTrackerTest.IntegrationTests.RepositoryIntegrationTests
             var repo = _testApp.ProvideCatalogTreeRepository();
             var firstUnprocessedNode = await repo.GetUnprocessedNodeAsync();
             var sameFirstUnprocessedNode = await repo.GetUnprocessedNodeAsync();
-            
+
             // Assert
             Assert.Equal(firstUnprocessedNode.DefaultLocation.Url,
                 sameFirstUnprocessedNode.DefaultLocation.Url);
@@ -64,7 +64,7 @@ namespace PriceTrackerTest.IntegrationTests.RepositoryIntegrationTests
             Assert.True(unprocessedNode.ProcessingErrorCount <= 4);
 
             // Assert
-            Assert.NotEqual(firstUnprocessedNode.DefaultLocation.Url, 
+            Assert.NotEqual(firstUnprocessedNode.DefaultLocation.Url,
                 unprocessedNode.DefaultLocation.Url);
         }
 
@@ -83,7 +83,7 @@ namespace PriceTrackerTest.IntegrationTests.RepositoryIntegrationTests
             CitilinkScrapeTarget firstTarget = new("OneMoreSTUrl");
             CitilinkScrapeTarget secondTarget = new("OneMoreSTUrl");
 
-            await Assert.ThrowsAsync<ArgumentException>(async () => 
+            await Assert.ThrowsAsync<ArgumentException>(async () =>
             await repo.AppendBranchesAsync(unprocessedNode, [firstTarget, secondTarget]));
         }
 
@@ -165,7 +165,7 @@ namespace PriceTrackerTest.IntegrationTests.RepositoryIntegrationTests
             await context.CitilinkBranches.ExecuteDeleteAsync();
 
             // Шаг 2: подготовить исходные данные.
-            CitilinkCatalogBranchEntity root = new("SomeRootUrl", false, 
+            CitilinkCatalogBranchEntity root = new("SomeRootUrl", false,
                 CitilinkNodeAugmentationState.Unprocessed,
                 CitilinkNodeType.RootCatalog);
             CitilinkCatalogUrlsTreeEntity treeEntity = new(root);

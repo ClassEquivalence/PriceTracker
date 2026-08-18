@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner;
+﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner;
 using System.Net;
 using System.Text;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node
 {
@@ -16,8 +13,8 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         public readonly int Page;
         public readonly int PerPage;
 
-        public CitilinkScrapeMerchJsonTarget(string categorySlug, int page, 
-            bool isProcessed = false, int perPage = 48) : 
+        public CitilinkScrapeMerchJsonTarget(string categorySlug, int page,
+            bool isProcessed = false, int perPage = 48) :
             base(_citilinkApiRoute, CitilinkScrapeTargetPurpose.MerchesJson, isProcessed)
         {
             _categorySlug = categorySlug;
@@ -37,7 +34,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
 
             httpMethod = HttpMethod.Post;
             statusCodes.AddRange([HttpStatusCode.OK]);
-            
+
             string requestBody = $@"
 {{
     ""query"": ""{queryInBody}"",

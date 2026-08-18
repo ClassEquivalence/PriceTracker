@@ -8,8 +8,8 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
     {
 
         public CitilinkScrapeAssignment(string uriString, HttpMethod requestMethod,
-            List<HttpStatusCode> allowedStatusCodes, CitilinkEnforcersSharedContext 
-            sharedContext, Dictionary<string, string>? cookies = null): this(new(uriString, requestMethod,
+            List<HttpStatusCode> allowedStatusCodes, CitilinkEnforcersSharedContext
+            sharedContext, Dictionary<string, string>? cookies = null) : this(new(uriString, requestMethod,
                 allowedStatusCodes, cookies), new CitilinkScraperPoliciesEnforcer(sharedContext))
         {
         }

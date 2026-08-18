@@ -11,11 +11,6 @@ using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
 using PriceTracker.Modules.WebInterface.Adapters.Repository;
 using PriceTrackerTest.Utils.TestAppBuilder.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PriceTrackerTest.Utils.TestAppBuilder
 {

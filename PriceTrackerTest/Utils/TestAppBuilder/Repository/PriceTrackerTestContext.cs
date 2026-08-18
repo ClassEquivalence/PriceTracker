@@ -1,16 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using PriceTracker;
-using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
 {
@@ -27,7 +18,7 @@ namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
         {
             var options = optionsBuilder
                 .UseSqlite(_connection) // Передаем именно открытое соединение, а не просто строку!
-                // Вроде как если передавать строку - возникнут проблемы связанные со статусом InMemory.
+                                        // Вроде как если передавать строку - возникнут проблемы связанные со статусом InMemory.
                 .LogTo(s => _logger?.LogTrace(s)); // Вывод SQL в консоль для тестирования
         }
 
