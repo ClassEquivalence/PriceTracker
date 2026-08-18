@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
-using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
 using PriceTracker.Modules.Repository.Entities.Domain;
 using PriceTracker.Modules.Repository.Entities.Domain.MerchPriceHistory;
 using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;
@@ -17,7 +16,7 @@ namespace PriceTracker.Modules.Repository.DataAccess.EFCore
 
         private readonly string? _conectionString;
         private readonly string? _connectionPassword;
-        private readonly ILogger? _logger;
+        protected readonly ILogger? _logger;
 
         public DbSet<ShopEntity> Shops { get; set; }
         public DbSet<MerchEntity> Merches { get; set; }
@@ -53,12 +52,12 @@ namespace PriceTracker.Modules.Repository.DataAccess.EFCore
 
         }
 
-        protected PriceTrackerContext(ILogger<Program>? logger = null)
+        protected PriceTrackerContext(ILogger? logger = null)
         {
             _logger = logger;
             _logger?.LogTrace($"{nameof(PriceTrackerContext)}: Попытка подключиться к БД");
         }
-        public PriceTrackerContext(IOptions<ProductionDbOptions> options, ILogger<Program>? logger = null)
+        public PriceTrackerContext(IOptions<ProductionDbOptions> options, ILogger? logger = null)
         {
             _conectionString = options.Value.ConnectionStringBody;
             _connectionPassword = options.Value.ConnectionPassword;
