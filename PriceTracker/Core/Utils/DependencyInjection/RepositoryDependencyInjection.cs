@@ -3,7 +3,6 @@ using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
 using PriceTracker.Modules.Repository;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Domain;
-using PriceTracker.Modules.Repository.Entities.Domain.MerchPriceHistory;
 using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;
 using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
@@ -13,7 +12,6 @@ using PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink.ExtractionState;
 using PriceTracker.Modules.Repository.Repositories.Base;
 using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
-using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel.MerchRepository;
 using PriceTracker.Modules.Repository.Repositories.Domain.EntityLevel;
 using PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink;
 using PriceTracker.Modules.WebInterface.Adapters.Repository;
@@ -29,11 +27,6 @@ namespace PriceTracker.Core.Utils.DependencyInjection
         {
             services.AddSingleton<IEntityRepository<ShopEntity>,
                 ShopEntityRepository>();
-
-            services.AddSingleton<IEntityRepository<TimestampedPriceEntity>,
-                TimestampedPriceEntityRepository>();
-            services.AddSingleton<IEntityRepository<MerchPriceHistoryEntity>,
-                PriceHistoryEntityRepository>();
             services.AddSingleton<CitilinkMerchEntityRepository>();
 
             services.AddSingleton<IEntityRepository<CitilinkMerchEntity>>(s =>
@@ -73,16 +66,8 @@ namespace PriceTracker.Core.Utils.DependencyInjection
 
         private static IServiceCollection AddRepositories(IServiceCollection services) //completed
         {
-            services.AddSingleton<CitilinkExtractorStorageStateRepository>();
-            services.AddSingleton<CitilinkExtractionStateRepository>();
             services.AddSingleton<ShopRepository>(); //s
-            services.AddSingleton<TimestampedPriceRepository>();
-            services.AddSingleton<PriceHistoryRepository>();
             services.AddSingleton<CitilinkMerchRepository>();
-
-            services.AddSingleton<IMerchSubtypeRepositoryAdapter, CitilinkMerchRepositoryAdapter>();
-            services.AddSingleton<MerchRepository>();
-
             return services;
         }
 
@@ -96,13 +81,8 @@ namespace PriceTracker.Core.Utils.DependencyInjection
 
         private static IServiceCollection AddFacades(IServiceCollection services)
         {
-            services.AddSingleton<IMerchRepositoryFacade, MerchRepositoryFacade>();
-            services.AddSingleton<ICitilinkMiscellaneousRepositoryFacade, CitilinkMiscellaneousRepositoryFacade>();
             services.AddSingleton<IShopRepositoryFacade, ShopRepositoryFacade>();
-            services.AddSingleton<IShopSelectorFacade, ShopSelectorFacade>();
 
-            services.AddSingleton<ITimestampedPriceRepositoryFacade, TimestampedPriceRepositoryFacade>();
-            services.AddSingleton<IPriceHistoryRepositoryFacade, PriceHistoryRepositoryFacade>();
             services.AddSingleton<ICitilinkMerchRepositoryFacade, CitilinkMerchRepositoryFacade>();
             return services;
         }

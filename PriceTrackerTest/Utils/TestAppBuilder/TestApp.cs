@@ -41,12 +41,6 @@ namespace PriceTrackerTest.Utils.TestAppBuilder
         {
             return ProvideService<ILogger>();
         }
-
-        public ICitilinkMiscellaneousRepositoryFacade ProvideMiscRepository()
-        {
-            return ProvideService<ICitilinkMiscellaneousRepositoryFacade>();
-        }
-
         public ICitilinkCatalogTreeRepositoryAdapter ProvideCatalogTreeRepository()
         {
             return ProvideService<ICitilinkCatalogTreeRepositoryAdapter>();
