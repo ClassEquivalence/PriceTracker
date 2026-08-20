@@ -1,5 +1,6 @@
-﻿using PriceTracker.Core.Models.Domain;
-using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
+﻿using PriceTracker.Modules.Repository.Entities.Domain;
+using PriceTracker.Modules.Repository.Entities.Domain.MerchPriceHistory;
+using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;
 using PriceTracker.Modules.WebInterface.Adapters.Repository;
 using PriceTrackerTest.Utils.Logging;
 using PriceTrackerTest.Utils.TestAppBuilder;
@@ -9,44 +10,46 @@ namespace PriceTrackerTest.IntegrationTests.RepositoryIntegrationTests
 {
     public class MerchRepositoryAdapterTests
     {
-        private readonly TestApp _testApp;
-        private readonly IMerchRepositoryAdapter _merchRepository;
+        private TestApp _testApp;
+        private IMerchRepositoryAdapter _merchRepository;
+
+        ITestOutputHelper _testOutputHelper;
 
         private const int merchId = 1423;
         private const string citilinkMerchCode = "someAbsolutelyUniqueId";
         public MerchRepositoryAdapterTests(ITestOutputHelper outputHelper)
         {
-            // Arrange Act Assert.
-            // Arrange-part
-            TestAppBuilder appBuilder = new();
-            _testApp = appBuilder.BuildWithDefaults(new TestOutputLogger(outputHelper));
-            _testApp.Initialize();
-            _merchRepository = _testApp.ProvideMerchRepositoryAdapter();
-            ArrangeRepositoryData();
-            // Arrange-part ends here.
+            _testOutputHelper = outputHelper;
         }
         private void ArrangeRepositoryData()
         {
-            // используем для этого временно старый пласт кода.
-            var oldMerchRepository = _testApp.ProvideMerchRepository();
+            TestAppBuilder appBuilder = new();
+            _testApp = appBuilder.BuildWithDefaults(new TestOutputLogger(_testOutputHelper));
+            _testApp.Initialize();
+            _merchRepository = _testApp.ProvideMerchRepositoryAdapter();
 
-            // Костыль: чтобы добавить мерч к именно ситилинку - пока что приходится узнавать его ID
-            // при обращении к репозиторию.
-            var citilink = _testApp.ProvideShopRepository().SingleOrDefault(s => s.Name == "Citilink");
-            if (citilink == null)
-                throw new InvalidOperationException();
+            using var context = _testApp.ProvideDbContextFactory().CreateDbContext();
+            MerchPriceHistoryEntity priceHistoryEntity = new();
+            TimestampedPriceEntity currentPriceEntity = new(46810, DateTime.Now);
+            priceHistoryEntity.TimestampedPrices = [new(1111, DateTime.Now),
+            new(2345, DateTime.Now), currentPriceEntity];
+            priceHistoryEntity.CurrentPricePointer = new CurrentPricePointerEntity(default, default,
+                default);
+            priceHistoryEntity.CurrentPricePointer.CurrentPrice = currentPriceEntity;
+            //priceHistoryEntity.CurrentPricePointer.MerchPriceHistory = priceHistoryEntity;
+            CitilinkMerchEntity merchEntity = new("SomeVeryMemorialName", citilinkMerchCode, merchId);
+            merchEntity.PriceHistory = priceHistoryEntity;
+            merchEntity.ShopId = context.Shops.Single(s => s.Name == "Citilink").Id;
+            context.Merches.Add(merchEntity);
 
-            MerchPriceHistoryDto priceHistory = new(default, [new(default, 1111, DateTime.Now, default),
-            new(default, 2345, DateTime.Now, default)], new(default, 46810, DateTime.Now, default), default);
-
-            CitilinkMerchDto dto = new(merchId, "SomeVeryMemorialName", priceHistory,
-                citilinkMerchCode, citilink.Id, default);
-            oldMerchRepository.TryInsert(dto);
+            context.SaveChanges();
         }
 
         [Fact]
         public async Task CheckDataIntegrity_SelectingByMerchId()
         {
+            ArrangeRepositoryData();
+
             var merch = await _merchRepository.GetMerchAsync(merchId);
             Assert.NotNull(merch);
             var priceHistory = merch.MerchPriceHistory;
@@ -60,6 +63,8 @@ namespace PriceTrackerTest.IntegrationTests.RepositoryIntegrationTests
         [Fact]
         public async Task CheckDataIntegrity_SelectingByCitilinkCode()
         {
+            ArrangeRepositoryData();
+
             var merch = await _merchRepository.GetCitilinkMerchAsync(citilinkMerchCode);
             Assert.NotNull(merch);
             var priceHistory = merch.MerchPriceHistory;

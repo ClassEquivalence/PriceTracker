@@ -35,7 +35,7 @@ namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
             {
                 DataSource = "TestDatabase",
                 Mode = SqliteOpenMode.Memory,
-                Cache = SqliteCacheMode.Shared
+                Cache = SqliteCacheMode.Private
             };
             var connectionString = connectionStringBuilder.ToString();
 
