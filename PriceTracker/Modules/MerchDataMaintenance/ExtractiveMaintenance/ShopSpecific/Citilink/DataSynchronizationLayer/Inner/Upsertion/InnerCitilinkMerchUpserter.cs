@@ -162,7 +162,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                     DateTime.UtcNow, default);
                 var priceHistory = new MerchPriceHistoryDto(default, [], currentPrice, default);
                 var inserted = new CitilinkMerchDto(default, insertable.Name,
-                    priceHistory, insertable.CitilinkId, _citilinkShop.Id, default);
+                    priceHistory, insertable.CitilinkId, default);
                 coreDtosToInsert.Add(inserted);
             }
             var insertTask = _merchRepository.CreateManyAsync(coreDtosToInsert);

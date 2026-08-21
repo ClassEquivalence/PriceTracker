@@ -79,8 +79,6 @@ namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
                 TimestampedPriceMapper>();
             services.AddSingleton<IPriceHistoryMapper,
                 PriceHistoryMapper>();
-            services.AddSingleton<IMerchCoreToEntityMapper<MerchDto, MerchEntity>,
-                MerchMapper>();
 
             services.AddSingleton<ICitilinkCatalogUrlBranchMapper, CitilinkCatalogUrlBranchMapper>();
             services.AddSingleton<ICitilinkCatalogUrlTreeMapper, CitilinkCatalogUrlTreeMapper>();

@@ -43,8 +43,6 @@ namespace PriceTracker.Core.Utils.DependencyInjection
                 TimestampedPriceMapper>();
             services.AddSingleton<IPriceHistoryMapper,
                 PriceHistoryMapper>();
-            services.AddSingleton<IMerchCoreToEntityMapper<MerchDto, MerchEntity>,
-                MerchMapper>();
 
             services.AddSingleton<ICitilinkCatalogUrlBranchMapper, CitilinkCatalogUrlBranchMapper>();
             services.AddSingleton<ICitilinkCatalogUrlTreeMapper, CitilinkCatalogUrlTreeMapper>();

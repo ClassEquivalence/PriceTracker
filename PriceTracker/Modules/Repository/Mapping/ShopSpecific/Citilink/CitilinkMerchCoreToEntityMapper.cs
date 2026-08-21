@@ -1,4 +1,6 @@
-﻿using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
+﻿using Microsoft.EntityFrameworkCore;
+using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
+using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;
 using PriceTracker.Modules.Repository.Mapping.Domain;
 
@@ -8,15 +10,19 @@ namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink
         ICitilinkMerchCoreToEntityMapper
     {
         private readonly IPriceHistoryMapper _priceHistoryMapper;
-        public CitilinkMerchCoreToEntityMapper(IPriceHistoryMapper priceHistoryMapper) : base()
+        private readonly int _citilinkId;
+        public CitilinkMerchCoreToEntityMapper(IDbContextFactory<PriceTrackerContext> 
+            contextFactory, IPriceHistoryMapper priceHistoryMapper) : base()
         {
+            using var context = contextFactory.CreateDbContext();
+            _citilinkId = context.Shops.Single(s => s.Name == "Citilink").Id;
             _priceHistoryMapper = priceHistoryMapper;
         }
 
         protected override CitilinkMerchEntity CreateEntityFromModel(CitilinkMerchDto model)
         {
             CitilinkMerchEntity entity = new(model.Name, model.CitilinkId, model.Id);
-            entity.ShopId = model.ShopId;
+            entity.ShopId = _citilinkId;
             entity.PriceHistory = _priceHistoryMapper.Map(model.PriceTrack);
             entity.PriceHistory.Id = model.PriceHistoryId;
             return entity;
@@ -25,14 +31,14 @@ namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink
         protected override CitilinkMerchDto CreateModelFromEntity(CitilinkMerchEntity entity)
         {
             return new CitilinkMerchDto(entity.Id, entity.Name, _priceHistoryMapper.Map(entity.PriceHistory),
-                entity.CitilinkId, entity.ShopId, entity.PriceHistory.Id);
+                entity.CitilinkId, entity.PriceHistory.Id);
         }
 
         protected override void MapModelFieldsToEntity(CitilinkMerchDto model, CitilinkMerchEntity entity)
         {
             entity.Name = model.Name;
             entity.PriceHistory = _priceHistoryMapper.Map(model.PriceTrack);
-            entity.ShopId = model.ShopId;
+            entity.ShopId = _citilinkId;
             entity.CitilinkId = model.CitilinkId;
 
         }

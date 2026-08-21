@@ -1,6 +1,6 @@
 ﻿
 namespace PriceTracker.Core.Models.Domain
 {
-    public record MerchDto(int Id, string Name, MerchPriceHistoryDto PriceTrack,
-        int ShopId, int PriceHistoryId) : DomainDto(Id);
+    public abstract record MerchDto(int Id, string Name, MerchPriceHistoryDto PriceTrack,
+        int PriceHistoryId) : DomainDto(Id);
 }
