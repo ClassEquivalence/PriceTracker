@@ -2,7 +2,8 @@
 
 namespace PriceTracker.Modules.Repository.Facade.FacadeInterfaces
 {
-    public interface IShopRepositoryFacade : IDomainRepositoryFacade<ShopDto>
+    public interface IShopRepositoryFacade
     {
+        public Task EnsureCitilinkInitializedAsync();
     }
 }

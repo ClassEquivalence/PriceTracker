@@ -82,8 +82,8 @@ namespace PriceTrackerTest.IntegrationTests
 
 
             // Это успешный сетап мока? сомневаюсь хз посмотрим.
-            shopRepositoryMock.Setup(r => r.SingleOrDefault(It.IsAny<Func<ShopDto, bool>>()))
-                .Returns(new ShopDto(1, "Citilink", []));
+            //shopRepositoryMock.Setup(r => r.SingleOrDefault(It.IsAny<Func<ShopDto, bool>>()))
+            //    .Returns(new ShopDto(1, "Citilink"));
 
 
             var catalogTreeRepositoryMock = new Mock<ICitilinkCatalogTreeRepositoryAdapter>();

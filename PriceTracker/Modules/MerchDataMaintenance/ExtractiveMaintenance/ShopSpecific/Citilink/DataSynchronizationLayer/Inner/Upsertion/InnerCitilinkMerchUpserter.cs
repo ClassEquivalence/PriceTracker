@@ -10,7 +10,6 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
     public class InnerCitilinkMerchUpserter : IInnerCitilinkMerchUpserter
     {
         private readonly ICitilinkMerchRepositoryFacade _merchRepository;
-        private readonly ShopDto _citilinkShop;
         private readonly ILogger? _logger;
         List<CitilinkMerchParsingDto> queuedData = [];
         private readonly int _upsertablePortionSize;
@@ -19,15 +18,12 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         private bool isCompleted = false;
 
         public InnerCitilinkMerchUpserter(ICitilinkMerchRepositoryFacade repository,
-            IShopRepositoryFacade shopRepository, int upsertablePortionSize = 100,
-            ILogger? logger = null)
+            int upsertablePortionSize = 100, ILogger? logger = null)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(upsertablePortionSize,
                 $"{nameof(InnerCitilinkMerchUpserter)}: {nameof(upsertablePortionSize)} " +
                 $"должен быть больше 0.");
             _merchRepository = repository;
-            _citilinkShop = shopRepository.SingleOrDefault(s => s.Name == "Citilink")
-                ?? throw new InvalidOperationException();
 
             _logger = logger;
             _upsertablePortionSize = upsertablePortionSize;

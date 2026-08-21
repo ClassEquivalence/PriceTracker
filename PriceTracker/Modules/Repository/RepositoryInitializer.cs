@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
-using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
+using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 
 namespace PriceTracker.Modules.Repository
 {
     public class RepositoryInitializer
     {
-        private readonly ShopRepository _shopRepository;
+        private readonly IShopRepositoryFacade _shopRepository;
         private readonly IDbContextFactory<PriceTrackerContext> _factory;
-        public RepositoryInitializer(ShopRepository repository,
+        public RepositoryInitializer(IShopRepositoryFacade repository,
             IDbContextFactory<PriceTrackerContext> factory)
         {
             _shopRepository = repository;
@@ -20,14 +20,8 @@ namespace PriceTracker.Modules.Repository
             {
                 context.Database.EnsureCreated();
             }
-            var citilink = _shopRepository.SingleOrDefault(s => s.Name ==
-            RepositoryParameters.CitilinkShopName);
-            if (citilink == null)
-            {
-                citilink = new(default, RepositoryParameters.CitilinkShopName,
-                    []);
-                _shopRepository.Create(citilink);
-            }
+            // Костыль! Wait лучше не использовать обычно!
+            _shopRepository.EnsureCitilinkInitializedAsync().Wait();
         }
     }
 }
