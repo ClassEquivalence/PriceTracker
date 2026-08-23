@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;
@@ -10,19 +11,20 @@ namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink
         ICitilinkMerchCoreToEntityMapper
     {
         private readonly IPriceHistoryMapper _priceHistoryMapper;
-        private readonly int _citilinkId;
-        public CitilinkMerchCoreToEntityMapper(IDbContextFactory<PriceTrackerContext> 
+        private int? _citilinkId;
+        private readonly IDbContextFactory<PriceTrackerContext> _contextFactory;
+        public CitilinkMerchCoreToEntityMapper(IDbContextFactory<PriceTrackerContext>
             contextFactory, IPriceHistoryMapper priceHistoryMapper) : base()
         {
-            using var context = contextFactory.CreateDbContext();
-            _citilinkId = context.Shops.Single(s => s.Name == "Citilink").Id;
             _priceHistoryMapper = priceHistoryMapper;
+            _contextFactory = contextFactory;
         }
 
         protected override CitilinkMerchEntity CreateEntityFromModel(CitilinkMerchDto model)
         {
+            EnsureCitilinkIdInitialized();
             CitilinkMerchEntity entity = new(model.Name, model.CitilinkId, model.Id);
-            entity.ShopId = _citilinkId;
+            entity.ShopId = _citilinkId ?? throw new InvalidOperationException();
             entity.PriceHistory = _priceHistoryMapper.Map(model.PriceTrack);
             entity.PriceHistory.Id = model.PriceHistoryId;
             return entity;
@@ -36,11 +38,22 @@ namespace PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink
 
         protected override void MapModelFieldsToEntity(CitilinkMerchDto model, CitilinkMerchEntity entity)
         {
+            EnsureCitilinkIdInitialized();
             entity.Name = model.Name;
             entity.PriceHistory = _priceHistoryMapper.Map(model.PriceTrack);
-            entity.ShopId = _citilinkId;
+            entity.ShopId = _citilinkId ?? throw new InvalidOperationException();
             entity.CitilinkId = model.CitilinkId;
 
+        }
+
+        private void EnsureCitilinkIdInitialized()
+        {
+            if (_citilinkId != null)
+                return;
+            using var context = _contextFactory.CreateDbContext();
+            _citilinkId = context.Shops.Single(s => s.Name == "Citilink").Id;
+            if (_citilinkId == null)
+                throw new InvalidOperationException();
         }
     }
 }
