@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PriceTracker.Core.Models.Domain;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
-using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
 
 namespace PriceTracker.Modules.Repository.Facade.Implementations
 {
@@ -19,7 +17,7 @@ namespace PriceTracker.Modules.Repository.Facade.Implementations
         {
             using var context = await _contextFactory.CreateDbContextAsync();
             var citilink = await context.Shops.SingleOrDefaultAsync(s => s.Name == "Citilink");
-            if(citilink is null)
+            if (citilink is null)
             {
                 context.Shops.Add(new("Citilink"));
             }

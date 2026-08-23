@@ -1,15 +1,14 @@
 ﻿using PriceTracker.Core.Models.Domain;
 using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
+using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models;
-using PriceTracker.Modules.Repository.Facade.Citilink;
-using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 using System.Text;
 
 namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Upsertion
 {
     public class InnerCitilinkMerchUpserter : IInnerCitilinkMerchUpserter
     {
-        private readonly ICitilinkMerchRepositoryFacade _merchRepository;
+        private readonly IMerchDataMaintenanceRepositoryAdapter _merchRepository;
         private readonly ILogger? _logger;
         List<CitilinkMerchParsingDto> queuedData = [];
         private readonly int _upsertablePortionSize;
@@ -17,7 +16,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         private readonly SemaphoreSlim _semaphore = new(1, 1);
         private bool isCompleted = false;
 
-        public InnerCitilinkMerchUpserter(ICitilinkMerchRepositoryFacade repository,
+        public InnerCitilinkMerchUpserter(IMerchDataMaintenanceRepositoryAdapter repository,
             int upsertablePortionSize = 100, ILogger? logger = null)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(upsertablePortionSize,

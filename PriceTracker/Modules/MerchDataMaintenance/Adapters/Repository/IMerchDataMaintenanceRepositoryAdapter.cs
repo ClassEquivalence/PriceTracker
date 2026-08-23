@@ -1,15 +1,9 @@
 ﻿using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
 
-namespace PriceTracker.Modules.Repository.Facade.Citilink
+namespace PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository
 {
-    public interface ICitilinkMerchRepositoryFacade
+    public interface IMerchDataMaintenanceRepositoryAdapter
     {
-        List<CitilinkMerchDto> Where(Func<CitilinkMerchDto, bool> selector);
-
-        bool TryGetSingleByCitilinkId(string citilinkId, out CitilinkMerchDto? dto);
-        bool TryUpdate(CitilinkMerchDto dto);
-        bool TryInsert(CitilinkMerchDto dto);
-
         /// <summary>
         /// Данный метод не станет сохранять или менять магазин.
         /// </summary>

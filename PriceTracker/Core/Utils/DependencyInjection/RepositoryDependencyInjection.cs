@@ -1,10 +1,8 @@
-﻿using PriceTracker.Core.Models.Domain;
-using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
+﻿using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
 using PriceTracker.Modules.Repository;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Domain;
 using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;
-using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 using PriceTracker.Modules.Repository.Facade.Implementations;
 using PriceTracker.Modules.Repository.Mapping.Domain;
@@ -74,6 +72,8 @@ namespace PriceTracker.Core.Utils.DependencyInjection
             services.AddSingleton<ICitilinkCatalogTreeRepositoryAdapter,
                 NewCitilinkCatalogTreeRepositoryAdapter>();
             services.AddSingleton<IMerchRepositoryAdapter, MerchRepositoryAdapter>();
+            services.AddSingleton<IMerchDataMaintenanceRepositoryAdapter,
+                MerchDataMaintenanceRepositoryAdapter>();
             return services;
         }
 
@@ -81,7 +81,6 @@ namespace PriceTracker.Core.Utils.DependencyInjection
         {
             services.AddSingleton<IShopRepositoryFacade, ShopRepositoryFacade>();
 
-            services.AddSingleton<ICitilinkMerchRepositoryFacade, CitilinkMerchRepositoryFacade>();
             return services;
         }
 

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
-using PriceTracker.Core.Models.Domain;
 using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
 using PriceTracker.Core.Utils.DependencyInjection;
 using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
@@ -11,7 +10,6 @@ using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecif
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies.PolicyEnforcersProvider;
-using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 using PriceTrackerTest.Utils.Logging;
 using Xunit.Abstractions;
@@ -48,7 +46,7 @@ namespace PriceTrackerTest.IntegrationTests
 
             collection.AddSingleton<ILogger>(new TestOutputLogger(_outputHelper));
 
-            Mock<ICitilinkMerchRepositoryFacade> mockMerchRepositoryFacade = new();
+            Mock<IMerchDataMaintenanceRepositoryAdapter> mockMerchRepositoryFacade = new();
             mockMerchRepositoryFacade.Setup(r => r.UpdateManyAsync
             (It.IsAny<List<CitilinkMerchDto>>())).Callback<List<CitilinkMerchDto>>
             (async list =>
@@ -98,7 +96,7 @@ namespace PriceTrackerTest.IntegrationTests
 
             var shopRepositoryPseudo = shopRepositoryMock.Object;
 
-            collection.AddSingleton<ICitilinkMerchRepositoryFacade>(merchRepositoryPseudo);
+            collection.AddSingleton<IMerchDataMaintenanceRepositoryAdapter>(merchRepositoryPseudo);
             collection.AddSingleton<ICitilinkCatalogTreeRepositoryAdapter>(catalogTreeRepoPseudo);
             collection.AddSingleton<IShopRepositoryFacade>(shopRepositoryPseudo);
 

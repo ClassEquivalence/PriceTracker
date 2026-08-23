@@ -7,7 +7,6 @@ using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecif
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Pipeline;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer;
 using PriceTracker.Modules.Repository;
-using PriceTracker.Modules.Repository.Facade.Citilink;
 using PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel;
 using PriceTracker.Modules.WebInterface.Adapters.Repository;
 using PriceTrackerTest.Utils.TestAppBuilder.Repository;
@@ -44,10 +43,6 @@ namespace PriceTrackerTest.Utils.TestAppBuilder
         public ICitilinkCatalogTreeRepositoryAdapter ProvideCatalogTreeRepository()
         {
             return ProvideService<ICitilinkCatalogTreeRepositoryAdapter>();
-        }
-        public ICitilinkMerchRepositoryFacade ProvideMerchRepository()
-        {
-            return ProvideService<ICitilinkMerchRepositoryFacade>();
         }
         public IMerchRepositoryAdapter ProvideMerchRepositoryAdapter()
         {
