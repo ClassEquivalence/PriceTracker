@@ -49,8 +49,6 @@ namespace PriceTracker.Core.Utils.DependencyInjection
                 CitilinkExtractorStorageStateMapper>();
             services.AddSingleton<ICitilinkExtractionStateMapper,
                 CitilinkExtractionStateMapper>();
-            services.AddSingleton<IShopMapper,
-                ShopCoreToEntityMapper>();
 
             services.AddSingleton<ICitilinkMerchCoreToEntityMapper,
                 CitilinkMerchCoreToEntityMapper>();
@@ -62,7 +60,6 @@ namespace PriceTracker.Core.Utils.DependencyInjection
 
         private static IServiceCollection AddRepositories(IServiceCollection services) //completed
         {
-            services.AddSingleton<ShopRepository>(); //s
             services.AddSingleton<CitilinkMerchRepository>();
             return services;
         }

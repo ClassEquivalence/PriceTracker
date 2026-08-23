@@ -85,8 +85,6 @@ namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
                 CitilinkExtractorStorageStateMapper>();
             services.AddSingleton<ICitilinkExtractionStateMapper,
                 CitilinkExtractionStateMapper>();
-            services.AddSingleton<IShopMapper,
-                ShopCoreToEntityMapper>();
 
             services.AddSingleton<ICitilinkMerchCoreToEntityMapper,
                 CitilinkMerchCoreToEntityMapper>();
@@ -98,7 +96,6 @@ namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
 
         private static IServiceCollection AddRepositories(IServiceCollection services) //completed
         {
-            services.AddSingleton<ShopRepository>(); //s
             services.AddSingleton<CitilinkMerchRepository>();
             return services;
         }

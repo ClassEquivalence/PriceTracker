@@ -24,10 +24,6 @@ namespace PriceTrackerTest.Utils.TestAppBuilder
         {
             return ProvideService<ICitilinkUpsertionInvoker>();
         }
-        public ShopRepository ProvideShopRepository()
-        {
-            return ProvideService<ShopRepository>();
-        }
         public ICitilinkParsableClassifier ProvideParsablesClassifier()
         {
             return ProvideService<ICitilinkParsableClassifier>();
