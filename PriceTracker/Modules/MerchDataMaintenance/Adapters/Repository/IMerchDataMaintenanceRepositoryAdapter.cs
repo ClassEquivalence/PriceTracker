@@ -1,4 +1,4 @@
-﻿using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
+﻿using PriceTracker.Core.CommonModels.Domain.ShopSpecific.Citilink;
 
 namespace PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository
 {

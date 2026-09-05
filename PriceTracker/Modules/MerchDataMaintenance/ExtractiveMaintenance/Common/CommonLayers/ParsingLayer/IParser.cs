@@ -1,4 +1,4 @@
-﻿using PriceTracker.Core.Utils;
+﻿using PriceTracker.Core.HelperUtils;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Common.CommonLayers.ParsingLayer.Models;
 
 

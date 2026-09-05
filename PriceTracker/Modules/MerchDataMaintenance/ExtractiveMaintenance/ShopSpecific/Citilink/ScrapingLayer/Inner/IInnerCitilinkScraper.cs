@@ -1,4 +1,4 @@
-﻿using PriceTracker.Core.Utils;
+﻿using PriceTracker.Core.HelperUtils;
 
 namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner
 {

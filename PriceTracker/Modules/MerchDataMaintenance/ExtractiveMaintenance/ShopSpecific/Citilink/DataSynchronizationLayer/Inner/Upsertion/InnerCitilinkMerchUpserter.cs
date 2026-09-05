@@ -1,5 +1,5 @@
-﻿using PriceTracker.Core.Models.Domain;
-using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
+﻿using PriceTracker.Core.CommonModels.Domain;
+using PriceTracker.Core.CommonModels.Domain.ShopSpecific.Citilink;
 using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models;
 using System.Text;

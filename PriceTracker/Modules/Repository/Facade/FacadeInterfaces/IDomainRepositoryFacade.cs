@@ -1,4 +1,4 @@
-﻿using PriceTracker.Core.Models.Domain;
+﻿using PriceTracker.Core.CommonModels.Domain;
 
 namespace PriceTracker.Modules.Repository.Facade.FacadeInterfaces
 {

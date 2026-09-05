@@ -15,7 +15,7 @@ namespace PriceTrackerTest.IntegrationTests
         public CitilinkUpsertionInvokerIntegrationTests(ITestOutputHelper outputHelper)
         {
             TestAppBuilder appBuilder = new();
-            _testApp = appBuilder.BuildWithDefaults(new TestOutputLogger(outputHelper));
+            _testApp = appBuilder.BuildTestApp(new TestOutputLogger(outputHelper));
 
             _testApp.Initialize();
 

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
+using PriceTracker.Core.CommonModels.Domain.ShopSpecific.Citilink;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;
 using PriceTracker.Modules.Repository.Mapping.Domain;

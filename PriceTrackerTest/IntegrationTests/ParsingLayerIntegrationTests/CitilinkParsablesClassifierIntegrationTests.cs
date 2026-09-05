@@ -25,7 +25,7 @@ namespace PriceTrackerTest.IntegrationTests.ParsingLayerIntegrationTests
         public async Task Classify_ClassifiesCorrectly(string url, ParsableType expectedType)
         {
             TestAppBuilder appBuilder = new();
-            var app = appBuilder.BuildWithDefaults(_logger);
+            var app = appBuilder.BuildTestApp(_logger);
             ICitilinkParsableClassifier classifier = app.ProvideParsablesClassifier();
             var scraper = app.ProvideScraper();
 

@@ -1,4 +1,4 @@
-﻿using PriceTracker.Core.Utils;
+﻿using PriceTracker.Core.HelperUtils;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner.Parsers;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Models;
 

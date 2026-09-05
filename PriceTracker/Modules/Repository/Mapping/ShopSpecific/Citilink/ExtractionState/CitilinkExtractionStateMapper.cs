@@ -1,5 +1,5 @@
-﻿using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState;
-using PriceTracker.Core.Models.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
+﻿using PriceTracker.Core.CommonModels.Process.ShopSpecific.Citilink.ExtractionState;
+using PriceTracker.Core.CommonModels.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree;
 

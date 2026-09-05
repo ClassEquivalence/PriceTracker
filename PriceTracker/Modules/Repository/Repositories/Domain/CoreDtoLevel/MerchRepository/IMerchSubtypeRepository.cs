@@ -1,4 +1,4 @@
-﻿using PriceTracker.Core.Models.Domain;
+﻿using PriceTracker.Core.CommonModels.Domain;
 using PriceTracker.Modules.Repository.Repositories.Base;
 
 namespace PriceTracker.Modules.Repository.Repositories.Domain.CoreDtoLevel.MerchRepository

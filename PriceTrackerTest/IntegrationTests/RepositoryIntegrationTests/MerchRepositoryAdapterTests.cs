@@ -24,7 +24,7 @@ namespace PriceTrackerTest.IntegrationTests.RepositoryIntegrationTests
         private void ArrangeRepositoryData()
         {
             TestAppBuilder appBuilder = new();
-            _testApp = appBuilder.BuildWithDefaults(new TestOutputLogger(_testOutputHelper));
+            _testApp = appBuilder.BuildTestApp(new TestOutputLogger(_testOutputHelper));
             _testApp.Initialize();
             _merchRepository = _testApp.ProvideMerchRepositoryAdapter();
 

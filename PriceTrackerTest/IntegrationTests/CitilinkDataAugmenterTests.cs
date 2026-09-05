@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using PriceTracker.Core.App.DependencyInjection;
+using PriceTracker.Core.CommonModels.Domain.ShopSpecific.Citilink;
 using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
-using PriceTracker.Core.Models.Domain.ShopSpecific.Citilink;
-using PriceTracker.Core.Utils.DependencyInjection;
 using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Pipeline;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models;
