@@ -2,6 +2,8 @@
 {
     public class CitilinkUpsertionOptions
     {
+        public static string OptionsSectionKey = "MerchUpsertionOptions:CitilinkUpsertionOptions";
+
         // Период обновления цен в днях
         public int CitilinkPriceUpdatePeriod { get; set; }
 

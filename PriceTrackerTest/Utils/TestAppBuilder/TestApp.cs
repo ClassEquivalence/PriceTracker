@@ -8,6 +8,7 @@ using PriceTracker.Modules.Repository;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.WebInterface.Adapters.Repository;
 using Microsoft.Extensions.DependencyInjection;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.LayersParallelBridge.UpsertionInvocation;
 
 
 namespace PriceTrackerTest.Utils.TestAppBuilder
@@ -52,6 +53,11 @@ namespace PriceTrackerTest.Utils.TestAppBuilder
         public RepositoryInitializer ProvideRepositoryInitializer()
         {
             return ProvideService<RepositoryInitializer>();
+        }
+
+        public PartialCycleExecutor ProvideCycleExecutor()
+        {
+            return ProvideService<PartialCycleExecutor>();
         }
 
         public void Initialize()

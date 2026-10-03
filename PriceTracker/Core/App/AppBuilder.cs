@@ -3,6 +3,8 @@ using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Inner;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Pipeline;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Upsertion;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.LayersParallelBridge.Scraping;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.LayersParallelBridge.UpsertionInvocation;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner.Parsers;
@@ -39,7 +41,7 @@ namespace PriceTracker.Core.App
             app.UseAuthorization();
             app.MapControllers();
             app.MapFallbackToFile("index.html");
-
+            
             return app;
         }
         protected void UseProductionRepository(IServiceCollection collection)
@@ -77,6 +79,10 @@ namespace PriceTracker.Core.App
             collection.AddSingleton<ICitilinkPolicyEnforcersContextfulProvider,
                 CitilinkPolicyEnforcersContextfulProvider>();
             collection.AddSingleton<ICitilinkUpsertionInvoker, CitilinkUpsertionInvoker>();
+
+            collection.AddSingleton<IParallelBridgeCitilinkScraper, 
+                ParallelBridgeCitilinkScraper>();
+            collection.AddSingleton<PartialCycleExecutor>();
         }
         protected void UseOptions(IServiceCollection collection)
         {
@@ -86,6 +92,8 @@ namespace PriceTracker.Core.App
                 configurationManager.GetSection(ProductionDbOptions.OptionsSectionKey));
             collection.Configure<MerchUpsertionOptions>(
                 configurationManager.GetSection(MerchUpsertionOptions.OptionsSectionKey));
+            collection.Configure<CitilinkUpsertionOptions>(
+                configurationManager.GetSection(CitilinkUpsertionOptions.OptionsSectionKey));
             collection.AddSingleton<IAppEnvironment, HostEnvironmentAdapter>();
         }
         protected void UseAngular(IServiceCollection collection)
