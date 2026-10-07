@@ -20,6 +20,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.Common
 
         public async Task OnShutdown()
         {
+            throw new NotImplementedException();
         }
 
     }
