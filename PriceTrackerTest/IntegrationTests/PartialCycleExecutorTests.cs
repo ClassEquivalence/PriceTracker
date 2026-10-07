@@ -10,7 +10,7 @@ namespace PriceTrackerTest.IntegrationTests
     public class PartialCycleExecutorTests
     {
         private readonly TestApp _testApp;
-        private readonly PartialCycleExecutor _executor;
+        private readonly CitilinkPartialCycleExecutor _executor;
         private readonly ILogger _logger;
         public PartialCycleExecutorTests(ITestOutputHelper outputHelper)
         {

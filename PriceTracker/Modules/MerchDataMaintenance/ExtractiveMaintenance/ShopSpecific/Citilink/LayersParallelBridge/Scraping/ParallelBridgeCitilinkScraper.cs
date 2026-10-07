@@ -1,5 +1,4 @@
-﻿using PriceTracker.Core.HelperUtils;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.LayersParallelBridge.UpsertionInvocation;
+﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.LayersParallelBridge.UpsertionInvocation;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner;
 
@@ -11,7 +10,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         Success, RequestsQuotaExhausted, UnallowedStatus
     }
 
-    public class ParallelBridgeCitilinkScraper: IParallelBridgeCitilinkScraper
+    public class ParallelBridgeCitilinkScraper : IParallelBridgeCitilinkScraper
     {
         private readonly HttpClient _baseClient;
         private readonly ILogger? _logger;

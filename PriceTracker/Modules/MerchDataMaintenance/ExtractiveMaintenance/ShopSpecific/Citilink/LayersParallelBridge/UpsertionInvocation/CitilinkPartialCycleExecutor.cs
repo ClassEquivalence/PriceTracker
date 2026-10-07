@@ -1,16 +1,13 @@
 ﻿using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Inner;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Pipeline;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.LayersParallelBridge.Scraping;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner;
 
 namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.LayersParallelBridge.UpsertionInvocation
 {
 
-    public class PartialCycleExecutor
+    public class CitilinkPartialCycleExecutor
     {
         private readonly ILogger? _logger;
 
@@ -18,7 +15,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         private readonly IInnerCitilinkParser _parser;
         private readonly CitilinkInnerDataAugmenter _dataAugmenter;
         private readonly ICitilinkCatalogTreeRepositoryAdapter _treeRepository;
-        public PartialCycleExecutor(IParallelBridgeCitilinkScraper scraper,
+        public CitilinkPartialCycleExecutor(IParallelBridgeCitilinkScraper scraper,
             IInnerCitilinkParser parser, CitilinkInnerDataAugmenter dataAugmenter,
             ICitilinkCatalogTreeRepositoryAdapter catalogTreeRepository,
             ILogger? logger)
@@ -42,7 +39,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
             RequestsQuota quota = new(requestsLimitPerCycle);
 
             var anyUnprocessedNode = await _treeRepository.GetUnprocessedNodeAsync();
-            if(anyUnprocessedNode is null)
+            if (anyUnprocessedNode is null)
             {
                 await _treeRepository.RecreateTreeAsync();
             }
@@ -82,7 +79,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
             Processed, RequestsQuotaExhausted, UnexpectedResponse
         }
 
-        private async Task<NodeProcessingStatus> 
+        private async Task<NodeProcessingStatus>
             ProcessNodeAsync(CitilinkNode unprocessedNode, RequestsQuota quota)
         {
             _logger?.LogTrace($"Starting to process node {unprocessedNode.DefaultLocation.Url}");
@@ -133,7 +130,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
             Processed, RequestsQuotaExhausted, UnexpectedResponse
         }
         private async Task<LocationsProcessingStatus> ProcessLocationsToNodeAsync
-            (CitilinkNode locationsOwnerNode, List<CitilinkScrapeTarget> unprocessedLocations, 
+            (CitilinkNode locationsOwnerNode, List<CitilinkScrapeTarget> unprocessedLocations,
             RequestsQuota quota)
         {
             foreach (var location in unprocessedLocations)
@@ -180,7 +177,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                 await _dataAugmenter.AugmentNodeAsync(locationsOwnerNode, parseSnapshot);
                 await _dataAugmenter.MarkNodeLocationAsProcessed(locationsOwnerNode, location);
             }
-            
+
             return LocationsProcessingStatus.Processed;
         }
     }

@@ -55,9 +55,9 @@ namespace PriceTrackerTest.Utils.TestAppBuilder
             return ProvideService<RepositoryInitializer>();
         }
 
-        public PartialCycleExecutor ProvideCycleExecutor()
+        public CitilinkPartialCycleExecutor ProvideCycleExecutor()
         {
-            return ProvideService<PartialCycleExecutor>();
+            return ProvideService<CitilinkPartialCycleExecutor>();
         }
 
         public void Initialize()

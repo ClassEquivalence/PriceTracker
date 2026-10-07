@@ -41,7 +41,7 @@ namespace PriceTracker.Core.App
             app.UseAuthorization();
             app.MapControllers();
             app.MapFallbackToFile("index.html");
-            
+
             return app;
         }
         protected void UseProductionRepository(IServiceCollection collection)
@@ -80,9 +80,9 @@ namespace PriceTracker.Core.App
                 CitilinkPolicyEnforcersContextfulProvider>();
             collection.AddSingleton<ICitilinkUpsertionInvoker, CitilinkUpsertionInvoker>();
 
-            collection.AddSingleton<IParallelBridgeCitilinkScraper, 
+            collection.AddSingleton<IParallelBridgeCitilinkScraper,
                 ParallelBridgeCitilinkScraper>();
-            collection.AddSingleton<PartialCycleExecutor>();
+            collection.AddSingleton<CitilinkPartialCycleExecutor>();
         }
         protected void UseOptions(IServiceCollection collection)
         {
