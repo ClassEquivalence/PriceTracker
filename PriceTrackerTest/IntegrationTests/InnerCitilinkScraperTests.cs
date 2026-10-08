@@ -1,5 +1,7 @@
 ﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies.PolicyEnforcersProvider;
 
@@ -14,19 +16,13 @@ namespace PriceTrackerTest.IntegrationTests
         {
             CitilinkScrapeMerchJsonTarget scrapeTarget = new CitilinkScrapeMerchJsonTarget
                 (categorySlug, page);
-
-            CitilinkScrapeEpisodeDescriptor descriptor = scrapeTarget.CreateDescriptor();
-
-            var innerScraper = new NewCitilinkScraper(new());
-
-            CitilinkEnforcersSharedContext sharedContext = new();
-            CitilinkScraperPoliciesEnforcer enforcer = new(sharedContext);
-            CitilinkScrapeAssignment assignment = new(descriptor, enforcer);
-            var scrapeRes = await innerScraper.ScrapeAsync(assignment);
-            if (scrapeRes.Info.CompletionState != ScrapeCompletionState.Success)
+            var innerScraper = new CitilinkScraper(new());
+            RequestsQuota quota = new(5);
+            var scrapeRes = await innerScraper.ScrapeAsync(scrapeTarget, quota);
+            if (scrapeRes.state != ScrapeState.Success)
             {
-                Assert.Fail($"{scrapeRes.Info.CompletionState} should be " +
-                    $"{ScrapeCompletionState.Success}");
+                Assert.Fail($"{scrapeRes.state} should be " +
+                    $"{ScrapeState.Success}");
             }
         }
     }

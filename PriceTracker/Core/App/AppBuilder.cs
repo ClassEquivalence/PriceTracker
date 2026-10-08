@@ -61,8 +61,6 @@ namespace PriceTracker.Core.App
 
             collection.AddSingleton<HttpClient>();
 
-            collection.AddSingleton<IInnerCitilinkScraper, NewCitilinkScraper>();
-
             collection.AddSingleton<IInnerCitilinkParser, InnerCitilinkParser>();
 
             collection.AddSingleton<CitilinkInnerDataAugmenter>();
