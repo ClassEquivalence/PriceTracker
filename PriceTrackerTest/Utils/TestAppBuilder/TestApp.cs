@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Pipeline;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer;
 using PriceTracker.Modules.Repository;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.WebInterface.Adapters.Repository;
-using Microsoft.Extensions.DependencyInjection;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.LayersParallelBridge.UpsertionInvocation;
 
 
 namespace PriceTrackerTest.Utils.TestAppBuilder
@@ -19,10 +19,6 @@ namespace PriceTrackerTest.Utils.TestAppBuilder
         public TestApp(IServiceProvider appServiceProvider)
         {
             _appServiceProvider = appServiceProvider;
-        }
-        public ICitilinkUpsertionInvoker ProvideUpsertionInvoker()
-        {
-            return ProvideService<ICitilinkUpsertionInvoker>();
         }
         public ICitilinkParsableClassifier ProvideParsablesClassifier()
         {

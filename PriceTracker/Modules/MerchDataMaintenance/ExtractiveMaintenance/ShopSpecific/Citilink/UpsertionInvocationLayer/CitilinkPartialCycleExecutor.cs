@@ -1,21 +1,21 @@
 ﻿using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Inner;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.LayersParallelBridge.Scraping;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer;
 
-namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.LayersParallelBridge.UpsertionInvocation
+namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer
 {
 
     public class CitilinkPartialCycleExecutor
     {
         private readonly ILogger? _logger;
 
-        private readonly IParallelBridgeCitilinkScraper _scraper;
+        private readonly ICitilinkScraper _scraper;
         private readonly IInnerCitilinkParser _parser;
         private readonly CitilinkInnerDataAugmenter _dataAugmenter;
         private readonly ICitilinkCatalogTreeRepositoryAdapter _treeRepository;
-        public CitilinkPartialCycleExecutor(IParallelBridgeCitilinkScraper scraper,
+        public CitilinkPartialCycleExecutor(ICitilinkScraper scraper,
             IInnerCitilinkParser parser, CitilinkInnerDataAugmenter dataAugmenter,
             ICitilinkCatalogTreeRepositoryAdapter catalogTreeRepository,
             ILogger? logger)

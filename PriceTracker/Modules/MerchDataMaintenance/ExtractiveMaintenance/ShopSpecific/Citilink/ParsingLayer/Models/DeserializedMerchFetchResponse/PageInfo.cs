@@ -1,4 +1,4 @@
-﻿namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.DeserializedMerchFetchResponse
+﻿namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Models.DeserializedMerchFetchResponse
 {
     public class PageInfo
     {

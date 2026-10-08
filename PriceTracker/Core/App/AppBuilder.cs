@@ -1,15 +1,12 @@
 ﻿using PriceTracker.Core.Configuration.ProvidedWithDI;
 using PriceTracker.Core.Configuration.ProvidedWithDI.Options;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Inner;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Pipeline;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.DataSynchronizationLayer.Upsertion;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.LayersParallelBridge.Scraping;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.LayersParallelBridge.UpsertionInvocation;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner.Parsers;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Pipeline;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies.PolicyEnforcersProvider;
 
@@ -65,23 +62,15 @@ namespace PriceTracker.Core.App
             collection.AddSingleton<HttpClient>();
 
             collection.AddSingleton<IInnerCitilinkScraper, NewCitilinkScraper>();
-            collection.AddSingleton<ICitilinkScrapeAssignmentFactory,
-                CitilinkScrapeAssignmentFactory>();
 
-            collection.AddSingleton<ICitilinkScraper, CitilinkScraper>();
             collection.AddSingleton<IInnerCitilinkParser, InnerCitilinkParser>();
 
             collection.AddSingleton<CitilinkInnerDataAugmenter>();
-            collection.AddSingleton<ICitilinkParser, NewCitilinkOuterParser>();
-            collection.AddSingleton<ICitilinkDataAugmenter, CitilinkDataAugmenter>();
 
             collection.AddSingleton<CitilinkEnforcersSharedContext>();
-            collection.AddSingleton<ICitilinkPolicyEnforcersContextfulProvider,
-                CitilinkPolicyEnforcersContextfulProvider>();
-            collection.AddSingleton<ICitilinkUpsertionInvoker, CitilinkUpsertionInvoker>();
 
-            collection.AddSingleton<IParallelBridgeCitilinkScraper,
-                ParallelBridgeCitilinkScraper>();
+            collection.AddSingleton<ICitilinkScraper,
+                CitilinkScraper>();
             collection.AddSingleton<CitilinkPartialCycleExecutor>();
         }
         protected void UseOptions(IServiceCollection collection)

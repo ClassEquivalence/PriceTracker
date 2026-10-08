@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies.PolicyEnforcersProvider;
 using PriceTrackerTest.Utils.Logging;
 using PriceTrackerTest.Utils.TestAppBuilder;
 using Xunit.Abstractions;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer;
 
 namespace PriceTrackerTest.IntegrationTests.ParsingLayerIntegrationTests
 {
@@ -29,17 +29,16 @@ namespace PriceTrackerTest.IntegrationTests.ParsingLayerIntegrationTests
             ICitilinkParsableClassifier classifier = app.ProvideParsablesClassifier();
             var scraper = app.ProvideScraper();
 
-            CitilinkEnforcersSharedContext context = new();
-            CitilinkPolicyEnforcersContextfulProvider citilinkPolicyEnforcersProvider
-                = new(context);
             CitilinkScrapeTarget scrapeTarget = new(url);
-            var scrapeRes = await scraper.ScrapeAsync(scrapeTarget, citilinkPolicyEnforcersProvider.ProvideForEntireNodeAugmentationEpisode());
-            if (scrapeRes.Info.ScrapeMetadata.CompletionState != ScrapeCompletionState.Success
-                || scrapeRes.Result == null)
+
+            RequestsQuota quota = new(200);
+            var scrapeRes = await scraper.ScrapeAsync(scrapeTarget, quota);
+            if (scrapeRes.state != ScrapeState.Success
+                || scrapeRes.scrapable == null)
             {
                 throw new InvalidOperationException();
             }
-            var obtainedType = classifier.Classify(scrapeRes.Result);
+            var obtainedType = classifier.Classify(scrapeRes.scrapable);
 
             Assert.Equal(expectedType, obtainedType);
         }
