@@ -6,9 +6,7 @@ using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecif
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner.Parsers;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer;
-using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models.Policies.PolicyEnforcersProvider;
 
 namespace PriceTracker.Core.App
 {
@@ -64,8 +62,6 @@ namespace PriceTracker.Core.App
             collection.AddSingleton<IInnerCitilinkParser, InnerCitilinkParser>();
 
             collection.AddSingleton<CitilinkInnerDataAugmenter>();
-
-            collection.AddSingleton<CitilinkEnforcersSharedContext>();
 
             collection.AddSingleton<ICitilinkScraper,
                 CitilinkScraper>();
