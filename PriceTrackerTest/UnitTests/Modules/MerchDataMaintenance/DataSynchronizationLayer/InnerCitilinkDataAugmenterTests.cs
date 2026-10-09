@@ -6,6 +6,7 @@ using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecif
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Inner;
+using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Models;
 
 namespace PriceTrackerTest.UnitTests.Modules.MerchDataMaintenance.DataSynchronizationLayer
 {

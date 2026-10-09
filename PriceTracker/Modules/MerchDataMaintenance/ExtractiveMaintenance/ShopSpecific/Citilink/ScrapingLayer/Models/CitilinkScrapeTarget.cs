@@ -1,7 +1,6 @@
-﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner;
-using System.Net;
+﻿using System.Net;
 
-namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node
+namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Models
 {
     // Функциональное назначение содержимого контента с точки зрения приложения
     public enum CitilinkScrapeTargetPurpose { Default, MerchesJson }

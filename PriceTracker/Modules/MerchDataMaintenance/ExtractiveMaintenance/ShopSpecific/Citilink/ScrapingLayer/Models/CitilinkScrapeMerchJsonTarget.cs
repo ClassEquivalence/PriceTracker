@@ -1,8 +1,7 @@
-﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Inner;
-using System.Net;
+﻿using System.Net;
 using System.Text;
 
-namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node
+namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Models
 {
     public class CitilinkScrapeMerchJsonTarget : CitilinkScrapeTarget
     {
@@ -66,7 +65,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         ""isTerminal"": false
     }}
 }}";
-            var descriptor = new CitilinkScrapeEpisodeDescriptor(this.Url, httpMethod, statusCodes,
+            var descriptor = new CitilinkScrapeEpisodeDescriptor(Url, httpMethod, statusCodes,
                 requestBody: requestBody, requestBodyEncoding: Encoding.UTF8, requestBodyMediaType:
                 "application/json");
             return descriptor;
