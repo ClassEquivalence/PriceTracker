@@ -1,4 +1,4 @@
-﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models.Node;
+﻿using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models;
 
 namespace PriceTracker.Core.CommonModels.Process.ShopSpecific.Citilink.ExtractionState.CatalogTree
 {

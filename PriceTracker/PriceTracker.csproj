@@ -38,7 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Modules\MerchDataMaintenance\ExtractiveMaintenance\Mapping\" />
     <Folder Include="Modules\Repository\Facade\Citilink\" />
     <Folder Include="Modules\Repository\Mapping\Process\" />
   </ItemGroup>

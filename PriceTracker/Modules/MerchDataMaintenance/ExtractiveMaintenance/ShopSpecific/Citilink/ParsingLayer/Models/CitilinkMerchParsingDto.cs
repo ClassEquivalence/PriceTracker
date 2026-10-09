@@ -1,4 +1,4 @@
-﻿namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.Models
+﻿namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ParsingLayer.Models
 {
     public record CitilinkMerchParsingDto(decimal Price, string CitilinkId, string Name)
     {
