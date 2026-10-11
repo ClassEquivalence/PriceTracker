@@ -1,16 +1,10 @@
 ﻿using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
 using PriceTracker.Modules.Repository;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
-using PriceTracker.Modules.Repository.Entities.Domain;
-using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 using PriceTracker.Modules.Repository.Facade.Implementations;
 using PriceTracker.Modules.Repository.Mapping.Domain;
 using PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink;
-using PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink.ExtractionState;
-using PriceTracker.Modules.Repository.Repositories.Base;
-using PriceTracker.Modules.Repository.Repositories.Domain.EntityLevel;
-using PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink;
 using PriceTracker.Modules.WebInterface.Adapters.Repository;
 
 namespace PriceTracker.Core.App
@@ -34,11 +28,6 @@ namespace PriceTracker.Core.App
         }
         private static IServiceCollection AddEntityRepositories(IServiceCollection services)
         {
-            services.AddSingleton<IEntityRepository<ShopEntity>,
-                ShopEntityRepository>();
-            services.AddSingleton<CitilinkMerchEntityRepository>();
-            services.AddSingleton<IEntityRepository<CitilinkMerchEntity>>(s =>
-            s.GetService<CitilinkMerchEntityRepository>());
             return services;
         }
         private static IServiceCollection AddMappers(IServiceCollection services)
@@ -47,19 +36,12 @@ namespace PriceTracker.Core.App
                 TimestampedPriceMapper>();
             services.AddSingleton<IPriceHistoryMapper,
                 PriceHistoryMapper>();
-            services.AddSingleton<ICitilinkCatalogUrlBranchMapper, CitilinkCatalogUrlBranchMapper>();
-            services.AddSingleton<ICitilinkCatalogUrlTreeMapper, CitilinkCatalogUrlTreeMapper>();
-            services.AddSingleton<ICitilinkExtractorStorageStateMapper,
-                CitilinkExtractorStorageStateMapper>();
-            services.AddSingleton<ICitilinkExtractionStateMapper,
-                CitilinkExtractionStateMapper>();
             services.AddSingleton<ICitilinkMerchCoreToEntityMapper,
                 CitilinkMerchCoreToEntityMapper>();
             return services;
         }
         private static IServiceCollection AddRepositories(IServiceCollection services)
         {
-            services.AddSingleton<CitilinkMerchRepository>();
             return services;
         }
         private static IServiceCollection AddAdapters(IServiceCollection services)

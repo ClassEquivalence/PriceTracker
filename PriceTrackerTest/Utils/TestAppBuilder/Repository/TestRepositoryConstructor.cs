@@ -4,16 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository;
 using PriceTracker.Modules.Repository;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
-using PriceTracker.Modules.Repository.Entities.Domain;
-using PriceTracker.Modules.Repository.Entities.Domain.ShopSpecific;
 using PriceTracker.Modules.Repository.Facade.FacadeInterfaces;
 using PriceTracker.Modules.Repository.Facade.Implementations;
 using PriceTracker.Modules.Repository.Mapping.Domain;
 using PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink;
-using PriceTracker.Modules.Repository.Mapping.ShopSpecific.Citilink.ExtractionState;
-using PriceTracker.Modules.Repository.Repositories.Base;
-using PriceTracker.Modules.Repository.Repositories.Domain.EntityLevel;
-using PriceTracker.Modules.Repository.Repositories.ShopSpecific.Citilink;
 using PriceTracker.Modules.WebInterface.Adapters.Repository;
 
 namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
@@ -58,13 +52,6 @@ namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
         private static IServiceCollection AddEntityRepositories(IServiceCollection services)
         // completed (parent = repositories)
         {
-            services.AddSingleton<IEntityRepository<ShopEntity>,
-                ShopEntityRepository>();
-            services.AddSingleton<CitilinkMerchEntityRepository>();
-
-            services.AddSingleton<IEntityRepository<CitilinkMerchEntity>>(s =>
-            s.GetService<CitilinkMerchEntityRepository>());
-
             return services;
 
         }
@@ -76,15 +63,6 @@ namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
                 TimestampedPriceMapper>();
             services.AddSingleton<IPriceHistoryMapper,
                 PriceHistoryMapper>();
-
-            services.AddSingleton<ICitilinkCatalogUrlBranchMapper, CitilinkCatalogUrlBranchMapper>();
-            services.AddSingleton<ICitilinkCatalogUrlTreeMapper, CitilinkCatalogUrlTreeMapper>();
-
-            services.AddSingleton<ICitilinkExtractorStorageStateMapper,
-                CitilinkExtractorStorageStateMapper>();
-            services.AddSingleton<ICitilinkExtractionStateMapper,
-                CitilinkExtractionStateMapper>();
-
             services.AddSingleton<ICitilinkMerchCoreToEntityMapper,
                 CitilinkMerchCoreToEntityMapper>();
 
@@ -95,7 +73,6 @@ namespace PriceTrackerTest.Utils.TestAppBuilder.Repository
 
         private static IServiceCollection AddRepositories(IServiceCollection services) //completed
         {
-            services.AddSingleton<CitilinkMerchRepository>();
             return services;
         }
 

@@ -10,9 +10,17 @@
 
   <ItemGroup>
     <Compile Remove="Modules\MerchDataMaintenance\ExtractiveMaintenance\Utils\**" />
+    <Compile Remove="Modules\Repository\Facade\Citilink\**" />
+    <Compile Remove="Modules\Repository\Mapping\Process\**" />
     <Content Remove="Modules\MerchDataMaintenance\ExtractiveMaintenance\Utils\**" />
+    <Content Remove="Modules\Repository\Facade\Citilink\**" />
+    <Content Remove="Modules\Repository\Mapping\Process\**" />
     <EmbeddedResource Remove="Modules\MerchDataMaintenance\ExtractiveMaintenance\Utils\**" />
+    <EmbeddedResource Remove="Modules\Repository\Facade\Citilink\**" />
+    <EmbeddedResource Remove="Modules\Repository\Mapping\Process\**" />
     <None Remove="Modules\MerchDataMaintenance\ExtractiveMaintenance\Utils\**" />
+    <None Remove="Modules\Repository\Facade\Citilink\**" />
+    <None Remove="Modules\Repository\Mapping\Process\**" />
   </ItemGroup>
 
 	<!--
@@ -35,11 +43,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="7.3.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="7.3.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="7.3.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Modules\Repository\Facade\Citilink\" />
-    <Folder Include="Modules\Repository\Mapping\Process\" />
   </ItemGroup>
 
 </Project>
