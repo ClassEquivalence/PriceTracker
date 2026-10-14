@@ -55,8 +55,6 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         private async Task TryAugmentWithType(CitilinkNode node, CitilinkParsingSnapshot snapshot)
         {
             node.NodeType = NodeTypeByParsableType(snapshot.Type ?? ParsableType.Unknown);
-            if (node.NodeType != CitilinkNodeType.Unknown)
-                node.AugmentationState = CitilinkNodeAugmentationState.PartiallyProcessed_TypeIsKnown;
             await _catalogTreeRepository.UpdateNodeAsync(node);
         }
         private async Task TryAugmentWithDescendants(CitilinkNode node, CitilinkParsingSnapshot snapshot)
@@ -120,10 +118,10 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                     {
                         AugmentOneJson();
                         node.MerchNodeScrapeTargetsAugmentationState =
-                            CitilinkMerchNodeScrapeTargetsAugmentationState.OneJsonTargetPresent;
+                            CitilinkMerchNodeScrapeTargetsAugmentationState.AtLeastOneJsonTargetPresent;
                     }
                     break;
-                case CitilinkMerchNodeScrapeTargetsAugmentationState.OneJsonTargetPresent:
+                case CitilinkMerchNodeScrapeTargetsAugmentationState.AtLeastOneJsonTargetPresent:
                     if (snapshot.NodeMerchesCount != null && snapshot.NodeMerchesCount > 0)
                     {
                         FullyAugment();

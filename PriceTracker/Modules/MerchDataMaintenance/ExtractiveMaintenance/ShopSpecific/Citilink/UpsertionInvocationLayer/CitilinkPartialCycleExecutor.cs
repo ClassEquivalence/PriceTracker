@@ -116,8 +116,6 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                 Where(l => !l.IsProcessed).ToList();
             }
 
-            // Mark it that the node's been processed.
-            unprocessedNode.AugmentationState = CitilinkNodeAugmentationState.Processed;
             await _treeRepository.UpdateNodeAsync(unprocessedNode);
 
             _logger?.LogTrace($"Node {unprocessedNode.DefaultLocation.Url}" +

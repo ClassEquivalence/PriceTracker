@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PriceTracker.Core.HelperUtils;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.ScrapingLayer.Models;
 using PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models;
 using PriceTracker.Modules.Repository.DataAccess.EFCore;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction;
 using PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree;
+using System.Linq.Expressions;
 
 namespace PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository
 {
@@ -65,21 +67,20 @@ namespace PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository
 
         public async Task<CitilinkNode?> GetUnprocessedNodeAsync(int maxErrorsCount = -1)
         {
-            if (_retreivedNodeCache.All(nc => nc.AugmentationState
-            == CitilinkNodeAugmentationState.Processed ||
+            if (_retreivedNodeCache.All(nc => IsNodeProcessed(nc) ||
             (nc.ProcessingErrorCount > maxErrorsCount && maxErrorsCount != -1)))
             {
                 // берём до 50 элементов через 1 where? хардкод-константа.
                 // maxErrorsCount - также хардкод-константа...
                 using var context = await _dbContextFactory.CreateDbContextAsync();
-                var branches = context.CitilinkBranches.Where(b => b.AugmentationState !=
-                CitilinkNodeAugmentationState.Processed &&
-                (b.ProcessingErrorCount <= maxErrorsCount || maxErrorsCount == -1)).Take(50);
+
+                var branches = context.CitilinkBranches.AsQueryable().WhereNot(IsBranchProcessedExpr)
+                    .Where(b => b.ProcessingErrorCount <= maxErrorsCount || maxErrorsCount == -1)
+                    .Take(50);
 
                 _retreivedNodeCache = branches.Select(CreateNodeFromBranch).ToList();
             }
-            return _retreivedNodeCache.Find(cn => cn.AugmentationState !=
-            CitilinkNodeAugmentationState.Processed &&
+            return _retreivedNodeCache.Find(cn => !IsNodeProcessed(cn) &&
             (cn.ProcessingErrorCount <= maxErrorsCount || maxErrorsCount == -1));
         }
 
@@ -92,7 +93,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository
             // Также разобраться как сделать это в рамках возможно одного сетевого запроса к БД
             // (при возможно нескольких подзапросах в рамках... транзакции, чтоли)
             CitilinkCatalogBranchEntity rootDefault = new(mainCatalogUrl, false,
-                CitilinkNodeAugmentationState.Unprocessed, CitilinkNodeType.RootCatalog);
+                CitilinkNodeType.RootCatalog);
             CitilinkCatalogUrlsTreeEntity treeEntity = new(rootDefault);
             CitilinkParsingExecutionStateEntity executionStateEntity = new(false,
                 treeEntity);
@@ -136,28 +137,39 @@ namespace PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository
             await context.SaveChangesAsync();
         }
 
+        private bool IsNodeProcessed(CitilinkNode node) => node.NodeType switch
+        {
+            CitilinkNodeType.Unknown => false,
+
+            CitilinkNodeType.RootCatalog or CitilinkNodeType.CatalogsCatalog or CitilinkNodeType.MerchCatalog
+                => node.ScrapeTargetsProcessed,
+
+            _ => throw new NotImplementedException()
+        };
+
+        // Логика выражения - та же что и для узла должна быть.
+        Expression<Func<CitilinkCatalogBranchEntity, bool>> IsBranchProcessedExpr = branch =>
+        branch.NodeType != CitilinkNodeType.Unknown && branch.ScrapeTargetsProcessed;
 
         private void UpdateBranchFieldsFromNode(CitilinkCatalogBranchEntity updateable,
             CitilinkNode updater)
         {
-            updateable.AugmentationState = updater.AugmentationState;
-            updateable.DescendantsProcessed = updater.DescendantsProcessed;
+            updateable.ScrapeTargetsProcessed = updater.ScrapeTargetsProcessed;
             updateable.NodeType = updater.NodeType;
             updateable.ProcessingErrorCount = updater.ProcessingErrorCount;
         }
         private CitilinkNode CreateNodeFromBranch(CitilinkCatalogBranchEntity branch)
         {
             CitilinkScrapeTarget target = new(branch.Url, processed:
-                branch.AugmentationState == CitilinkNodeAugmentationState.Processed);
-            CitilinkNode node = new(target, branch.AugmentationState, branch.NodeType,
-                branch.DescendantsProcessed, branch.ProcessingErrorCount);
+                branch.ScrapeTargetsProcessed);
+            CitilinkNode node = new(target, branch.NodeType,
+                branch.ScrapeTargetsProcessed, branch.ProcessingErrorCount);
             return node;
         }
 
         private CitilinkCatalogBranchEntity CreateBranchFromTarget(CitilinkScrapeTarget target)
         {
-            return new(target.Url, false, CitilinkNodeAugmentationState.Unprocessed,
-                CitilinkNodeType.Unknown);
+            return new(target.Url, false, CitilinkNodeType.Unknown);
         }
     }
 }

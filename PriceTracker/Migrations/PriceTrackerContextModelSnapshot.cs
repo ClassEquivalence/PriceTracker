@@ -162,20 +162,17 @@ namespace PriceTracker.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AugmentationState")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("CitilinkCatalogBranchEntityId")
                         .HasColumnType("integer");
-
-                    b.Property<bool>("DescendantsProcessed")
-                        .HasColumnType("boolean");
 
                     b.Property<int>("NodeType")
                         .HasColumnType("integer");
 
                     b.Property<int>("ProcessingErrorCount")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("ScrapeTargetsProcessed")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -185,7 +182,7 @@ namespace PriceTracker.Migrations
 
                     b.HasIndex("CitilinkCatalogBranchEntityId");
 
-                    b.ToTable("CitilinkCatalogBranchEntity");
+                    b.ToTable("CitilinkBranches");
                 });
 
             modelBuilder.Entity("PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CatalogTree.CitilinkCatalogUrlsTreeEntity", b =>
@@ -203,7 +200,7 @@ namespace PriceTracker.Migrations
 
                     b.HasIndex("RootId");
 
-                    b.ToTable("CitilinkCatalogUrlsTreeEntity");
+                    b.ToTable("CatalogUrlsTreeEntity");
                 });
 
             modelBuilder.Entity("PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extraction.CitilinkParsingExecutionStateEntity", b =>

@@ -2,25 +2,10 @@
 
 namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer.Models
 {
-    /// <summary>
-    /// Processed = обработана и ветвь и рекурсивно все её потомки.
-    /// TypeDiscovered = Уточнен тип ветви, в остальном она не обработана.
-    /// DescendantsUnprocessed = Уточнен тип ветви, но наследники обработаны как минимум не полностью.
-    /// TotallyUnprocessed = обработка ветви не начиналась.
-    /// 
-    /// </summary>
-    public enum CitilinkNodeAugmentationState
-    {
-        Processed,
-        PartiallyProcessed_TypeIsKnown,
-        PartiallyProcessed_TypeIsUnknown,
-        Unprocessed
-    }
-
     public enum CitilinkMerchNodeScrapeTargetsAugmentationState
     {
         NotAugmented,
-        OneJsonTargetPresent,
+        AtLeastOneJsonTargetPresent,
         AllTargetsPresent
     }
 
@@ -31,10 +16,8 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         private List<CitilinkScrapeTarget> locationsList;
         public IReadOnlyList<CitilinkScrapeTarget> LocationsList => locationsList.
             Append(DefaultLocation).ToList();
-
-        public CitilinkNodeAugmentationState AugmentationState;
         public CitilinkNodeType NodeType;
-        public bool DescendantsProcessed;
+        public bool ScrapeTargetsProcessed;
 
         public int ProcessingErrorCount;
 
@@ -52,8 +35,8 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
         }
 
         public CitilinkNode(CitilinkScrapeTarget defaultLocation,
-            CitilinkNodeAugmentationState state, CitilinkNodeType type = CitilinkNodeType.Unknown,
-            bool descendantsProcessed = false,
+            CitilinkNodeType type = CitilinkNodeType.Unknown,
+            bool scrapeTargetsProcessed = false,
             int processingErrorCount = 0)
         {
             if (defaultLocation.Purpose != CitilinkScrapeTargetPurpose.Default)
@@ -61,10 +44,9 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                 throw new ArgumentException($"Должна была передаться локация с дефолтным контентом. {defaultLocation.Purpose}");
             }
             DefaultLocation = defaultLocation;
-            AugmentationState = state;
             NodeType = type;
             locationsList = [];
-            DescendantsProcessed = descendantsProcessed;
+            ScrapeTargetsProcessed = scrapeTargetsProcessed;
             ProcessingErrorCount = processingErrorCount;
         }
         public void AddWebLocation(CitilinkScrapeTarget webLocation)
@@ -74,8 +56,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
 
         public override string ToString()
         {
-            return $"Node: url {DefaultLocation.Url}, AugmentationState {AugmentationState}, " +
-                $"NodeType {NodeType}";
+            return $"Node: url {DefaultLocation.Url}, NodeType {NodeType}";
         }
     }
 }

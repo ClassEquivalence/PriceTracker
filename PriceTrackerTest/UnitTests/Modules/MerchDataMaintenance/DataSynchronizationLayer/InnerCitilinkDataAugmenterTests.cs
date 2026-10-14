@@ -29,7 +29,7 @@ namespace PriceTrackerTest.UnitTests.Modules.MerchDataMaintenance.DataSynchroniz
             ICitilinkCatalogTreeRepositoryAdapter catalogTreeRepositoryAdapter =
                 catalogTreeRepositoryMock.Object;
             CitilinkInnerDataAugmenter augmenter = new(merchUpserter, catalogTreeRepositoryAdapter);
-            CitilinkNode? node = new CitilinkNode(new(""), CitilinkNodeAugmentationState.Unprocessed);
+            CitilinkNode? node = new CitilinkNode(new(""));
 
             CitilinkMerchParsingDto dto = new(2, "22", "22221a");
             List<CitilinkMerchParsingDto> merchesList = new() { dto };
@@ -77,7 +77,7 @@ namespace PriceTrackerTest.UnitTests.Modules.MerchDataMaintenance.DataSynchroniz
             ICitilinkCatalogTreeRepositoryAdapter catalogTreeRepositoryAdapter =
                 catalogTreeRepositoryMock.Object;
             CitilinkInnerDataAugmenter augmenter = new(merchUpserter, catalogTreeRepositoryAdapter);
-            CitilinkNode? node = new CitilinkNode(new(""), CitilinkNodeAugmentationState.Unprocessed);
+            CitilinkNode? node = new CitilinkNode(new(""));
 
             List<string> descendantsList = [];
             for (int i = 0; i < expectedTargetCount; i++)

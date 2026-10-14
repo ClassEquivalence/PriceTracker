@@ -38,7 +38,11 @@ namespace PriceTrackerTest.IntegrationTests.RepositoryIntegrationTests
                 sameFirstUnprocessedNode.DefaultLocation.Url);
 
             // Act
-            firstUnprocessedNode.AugmentationState = CitilinkNodeAugmentationState.Processed;
+            // Make it so that would seem that the node's been processed
+            firstUnprocessedNode.NodeType = CitilinkNodeType.MerchCatalog;
+            firstUnprocessedNode.ScrapeTargetsProcessed = true;
+            // We made it seem so.
+
             await repo.UpdateNodeAsync(firstUnprocessedNode);
             var secondUnprocessedNode = await repo.GetUnprocessedNodeAsync();
 
@@ -102,7 +106,7 @@ namespace PriceTrackerTest.IntegrationTests.RepositoryIntegrationTests
 
             CitilinkScrapeTarget firstTarget = new("OneMoreSTUrl");
             CitilinkScrapeTarget secondTarget = new("SecondMoreSTUrl");
-            unprocessedNode.AugmentationState = CitilinkNodeAugmentationState.Processed;
+
             await repo.UpdateNodeAsync(unprocessedNode);
             await repo.AppendBranchesAsync(unprocessedNode, [firstTarget, secondTarget]);
 
@@ -167,14 +171,13 @@ namespace PriceTrackerTest.IntegrationTests.RepositoryIntegrationTests
 
             // Шаг 2: подготовить исходные данные.
             CitilinkCatalogBranchEntity root = new("SomeRootUrl", false,
-                CitilinkNodeAugmentationState.Unprocessed,
                 CitilinkNodeType.RootCatalog);
             CitilinkCatalogUrlsTreeEntity treeEntity = new(root);
             CitilinkParsingExecutionStateEntity newExecutionState = new(false, treeEntity);
             CitilinkCatalogBranchEntity firstBranch = new("someFirstBranchesUrl", false,
-                CitilinkNodeAugmentationState.Unprocessed, CitilinkNodeType.Unknown);
+                CitilinkNodeType.Unknown);
             CitilinkCatalogBranchEntity secondBranch = new("someSecondBranchesUrl", false,
-                CitilinkNodeAugmentationState.Unprocessed, CitilinkNodeType.Unknown);
+                CitilinkNodeType.Unknown);
             root.Children.Add(firstBranch);
             firstBranch.Children.Add(secondBranch);
             context.CitilinkParsingExecutionStateEntity.Add(newExecutionState);
