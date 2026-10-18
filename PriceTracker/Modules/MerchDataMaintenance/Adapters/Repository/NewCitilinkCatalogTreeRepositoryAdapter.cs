@@ -137,6 +137,21 @@ namespace PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository
             await context.SaveChangesAsync();
         }
 
+        public async Task MarkNodeLocationAsProcessedAsync(CitilinkNode node,
+            CitilinkScrapeTarget nodeLocation)
+        {
+            if (!node.LocationsList.Contains(nodeLocation))
+                throw new InvalidOperationException();
+            nodeLocation.IsProcessed = true;
+            await UpdateNodeAsync(node);
+        }
+
+        public async Task MarkNodeAsProcessedAsync(CitilinkNode node)
+        {
+            node.ScrapeTargetsProcessed = true;
+            await UpdateNodeAsync(node);
+        }
+
         private bool IsNodeProcessed(CitilinkNode node) => node.NodeType switch
         {
             CitilinkNodeType.Unknown => false,

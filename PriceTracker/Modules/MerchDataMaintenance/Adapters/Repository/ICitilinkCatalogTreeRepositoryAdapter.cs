@@ -22,5 +22,10 @@ namespace PriceTracker.Modules.MerchDataMaintenance.Adapters.Repository
         /// <param name="node"></param>
         /// <returns></returns>
         Task UpdateNodeAsync(CitilinkNode node);
+
+        Task MarkNodeLocationAsProcessedAsync(CitilinkNode node, CitilinkScrapeTarget
+            nodeLocation);
+
+        Task MarkNodeAsProcessedAsync(CitilinkNode node);
     }
 }

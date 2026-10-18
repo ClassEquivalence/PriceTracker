@@ -43,15 +43,6 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
             await TryAugmentWithScrapeTargets(node, purgedSnapshot);
         }
 
-        public async Task MarkNodeLocationAsProcessed(CitilinkNode node, CitilinkScrapeTarget
-            nodeLocation)
-        {
-            if (!node.LocationsList.Contains(nodeLocation))
-                throw new InvalidOperationException();
-            nodeLocation.IsProcessed = true;
-            await _catalogTreeRepository.UpdateNodeAsync(node);
-        }
-
         private async Task TryAugmentWithType(CitilinkNode node, CitilinkParsingSnapshot snapshot)
         {
             node.NodeType = NodeTypeByParsableType(snapshot.Type ?? ParsableType.Unknown);

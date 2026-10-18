@@ -116,7 +116,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                 Where(l => !l.IsProcessed).ToList();
             }
 
-            await _treeRepository.UpdateNodeAsync(unprocessedNode);
+            await _treeRepository.MarkNodeAsProcessedAsync(unprocessedNode);
 
             _logger?.LogTrace($"Node {unprocessedNode.DefaultLocation.Url}" +
                 $" processing completed.");
@@ -174,7 +174,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
 
                 // Stage 3: Data augmentation
                 await _dataAugmenter.AugmentNodeAsync(locationsOwnerNode, parseSnapshot);
-                await _dataAugmenter.MarkNodeLocationAsProcessed(locationsOwnerNode, location);
+                await _treeRepository.MarkNodeLocationAsProcessedAsync(locationsOwnerNode, location);
             }
 
             return LocationsProcessingStatus.Processed;
