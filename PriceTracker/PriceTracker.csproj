@@ -44,5 +44,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="7.3.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="7.3.1" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <Folder Include="Modules\Repository\Entities\Process\ShopSpecific\Citilink\" />
+  </ItemGroup>
 
 </Project>

@@ -2,6 +2,10 @@
 
 namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSpecific.Citilink.UpsertionInvocationLayer
 {
+    public enum PartialCycleStopReason
+    {
+        NoUnprocessedNodesRemain, RequestQuotaExhausted, UnallowedResponse
+    }
 
     public class CitilinkPartialCycleExecutor
     {
@@ -19,31 +23,19 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
             _logger = logger;
         }
 
-        public enum PartialCycleStopReason
-        {
-            NoUnprocessedNodesRemain, RequestQuotaExhausted, UnallowedResponse
-        }
-
-        public async Task<PartialCycleStopReason> ExecutePartialCycleAsync(int requestsLimitPerCycle)
+        public async Task<(PartialCycleStopReason stopReason, int requestsSpent)> 
+            ExecutePartialCycleAsync(int requestsLimitPerCycle)
         {
             _logger?.LogInformation($"Partial cycle's starting now");
             RequestsQuota quota = new(requestsLimitPerCycle);
-
-            var anyUnprocessedNode = await _treeRepository.GetUnprocessedNodeAsync();
-            if (anyUnprocessedNode is null)
-            {
-                await _treeRepository.RecreateTreeAsync();
-            }
-            anyUnprocessedNode = await _treeRepository.GetUnprocessedNodeAsync();
-            if (anyUnprocessedNode is null)
-                throw new InvalidOperationException();
 
             while (quota.RequestsRemainingCount > 0)
             {
                 var unprocessedNode = await _treeRepository.GetUnprocessedNodeAsync();
 
                 if (unprocessedNode == null)
-                    return PartialCycleStopReason.NoUnprocessedNodesRemain;
+                    return (PartialCycleStopReason.NoUnprocessedNodesRemain, 
+                        quota.RequestsRemainingCount-requestsLimitPerCycle);
 
                 var nodeProcessingResult = await _nodeProcessor.
                     ProcessNodeAsync(unprocessedNode, quota);
@@ -52,18 +44,20 @@ namespace PriceTracker.Modules.MerchDataMaintenance.ExtractiveMaintenance.ShopSp
                     case NodeProcessingStatus.Processed:
                         break;
                     case NodeProcessingStatus.RequestsQuotaExhausted:
-                        return PartialCycleStopReason.RequestQuotaExhausted;
+                        return (PartialCycleStopReason.RequestQuotaExhausted,
+                        quota.RequestsRemainingCount - requestsLimitPerCycle);
                         break;
                     case NodeProcessingStatus.UnexpectedResponse:
-                        return PartialCycleStopReason.UnallowedResponse;
+                        return (PartialCycleStopReason.UnallowedResponse,
+                        quota.RequestsRemainingCount - requestsLimitPerCycle);
                         break;
                     case not NodeProcessingStatus.Processed:
                         throw new InvalidOperationException();
                         break;
                 }
             }
-
-            return PartialCycleStopReason.RequestQuotaExhausted;
+            return (PartialCycleStopReason.RequestQuotaExhausted, 
+                quota.RequestsRemainingCount - requestsLimitPerCycle);
         }
     }
 }

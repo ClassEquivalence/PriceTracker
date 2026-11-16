@@ -62,7 +62,7 @@ namespace PriceTracker.Modules.MerchDataMaintenance.Facade
 
         public async Task OnShutdownAsync()
         {
-            await _scheduledUpserter.OnShutdown();
+            await _scheduledUpserter.StopProcessingUpsertion();
 
         }
 

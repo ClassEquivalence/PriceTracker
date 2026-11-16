@@ -8,6 +8,10 @@ namespace PriceTracker.Modules.Repository.Entities.Process.ShopSpecific.Extracti
 
         public bool IsCompleted { get; set; }
 
+        public DateTime? LastTimePartialStarted { get; set; }
+        public DateTime? LastTimeFullStarted { get; set; }
+        public int PartialCycleRemainingRequestsQuota { get; set; }
+
         public CitilinkParsingExecutionStateEntity(bool isCompleted,
             int id = default) : base(id)
         {

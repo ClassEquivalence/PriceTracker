@@ -26,7 +26,7 @@ namespace PriceTrackerTest.IntegrationTests
         public async Task Executor_Executes()
         {
             var partialCycleResult = await _executor.ExecutePartialCycleAsync(5);
-            _logger?.LogInformation($"Cycle result is {partialCycleResult}");
+            _logger?.LogInformation($"Cycle result is {partialCycleResult.stopReason}");
         }
     }
 }

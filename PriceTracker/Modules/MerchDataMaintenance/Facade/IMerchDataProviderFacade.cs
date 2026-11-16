@@ -3,7 +3,7 @@
     /// <summary>
     /// Внешний интерфейс модуля.
     /// </summary>
-    public interface IMerchDataProviderFacade : IHostedService
+    public interface IMerchDataProviderFacade
     {
         public Task ProcessMerchUpsertion();
         public Task OnShutdownAsync();
